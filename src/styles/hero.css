@@ -1,0 +1,39 @@
+.hero {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+  background-color: white;
+}
+
+.hero-content {
+  display: grid;
+  gap: 8rem;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  color: var(--petnet-blue);
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-image {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-image img {
+  max-width: 350px;
+  border-radius: 1rem;
+}

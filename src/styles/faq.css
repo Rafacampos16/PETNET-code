@@ -1,0 +1,25 @@
+.faq-content {
+  background-color: #eff6ff;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.accordion-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0;
+  font-weight: 850;
+  color: var(--petnet-blue);
+  background: #eff6ff;
+  border: none;
+  cursor: pointer;
+}

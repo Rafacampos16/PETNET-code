@@ -1,0 +1,130 @@
+.services-section {
+  background-color: #eff6ff;
+  padding: 4rem 1rem;
+}
+
+.services-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--petnet-blue);
+  margin-bottom: 0.3rem;
+}
+
+.services-subtitle {
+  color: var(--petnet-black);
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+}
+
+.linha {
+  width: 100px;
+  height: 4px;
+  background-color: var(--petnet-yellow);
+  margin: 0.5rem auto 1.5rem auto;
+  border-radius: 2px;
+}
+
+.services-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+/* Cards */
+.service-card {
+  width: 340px;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Cabeçalho azul */
+.service-icon {
+  background-color: var(--petnet-blue);
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Conteúdo */
+.service-content {
+  padding: 1.0rem;
+  flex-grow: 1;
+}
+
+.service-content h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--petnet-blue);
+  margin-bottom: 0.5rem;
+}
+
+.service-content p {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* Lista */
+.service-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.service-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--petnet-black);
+  margin-bottom: 0.4rem;
+}
+
+.check-icon {
+  color: var(--petnet-blue);
+}
+
+/* Botão */
+.service-button {
+  background-color: var(--petnet-blue);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  margin: 1rem 1.5rem 1.5rem;
+  transition: all 0.2s;
+}
+
+.service-button:hover {
+  background-color: var(--petnet-yellow);
+  color: var(--petnet-black);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .services-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .service-card {
+    width: 90%;
+  }
+}
