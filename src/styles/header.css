@@ -138,3 +138,24 @@
     height: 3rem;
   }
 }
+
+/* ======= ADM ======= */
+
+/* Navbar Admin alinhada à direita */
+.header-right.admin-nav {
+  margin-left: auto;     /* empurra tudo para a direita */
+  gap: 0.75rem;          /* espaçamento normal entre ícones */
+}
+
+
+.icon-link {
+  width: 28px;       /* ajuste fino */
+  height: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+.menu-item img {
+  width: 28px;
+  height: 28px;
+}

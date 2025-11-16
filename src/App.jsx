@@ -7,7 +7,7 @@ import Servicos from "./pages/Servicos";
 import Pets from "./pages/Pets";
 import Conta from "./pages/Conta";
 import GlobalStyles from "./components/GlobalStyles";
-import Adiministracao from "./pages/Adiministracao";
+import Administracao from "./pages/Administracao";
 import ProtectedRoute from "./components/ProtectedRoute"; // <--- importe aqui
 
 const App = () => (
@@ -25,7 +25,7 @@ const App = () => (
           path="/admin"
           element={
             <ProtectedRoute>
-              <Adiministracao />
+              <Administracao />
             </ProtectedRoute>
           }
         />

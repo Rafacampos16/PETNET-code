@@ -230,7 +230,6 @@ function Pets() {
         </button>
       </div>
 
-      <Footer />
     </>
   );
 }

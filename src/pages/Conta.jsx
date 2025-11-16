@@ -22,6 +22,7 @@ export default function App() {
     const { email, senha } = login;
 
     //  LOGIN DO ADMIN
+    
     if (email === "netpetpi@gmail.com" && senha === "petnetFatec25") {
   setMensagem("Login de administrador realizado com sucesso!");
 

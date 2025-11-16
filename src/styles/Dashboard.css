@@ -1,0 +1,45 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  overflow-x: hidden;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 6px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+  color: #2563eb;
+  margin-top: 0.5rem;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.chart {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
