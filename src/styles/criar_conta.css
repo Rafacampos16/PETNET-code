@@ -322,3 +322,21 @@ input[type="password"]::-webkit-password-reveal {
     padding-left: 20px;
   }
 }
+
+@media (max-width: 768px) {
+
+  /* Reduz espaço do topo */
+  .cadastro-container {
+    padding: 50px 20px 30px 20px;
+  }
+
+  /* Ajusta o título */
+  .titulo {
+    font-size: 26px;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-left: 5px; /* afasta da borda */
+  }
+
+}
