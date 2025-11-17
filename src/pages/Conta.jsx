@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import "../styles/conta.css";
+import { useNavigate } from "react-router-dom";
+
 
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   const [login, setLogin] = useState({
     email: "",
@@ -141,7 +145,12 @@ export default function App() {
             especialmente para seu pet. Crie sua conta agora!
           </p>
 
-          <button className="btn-outline">Criar Conta</button>
+          <button 
+            className="btn-outline"
+            onClick={() => navigate("/criarconta")}
+          >
+            Criar Conta
+          </button>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import Conta from "./pages/Conta";
 import GlobalStyles from "./components/GlobalStyles";
 import Administracao from "./pages/Administracao";
 import ProtectedRoute from "./components/ProtectedRoute"; // <--- importe aqui
+import Criarconta from "./pages/Criar_conta";
 
 const App = () => (
   <Router>
@@ -20,6 +21,7 @@ const App = () => (
         <Route path="/servicos" element={<Servicos />} />
         <Route path="/pets" element={<Pets />} />
         <Route path="/conta" element={<Conta />} />
+        <Route path="/criarconta" element={<Criarconta />} />
 
         <Route
           path="/admin"

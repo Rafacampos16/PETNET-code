@@ -1,45 +1,131 @@
+/* ------------------------------ */
+/* CONTAINER PRINCIPAL            */
+/* ------------------------------ */
 .dashboard-container {
-  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* 🔥 centraliza tudo */
+  gap: 3rem;
+
+  max-width: 1100px;       /* 🔥 mesma largura dos gráficos */
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem 1rem;
-  overflow-x: hidden;
+  padding: 2rem 1.5rem;    /* respiro nas laterais */
 }
 
-.title {
-  text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
+
+/* ------------------------------ */
+/* CARD DOS GRÁFICOS              */
+/* ------------------------------ */
+.dashboard-charts {
+  width: 100%;
+  max-width: 1100px;       /* 🔥 agora bate com container */
+  margin: 0 auto;
+  padding: 0 10px;         /* margem lateral controlada */
 }
 
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+.dashboard-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* centraliza */
 }
 
-.card {
+.grafico-container {
+  width: 100%;
+  padding: 10px;
+}
+
+.chart-box {
   background: white;
-  padding: 1.5rem;
-  border-radius: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 40px;
+  width: 100%;
+  box-shadow: 0px 2px 10px rgba(231, 72, 72, 0.1);
+}
+
+.chart-title {
   text-align: center;
-  box-shadow: 0 0 6px rgba(0,0,0,0.08);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--petnet-blue);
+  margin-bottom: 0.3rem;
 }
 
-.card h3 {
-  color: #2563eb;
-  margin-top: 0.5rem;
+
+/* ------------------------------ */
+/* RESPONSIVIDADE                 */
+/* ------------------------------ */
+@media (max-width: 900px) {
+  .dashboard-container {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+    align-items: center; /* garante centralização */
+  }
+
+  .dashboard-charts {
+    padding: 0 5px;
+  }
 }
 
-.charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+@media (max-width: 600px) {
+  .chart-box {
+    padding: 1.2rem 1rem;
+  }
+
+  .chart-title {
+    font-size: 1.3rem;
+  }
 }
 
-.chart {
-  background: white;
-  padding: 1rem;
-  border-radius: 16px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+
+/* ------------------------------ */
+/* GRÁFICOS NO MOBILE             */
+/* ------------------------------ */
+@media (max-width: 650px) {
+  .grafico-container {
+    height: 300px;
+  }
+
+  .chart-box {
+    padding: 1rem;
+  }
+
+  .chart-title {
+    font-size: 1.1rem;
+  }
+
+  .recharts-legend-wrapper {
+    transform: scale(0.85);
+    margin-left: 5px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .grafico-container {
+    height: 260px;
+  }
+
+  .chart-box {
+    padding: 0.9rem;
+  }
+
+  .chart-title {
+    font-size: 1rem;
+  }
+
+  .recharts-pie-sector {
+    transform: scale(0.85);
+    transform-origin: center;
+  }
+}
+
+
+/* OCULTAR GRÁFICOS NO CELULAR */
+@media (max-width: 600px) {
+  .dashboard-charts,
+  .grafico-container,
+  .chart-box {
+    display: none !important;
+  }
 }

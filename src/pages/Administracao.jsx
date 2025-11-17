@@ -1,25 +1,35 @@
 import React from "react";
-import { PieChart, Pie, Cell, Legend, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import "../styles/Administracao.css";
 import { Link } from "react-router-dom";
-import Dashboard from "../components/Dashboard"; // IMPORTANDO DASHBOARD NOVA
+import Dashboard from "../components/Dashboard.jsx";  // <-- CORRETO
+import "../styles/administracao.css";
 
-export default function Administracao() {
+const Administracao = () => {
   return (
     <div className="admin-container">
+    
 
-      {/* CARDS DA ADMIN */}
       <div className="cards-container">
-        <Link to="/admin/agendamentos" className="card">AGENDAMENTOS</Link>
-        <Link to="/admin/clientes" className="card">CLIENTES</Link>
-        <Link to="/admin/pets" className="card">PETS</Link>
-        <Link to="/admin/status" className="card">STATUS</Link>
+        <Link to="/agendamentos" className="admin-card">
+          <span>AGENDAMENTOS</span>
+        </Link>
+
+        <Link to="/clientes" className="admin-card">
+          <span>CLIENTES</span>
+        </Link>
+
+        <Link to="/pets" className="admin-card">
+          <span>PETS</span>
+        </Link>
+
+        <Link to="/status" className="admin-card">
+          <span>STATUS</span>
+        </Link>
       </div>
 
-      {/* DASHBOARD COMPLETA */}
-      <div className="dashboard-section">
-        <Dashboard />
-      </div>
+    <Dashboard />
+      
     </div>
   );
-}
+};
+
+export default Administracao;

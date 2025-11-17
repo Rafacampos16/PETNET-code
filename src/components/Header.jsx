@@ -231,7 +231,7 @@ const Header = () => {
               </>
             ) : (
               <>
-                <span onClick={() => { navigate("/home"); setMenuOpen(false); }}>Home</span>
+                <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
                 <span onClick={() => { navigate("/servicos"); setMenuOpen(false); }}>Serviços</span>
                 <span onClick={() => { navigate("/pets"); setMenuOpen(false); }}>Pets</span>
                 <span onClick={() => { navigate("/conta"); setMenuOpen(false); }}>Conta</span>

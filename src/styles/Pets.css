@@ -314,3 +314,77 @@ select {
   background-color: #ffe6e6;
 }
 
+/* =============================================== */
+/*        AJUSTES FORTES DE RESPONSIVIDADE         */
+/* =============================================== */
+
+@media (max-width: 600px) {
+
+  /* Remove margem gigante do topo */
+  .topo2 {
+    margin-top: 100px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    padding: 0;
+    text-align: center;
+  }
+
+  /* Aproxima o formulário do header */
+  .container {
+    margin-top: 20px;
+    padding: 10px 15px;
+  }
+
+  /* Inputs mais próximos */
+  .form {
+    gap: 15px;
+  }
+
+  /* Reduz espaço vertical entre cada label/input */
+  label {
+    margin-top: 8px;
+    margin-bottom: 3px;
+  }
+
+  input, select {
+    padding: 8px;
+    height: 34px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  /* Reduz espaço e altura da área de upload */
+  .upload-area {
+    height: 300px !important;
+    padding: 10px;
+    border-width: 1px;
+  }
+
+  .upload-label {
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .upload-label::before {
+    font-size: 26px;
+  }
+
+  /* Ajusta linhas duplas */
+  .linhas.dupla {
+    gap: 12px;
+  }
+
+  /* Botão menos espaçado e mais compacto */
+  .btn {
+    margin: 30px auto 50px auto !important;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 16px;
+  }
+
+  /* Reduz margens gerais da página */
+  .pets-container {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+}

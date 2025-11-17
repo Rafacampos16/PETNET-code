@@ -1,104 +1,129 @@
-/* CONTAINER GERAL */
 .admin-container {
-  width: 100%;
-  padding: 60px 2rem 2rem; /* espaço abaixo do header */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  overflow-x: hidden; /* impede barra horizontal */
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+  text-align: center;
 }
 
+.admin-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--petnet-blue);
+  margin-bottom: 2rem;
+}
 
-
-/* === CARDS DE ACESSO RÁPIDO (MESMO TAMANHO DE ANTES) === */
 .cards-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  max-width: 100%;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto 3rem;
 }
 
-.card {
-  background-color: white;
-  width: 250px;             /* TAMANHO ORIGINAL */
-  height: 150px;            /* TAMANHO ORIGINAL */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform .3s, background .3s, color .3s;
+.admin-card {
+  border: 0.2px solid var(--petnet-blue);
+  border-radius: 0.75rem;
+  padding: 3rem 1rem;
   text-decoration: none;
   color: var(--petnet-blue);
-  border: 0.2px solid rgba(0, 0, 0, 0.438);
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-  max-width: 100%;      /* impede ultrapassar container */
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
 }
 
-/* Ajuste responsivo para telas menores */
-@media (max-width: 1200px) {
-  .cards-container {
-    width: 220px;
-  }
-}
-
-@media (max-width: 900px) {
-  .cards-container {
-    width: 45%;        /* vira 2 por linha */
-  }
-}
-
-@media (max-width: 600px) {
-  .cards-container {
-    width: 100%;       /* tela pequena 1 por linha */
-  }
-}
-
-.card:hover {
+.admin-card:hover {
   background-color: var(--petnet-blue);
-  color: white;
-  transform: translateY(-4px);
+  color: var(--petnet-white);
+  transform: translateY(-3px);
 }
 
-/* === CHARTS === */
-.charts-section {
-  width: 100%;
+/* DASHBOARD */
+.dashboard-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; 
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  padding: 0 2rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.chart {
+.dashboard-chart {
   width: 100%;
-  background-color: white;
-  border-radius: 12px;
+  min-height: 260px;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
   padding: 1rem;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* RESPONSIVIDADE */
-@media (max-width: 900px) {
+/* ==================== RESPONSIVIDADE ==================== */
+
+/* Telas até 850px */
+@media (max-width: 850px) {
+
   .cards-container {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
+    max-width: 400px;   /* força centralizar melhor */
+    margin: 0 auto;     /* garante centralização */
+    gap: 1.5rem;
   }
 
-  .card {
-    width: 45%;
-    height: 110px;
+  .admin-card {
+    font-size: 1.2rem;
+    padding: 2rem 1rem;
+    width: 100%;           /* ocupa largura total do container pequeno */
+  }
+
+  .dashboard-container {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1rem;
   }
 }
 
-@media (max-width: 500px) {
-  .card {
-    width: 100%;
-    height: 110px;
+/* Telas até 600px */
+@media (max-width: 600px) {
+
+  .cards-container {
+    max-width: 320px;   /* deixa ainda menor */
+    gap: 1.2rem;
+  }
+
+  .admin-card {
+    font-size: 1.05rem;
+    padding: 1.5rem 0.8rem;
+    border-radius: 0.6rem;
+  }
+
+  .dashboard-chart {
+    padding: 0.8rem;
+    min-height: 220px;
+  }
+}
+
+/* Telas até 430px — celular pequeno */
+@media (max-width: 430px) {
+
+  .cards-container {
+    max-width: 280px;      /* cards realmente pequenos */
+  }
+
+  .admin-card {
+    font-size: 0.95rem;
+    padding: 1.2rem 0.5rem;
+  }
+
+  .dashboard-container {
+    padding: 0.8rem 0.5rem;
+  }
+
+  .dashboard-chart {
+    padding: 0.6rem;
+    min-height: 200px;
   }
 }
