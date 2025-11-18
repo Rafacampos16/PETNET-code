@@ -129,6 +129,10 @@ export default function App() {
               ENTRAR
             </button>
           </form>
+
+          <p className="criar-mobile" onClick={() => navigate("/criarconta")}>
+            Não tem uma conta? <span>Crie agora</span>
+          </p>
         </div>
 
         {/* DIVISÃO */}

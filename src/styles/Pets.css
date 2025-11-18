@@ -283,6 +283,9 @@ select {
   vertical-align: middle;
 }
 
+.topo2{
+  margin-top: 100px;
+}
 
 .btn {
   display: block;
@@ -314,77 +317,86 @@ select {
   background-color: #ffe6e6;
 }
 
-/* =============================================== */
-/*        AJUSTES FORTES DE RESPONSIVIDADE         */
-/* =============================================== */
+/* --- MOBILE --- */
+@media (max-width: 768px) {
 
-@media (max-width: 600px) {
-
-  /* Remove margem gigante do topo */
-  .topo2 {
-    margin-top: 100px;
-    margin-bottom: 10px;
-    font-size: 24px;
-    padding: 0;
-    text-align: center;
-  }
-
-  /* Aproxima o formulário do header */
-  .container {
-    margin-top: 20px;
-    padding: 10px 15px;
-  }
-
-  /* Inputs mais próximos */
-  .form {
+  /* Faz todas as fileiras virarem coluna */
+  .linhas.dupla {
+    display: flex;
+    flex-direction: column !important;
     gap: 15px;
+    width: 100%;
   }
 
-  /* Reduz espaço vertical entre cada label/input */
-  label {
-    margin-top: 8px;
-    margin-bottom: 3px;
+  /* Garante que todos os inputs e selects tenham o mesmo tamanho */
+  .linhas.dupla div,
+  .form-left input,
+  .form-left select {
+    width: 100% !important;
+  }
+
+  /* Ajusta o input DATE (ele costuma estourar largura) */
+  input[type="date"] {
+    width: 100% !important;
+  }
+
+  /* Ajusta o container da coluna esquerda */
+  .form-left {
+    width: 100% !important;
+  }
+
+  /* Upload ocupa largura total e centralizado */
+  .upload-area {
+    width: 100% !important;
+    margin-top: 25px;
+  }
+}
+
+/* --- TABLET --- */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .container {
+    padding: 25px 40px;
+  }
+
+  .topo2 {
+    font-size: 34px;
+    text-align: center;
+    margin-top: 120px;
+  }
+
+  .form {
+    flex-direction: row;
+    gap: 30px;
+    align-items: flex-start;
+  }
+
+  .form-left {
+    flex: 1.2;
+  }
+
+  .linhas.dupla {
+    flex-direction: row !important;
+    gap: 20px !important;   /* antes 60px */
+  }
+
+  .linhas.dupla div {
+    width: 100% !important;
   }
 
   input, select {
-    padding: 8px;
-    height: 34px;
-    font-size: 12px;
-    margin-bottom: 6px;
+    height: 40px;
+    font-size: 14px;
   }
 
-  /* Reduz espaço e altura da área de upload */
   .upload-area {
-    height: 300px !important;
-    padding: 10px;
-    border-width: 1px;
+    flex: 0.8;
+    height: 320px !important; /* menor que celular e desktop */
   }
 
-  .upload-label {
-    font-size: 12px;
-    gap: 4px;
-  }
-
-  .upload-label::before {
-    font-size: 26px;
-  }
-
-  /* Ajusta linhas duplas */
-  .linhas.dupla {
-    gap: 12px;
-  }
-
-  /* Botão menos espaçado e mais compacto */
   .btn {
-    margin: 30px auto 50px auto !important;
-    width: 100%;
-    padding: 12px 0;
-    font-size: 16px;
-  }
-
-  /* Reduz margens gerais da página */
-  .pets-container {
-    margin-top: 60px;
-    margin-bottom: 60px;
+    font-size: 18px;
+    padding: 14px 50px;
+    margin-top: 40px;
   }
 }

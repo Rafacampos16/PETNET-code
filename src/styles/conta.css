@@ -13,6 +13,16 @@
     font-family: 'Inter', sans-serif;
   }
   
+  html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 
   .container {
     width: 100%;
@@ -27,7 +37,7 @@
     justify-content: center;
     align-items: flex-start;
     gap: 50px;
-    margin-top: 180px;
+    margin-top: 90px;
   }
   
   .left {
@@ -280,7 +290,7 @@
 
   /* Reduz a distância gigante do topo dos conteúdos */
   .content {
-    margin-top: 60px;
+    margin-top: 40px;
     gap: 30px;
   }
 
@@ -379,3 +389,102 @@
 }
 
 }
+
+/* TEXTO CRIAR CONTA NO MOBILE */
+.criar-mobile {
+  display: none;
+  font-size: 14px;
+  color: #444;
+  margin-top: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.criar-mobile span {
+  color: var(--petnet-blue);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Mostrar apenas no mobile */
+@media (max-width: 600px) {
+
+  .right .titulo2,
+  .right .texto,
+  .right .btn-outline {
+    display: none !important; /* esconde tudo da lateral */
+  }
+
+  .criar-mobile {
+    display: block;    /* aparece só no mobile */
+  }
+
+  .btn {
+    width: 100% !important;
+    max-width: 330px !important; /* maior largura */
+  }
+}
+
+@media (max-width: 600px) {
+  .form {
+    flex-wrap: wrap;
+  }
+
+  .form, .container, .content {
+    width: 100% !important;
+  }
+}
+
+/* --- TABLET IGUAL MOBILE --- */
+@media (min-width: 600px) and (max-width: 1024px) {
+
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .container, .content {
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* some a parte direita igual no celular */
+  .right .titulo2,
+  .right .texto,
+  .right .btn-outline {
+    display: none !important;
+  }
+
+  /* form ocupa tudo */
+  .form {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 0 15px;
+  }
+
+  input, select {
+    width: 100% !important;
+    max-width: 400px !important;
+  }
+
+  .btn {
+    width: 100% !important;
+    max-width: 380px !important;
+    font-size: 18px;
+    padding: 14px 0;
+    margin-top: 10px;
+  }
+
+  .criar-mobile {
+    display: block !important;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 12px;
+  }
+  
+}
+
+

@@ -236,6 +236,7 @@ export default function Cadastro() {
                       }
                       width="22"
                       alt=""
+                      className="olho-cor"
                     />
                   </span>
                 </div>

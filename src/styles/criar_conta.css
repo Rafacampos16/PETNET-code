@@ -51,9 +51,9 @@ body, html, #root {
   color: var(--petnet-blue);
   font-size: 48px;
   font-weight: 900;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
   text-align: left;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 /* Formulário */
@@ -110,7 +110,17 @@ input {
   cursor: pointer;
   display: flex;
   align-items: center;
+  filter: invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg);
 }
+
+.olho-cor {
+  filter: invert(5%) sepia(100%) saturate(500%) hue-rotate(190deg);
+}
+
+.olho-cor.ativo {
+  filter: invert(85%) sepia(70%) saturate(500%) hue-rotate(5deg);
+}
+
 
 /* Lado esquerdo */
 .col-esquerda {
