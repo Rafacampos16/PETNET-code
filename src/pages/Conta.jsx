@@ -41,6 +41,19 @@ export default function App() {
   return;
 }
 
+ // LOGIN USER PADRÃO
+  if (email === "usuario@petnet.com" && senha === "123456") {
+    setMensagem("Login realizado com sucesso!");
+
+    localStorage.setItem("isUser", "true");
+    localStorage.removeItem("isAdmin");
+
+    setLogin({ email: "", senha: "" });
+
+    navigate("/minhaconta"); // redireciona para minha conta
+    return;
+  }
+
     setMensagem("E-mail ou senha incorretos. Tente novamente.");
   }
 

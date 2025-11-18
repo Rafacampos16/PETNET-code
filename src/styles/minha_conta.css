@@ -1,0 +1,901 @@
+/* ========================= minha_conta.css (cole tudo) ========================= */
+
+/* Variáveis */
+:root{
+  --petnet-blue: #3370EB;
+  --muted: #666666;
+  --bg-muted: #f8f8f8;
+  --border: #e9e9e9;
+  --card-bg: #ffffff;
+  --danger: #e03b3b;
+  --radius: 12px;
+  --container-padding: 20px;
+  --max-width: 1200px;
+  --font-main: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Base */
+* { box-sizing: border-box; }
+body { font-family: var(--font-main); color: #111; margin: 0; }
+
+/* Container */
+.container-conta{
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 48px auto;
+  padding: var(--container-padding);
+}
+
+/* Top bar: título + sininho */
+.top-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 16px;
+}
+.titulo-conta{
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--petnet-blue);
+  margin: 0;
+  margin-top: 40px;
+}
+.icone-sino{
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 8px;
+  /* substitua pelo seu ícone: altere o src no JSX para o caminho da imagem */
+  /* se preferir usar background-image, troque <img> por <div class="icone-sino-bg"></div> e use background settings */
+}
+
+/* subtítulo */
+.subtitulo-conta{
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 50px;
+}
+
+/* Área principal com coluna esquerda + foto à direita */
+.area-info{
+  display:flex;
+  gap: 32px;
+  margin-top: 18px;
+  align-items:flex-start;
+  justify-content:space-between;
+}
+
+/* bloco esquerdo - restaurado e visível */
+.info-esquerda{
+  flex: 1;
+  min-width: 240px;
+}
+.info-bloco{ margin-bottom: 18px; }
+.titulo-section{
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--petnet-blue);
+  margin: 0 0 6px 0;
+}
+.info-item{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  font-size: 15px;
+  color: #111;
+  font-weight: 300; /* fonte mais fina conforme pedido */
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* botão editar ao lado do texto (simples) */
+.edit-btn{
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  color: var(--petnet-blue);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
+/* FOTO — quadrado preenchendo o container da caixa */
+.upload-box{
+  width: 100%;
+  /* quadrado fixo: controla tamanho aqui */
+  aspect-ratio: 1/1; /* mantém quadrado igual largura x altura */
+  border-radius: var(--radius);
+  border: 2px dashed var(--petnet-blue);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+  background: #fafafa;
+  cursor:pointer;
+  color: var(--petnet-blue);
+  font-weight: 700;
+  text-align:center;
+  padding: 8px;
+}
+
+/* input ocupa toda a caixa mas invisível — já no JSX é input dentro do label */
+.upload-box input[type="file"]{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
+}
+
+/* preview ocupa toda a área, cortando com object-fit */
+.foto-preview{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+
+/* botão remover foto */
+.remove-btn{
+  margin-top: 10px;
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* DIVISOR — mais fino, maior horizontalmente e sem borda preta */
+.linha{
+  width: 100%;
+  height: 1px;         /* muito fino */
+  background: var(--border);
+  margin: 28px 0;
+}
+
+/* PREFERÊNCIAS — card mais alinhado */
+.prefs-box{
+  background: var(--bg-muted);
+  padding: 16px;
+  border-radius: 10px;
+  max-width: 290px;
+}
+
+/* linha do toggle: texto à esquerda (fino, preto), switch à direita */
+.toggle-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.toggle-line span{
+  color: #111;
+  font-weight: 300; /* fonte fina */
+  font-size: 15px;
+}
+
+/* SWITCH - botão liga/desliga */
+.switch{
+  position:relative;
+  width: 48px;
+  height: 28px;
+  display:inline-block;
+}
+.switch input{ display:none; }
+.slider{
+  position:absolute;
+  inset:0;
+  background:#d0d0d0;
+  border-radius: 28px;
+  transition: all 180ms ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.slider::before{
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 4px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 180ms ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.switch input:checked + .slider{
+  background: linear-gradient(90deg, var(--petnet-blue), #2b66d9);
+}
+.switch input:checked + .slider::before{
+  transform: translateX(20px);
+}
+
+/* TABELA DE AGENDAMENTOS */
+.tabela-agendamentos{
+  width:100%;
+  border-collapse:collapse;
+  margin-top: 12px;
+}
+.tabela-agendamentos th,
+.tabela-agendamentos td{
+  padding: 10px 12px;
+  border-bottom: 1px solid #efefef;
+  text-align:left;
+  font-size: 14px;
+}
+.status{ font-weight: 800; } /* status em bold conforme solicitado */
+.concluido{ color: #15803d; }
+.aguardando{ color: #f59e0b; }
+.agendado{ color: var(--petnet-blue); }
+
+/* botão ver agendamentos */
+.ver-agendamentos{
+  margin-top: 12px;
+  background: var(--petnet-blue);
+  color: #fff;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* AÇÕES — lista vertical, sem borda, com ícone à esquerda */
+/* estrutura: <p><span class="icon-placeholder"></span> Texto</p> */
+.acoes-lista{
+  margin-top: 6px;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.acoes-lista p{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+  color: #111;
+}
+/* placeholder do ícone: troque o background-image para a sua imagem (ou substitua no JSX pela sua tag <img>) */
+.icon-placeholder{
+  width: 28px;
+  height: 28px;
+  background: #e9e9e9;
+  border-radius: 6px;
+  display:inline-block;
+  flex-shrink: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+}
+/* exemplo: colocar ícone no CSS (substitua o caminho) */
+/* .icon-placeholder { background-image: url('/imagens/icon-senha.png'); } */
+
+/* Sair - estilo em vermelho leve */
+.sair-btn{ color: var(--danger); font-weight: 700; }
+
+/* MODAL - fundo e box */
+.modal-bg{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 1200;
+  padding: 20px;
+}
+.modal{
+  width: 720px;
+  max-width: 98%;
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+  max-height: 86vh;
+  overflow:auto;
+}
+/* títulos e listas internas do modal */
+.modal h2{ margin: 0 0 12px 0; font-size: 20px; color: #111; }
+.lista-modal{ margin: 12px 0 0 0; padding: 0; list-style: none; display:flex; flex-direction:column; gap:10px; }
+.lista-modal li{ padding: 10px; border-radius: 8px; background: #fbfbfb; border: 1px solid #f0f0f0; font-size: 15px; }
+
+/* Botão Fechar do modal estilizado */
+.btn-fechar{
+  margin-top: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  float: right;
+}
+.btn-fechar:hover{ transform: translateY(-2px); transition: all 120ms ease; }
+
+/* estilização dos botões de fechar quando há vários (centralizar para mobile) */
+.modal .actions-row{ display:flex; justify-content:flex-end; gap: 8px; margin-top: 12px; }
+
+/* Responsividade */
+@media (max-width: 900px){
+  .area-info{ flex-direction: column-reverse; gap: 18px; }
+  .foto-area{ width: 100%; }
+  .upload-box{ aspect-ratio: 1/1; }
+  .titulo-conta{ font-size: 28px; }
+  .modal{ width: 92%; padding: 14px; }
+  .btn-fechar{ width: 100%; float: none; text-align:center; }
+}
+
+@media (max-width: 480px){
+  .container-conta{ padding: 12px; margin-top: 24px; }
+  .titulo-conta{ font-size: 22px; }
+  .info-item{ font-size: 14px; }
+  .ver-agendamentos{ width: 100%; }
+  .acoes-lista p{ font-size: 15px; }
+}
+
+
+/* ===== MODAL EDITAR ===== */
+.modal-editar {
+  width: 420px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  animation: aparecer 0.25s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-titulo {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.form-editar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Inputs */
+.form-editar label {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.form-editar input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.form-editar input:focus {
+  border-color: #3370eb;
+  box-shadow: 0 0 0 2px rgba(51, 112, 235, 0.2);
+}
+
+/* Botões */
+.botoes-editar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.btn-cancelar {
+  background: #ddd;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #c5c5c5;
+}
+
+.btn-salvar {
+  background: #3370eb;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.btn-salvar:hover {
+  background: #275cce;
+}
+
+/* Animação */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabs-editar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tab {
+  padding: 8px 14px;
+  background: #eee;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: .2s;
+}
+
+.tab:hover {
+  background: #ddd;
+}
+
+.tab.ativa {
+  background: #3370eb;
+  color: white;
+  font-weight: 600;
+}
+
+/* MODAL DE NOTIFICAÇÕES */
+.modal-notificacoes {
+  width: 420px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  animation: fadeUp 0.25s ease-out;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* topo */
+.notif-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-topo h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.btn-close-x {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  line-height: 20px;
+}
+
+.btn-close-x:hover {
+  color: #3370eb;
+}
+
+/* lista */
+.notif-lista {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notif-item {
+  background: #f6f8ff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border-left: 4px solid #3370eb;
+}
+
+.notif-titulo {
+  font-weight: 600;
+  color: #1d3d8f;
+  font-size: 15px;
+}
+
+.notif-desc {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ícone do sino */
+.icone-sino {
+  width: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icone-sino:hover {
+  transform: scale(1.1);
+}
+
+/* ---- ÁREA DA FOTO (versão limpa e funcional) ---- */
+
+.foto-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%; /* ocupa toda a largura disponível */
+  margin: 0 auto; /* centraliza */
+  gap: 14px;
+}
+
+.foto-titulo {
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  width: 100%;
+}
+
+.foto-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* CENTRALIZA TUDO */
+  gap: 12px; /* espaçamento entre foto e botões */
+}
+
+.upload-box {
+  width: 210px;
+  height: 210px;
+  border: 2px dashed #3370eb;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8faff;
+  cursor: pointer;
+  transition: 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.upload-box:hover {
+  background: #eef3ff;
+}
+
+.foto-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 240px; /* deixe um pouco maior para ficar proporcional */
+}
+
+
+
+.foto-btn {
+  width: 250px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #3370eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.foto-btn.remover {
+  background: #ff3939;
+}
+.foto-btn.remover:hover {
+  background: #be0505;
+}
+
+.foto-btn.trocar {
+  background: #378cfc;
+}
+.foto-btn.trocar:hover {
+  background: #185cb4;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .area-info {
+    flex-direction: column-reverse !important; /* foto vai para baixo */
+    align-items: center;
+  }
+
+  .foto-area {
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .upload-box {
+    margin: 0 auto;
+  }
+
+  .foto-btns {
+    width: 210px;
+    margin: 0 auto;
+  }
+}
+
+
+/* ===== MODAL AGENDAMENTOS ===== */
+
+.modal-agendamentos {
+  width: 480px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  animation: fadeUp 0.25s ease-out;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.agend-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agend-topo h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.agend-lista {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.agend-item {
+  background: #f6f8ff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border-left: 4px solid #3370eb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agend-title {
+  font-weight: 600;
+  color: #1d3d8f;
+  font-size: 16px;
+}
+
+.agend-info {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.agend-status {
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  width: fit-content;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* status cores */
+.agend-status.concluido {
+  background: #d2ffe1;
+  color: #0f8f48;
+}
+
+.agend-status.aguardando {
+  background: #fff2cc;
+  color: #b8860b;
+}
+
+.agend-status.agendado {
+  background: #e4e8ff;
+  color: #2e3aac;
+}
+
+.acoes-lista p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.acao-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.sair-btn {
+  color: red;
+  font-weight: bold;
+}
+
+/* --- Ajuste do layout da foto --- */
+.foto-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* Centraliza horizontalmente */
+  text-align: center;
+  gap: 10px;
+}
+
+/* Garante que tudo dentro fique centralizado */
+.foto-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+/* --- RESPONSIVIDADE PARA CELULAR --- */
+@media (max-width: 768px) {
+
+  /* Torna a coluna da foto mais estreita e centralizada */
+  .foto-section {
+    width: 100%;
+    justify-content: center;
+    margin: 0 auto;
+    padding-top: 20px;
+  }
+
+  /* Desce a foto para baixo dos campos */
+  .perfil-container {
+    display: flex;
+    flex-direction: column-reverse; /* FOTO VEM DEPOIS DO FORM */
+    gap: 25px;
+  }
+
+  /* Deixa o bloco da foto perfeito no mobile */
+  .foto-wrapper {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .foto-preview {
+    margin: 0 auto;
+  }
+
+  .btn-foto {
+    margin: 10px auto 0 auto;
+  }
+}
+
+/* ==================== AJUSTE FINAL – CENTRALIZAR A FOTO E OS BOTÕES ==================== */
+
+.foto-area,
+.foto-container,
+.foto-section,
+.foto-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;  /* CENTRALIZA TUDO */
+  width: 40% !important;
+  margin: 0 auto !important;
+}
+
+/* Caixa da foto */
+.upload-box {
+  width: 210px !important;
+  height: 210px !important;
+  margin: 0 auto !important;
+}
+
+/* Botões abaixo da foto */
+.foto-btns {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;  /* <-- AQUI CENTRALIZA */
+  justify-content: center !important;
+  gap: 10px !important;
+  width: auto !important; /* para o conteúdo definir a largura */
+  margin: 0 auto !important;
+}
+
+/* Botões */
+.foto-btn {
+  width: 210px !important;   /* agora fica proporcional à foto */
+  text-align: center !important;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .area-info {
+    flex-direction: column-reverse !important;
+    align-items: center !important;
+  }
+
+  .foto-area,
+  .foto-container {
+    width: 100% !important;
+  }
+
+  .foto-btns {
+    width: auto !important;
+  }
+}
+
+/* ==================== AJUSTE PARA TABLET ==================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .area-info {
+    flex-direction: column-reverse !important;
+    align-items: center !important;
+  }
+
+  .foto-area,
+  .foto-container,
+  .foto-section,
+  .foto-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+  }
+
+  .upload-box {
+    margin: 0 auto !important;
+  }
+
+  .foto-btns {
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    margin: 10px auto 0 auto !important;
+  }
+
+  .foto-btn {
+    width: 200px !important;
+  }
+}
+
+/* ========================= FIM ========================= */
+
+
