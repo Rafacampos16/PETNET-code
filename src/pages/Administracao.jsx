@@ -1,12 +1,39 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Dashboard from "../components/Dashboard.jsx";  // <-- CORRETO
+import { Link, useNavigate } from "react-router-dom";
+import Dashboard from "../components/Dashboard.jsx";
 import "../styles/administracao.css";
 
+import IconLogout from "../assets/icons/logout.png";
+import IconLogoutHover from "../assets/icons/logout-h.png";
+
 const Administracao = () => {
+  const navigate = useNavigate();
+  const [hover, setHover] = React.useState(false);
+
+  function handleLogout() {
+    localStorage.removeItem("isAdmin");
+    navigate("/conta");
+  }
+
   return (
     <div className="admin-container">
-    
+
+      {/* BOTÃO SAIR NOVO */}
+      <div className="admin-logout-wrapper">
+        <button
+          className="admin-logout-btn"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          onClick={handleLogout}
+        >
+          <img
+            src={hover ? IconLogout : IconLogoutHover}
+            alt="Sair"
+            className="logout-icon"
+          />
+          <span>Sair</span>
+        </button>
+      </div>
 
       <div className="cards-container">
         <Link to="/agendamentos" className="admin-card">
@@ -26,8 +53,7 @@ const Administracao = () => {
         </Link>
       </div>
 
-    <Dashboard />
-      
+      <Dashboard />
     </div>
   );
 };

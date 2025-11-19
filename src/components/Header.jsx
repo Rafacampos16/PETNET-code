@@ -204,7 +204,19 @@ const Header = () => {
                   className="menu-item"
                   onMouseEnter={() => setContaHover(true)}
                   onMouseLeave={() => setContaHover(false)}
-                  onClick={() => navigate("/conta")}
+                  onClick={() => {
+                    const isUser = localStorage.getItem("isUser");
+                    const isAdmin = localStorage.getItem("isAdmin");
+
+                    if (isAdmin) {
+                      navigate("/admin");
+                    } else if (isUser) {
+                      navigate("/minhaconta");
+                    } else {
+                      navigate("/conta");
+                    }
+                  }}
+
                 >
                   <img
                     src={contaHover ? ContaIconHover : ContaIcon}
@@ -234,7 +246,21 @@ const Header = () => {
                 <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
                 <span onClick={() => { navigate("/servicos"); setMenuOpen(false); }}>Serviços</span>
                 <span onClick={() => { navigate("/pets"); setMenuOpen(false); }}>Pets</span>
-                <span onClick={() => { navigate("/conta"); setMenuOpen(false); }}>Conta</span>
+                <span
+                      onClick={() => {
+                        const isUser = localStorage.getItem("isUser");
+                        const isAdmin = localStorage.getItem("isAdmin");
+
+                        if (isAdmin) navigate("/admin");
+                        else if (isUser) navigate("/minhaconta");
+                        else navigate("/conta");
+
+                        setMenuOpen(false);
+                      }}
+                    >
+                      Conta
+                    </span>
+
               </>
             )}
           </div>
