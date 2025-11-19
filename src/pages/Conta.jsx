@@ -50,7 +50,7 @@ export default function App() {
 
     setLogin({ email: "", senha: "" });
 
-    navigate("/minhaconta"); // redireciona para minha conta
+    window.location.href = "/minhaconta";
     return;
   }
 
