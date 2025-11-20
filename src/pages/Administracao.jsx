@@ -36,19 +36,19 @@ const Administracao = () => {
       </div>
 
       <div className="cards-container">
-        <Link to="/agendamentos" className="admin-card">
+        <Link to="/admin/agendamentos" className="admin-card">
           <span>AGENDAMENTOS</span>
         </Link>
 
-        <Link to="/clientes" className="admin-card">
+        <Link to="/admin/clientes" className="admin-card">
           <span>CLIENTES</span>
         </Link>
 
-        <Link to="/pets" className="admin-card">
+        <Link to="/admin/pets" className="admin-card">
           <span>PETS</span>
         </Link>
 
-        <Link to="/status" className="admin-card">
+        <Link to="/admin/status" className="admin-card">
           <span>STATUS</span>
         </Link>
       </div>

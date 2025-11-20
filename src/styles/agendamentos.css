@@ -1,0 +1,327 @@
+:root {
+  --petnet-blue: #3370EB;
+  --petnet-yellow: #F9EE7C;
+  --petnet-black: #000000;
+  --petnet-white: #ffffff;
+}
+
+.agendamento-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 40px;
+  box-sizing: border-box;
+  margin-top: 0px;
+}
+
+.topo2 {
+  color: var(--petnet-blue);
+  text-align: left;
+  font-weight: 800;
+  font-size: 45px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topo2 .icon {
+  font-size: 42px;
+}
+
+.agendamento-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 50px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* ------- FORMULÁRIO ESQUERDA ------- */
+
+.form-left-agendamento {
+  flex: 1.4;
+  min-width: 320px;
+}
+
+label {
+  display: block;
+  color: var(--petnet-blue);
+  font-weight: 700;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  height: 38px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: var(--petnet-white);
+}
+
+input:focus,
+select:focus {
+  border: 2px solid var(--petnet-blue);
+}
+
+.input-icon-right {
+  position: relative;
+}
+
+.input-icon-right span {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--petnet-blue);
+  cursor: pointer;
+}
+
+/* ------- SERVIÇOS ------- */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 16px;
+  margin-top: 10px;
+}
+
+.service-btn {
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #3370EB;
+  cursor: pointer;
+  background-color: var(--petnet-white);
+  transition: 0.3s;
+  font-weight: 600;
+  color: var(--petnet-blue);
+}
+
+.service-btn.active,
+.service-btn:hover {
+  background-color: var(--petnet-blue);
+  color: var(--petnet-white);
+}
+
+/* ------- CAMPOS DE HORÁRIO ------- */
+
+.linhas-dupla {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+.linhas-dupla div {
+  width: 100%;
+}
+
+/* ------- ÁREA DE CALENDÁRIO ------- */
+
+.calendar-area {
+  flex: 1;
+  min-width: 350px;
+  margin-top: 0px;
+}
+
+.calendar-box {
+  width: 100%;
+  height: 564px;
+  border-radius: 12px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* legenda */
+.legend {
+  margin-top: 15px;
+}
+
+.legend p {
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leg {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.leg.invalid {
+  background-color: #F9D57D;
+}
+
+.leg.full {
+  background-color: #E95757;
+}
+
+.leg.available {
+  background-color: #56C86F;
+}
+
+/* ------- BOTÃO ------- */
+
+.btn-agendar {
+  display: block;
+  margin: 45px auto 80px auto;
+  background-color: var(--petnet-blue);
+  color: var(--petnet-white);
+  border: none;
+  padding: 16px 80px;
+  font-size: 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: 0.3s;
+}
+
+.btn-agendar:hover {
+  opacity: 0.92;
+}
+
+/* ------- RESPONSIVIDADE ------- */
+
+@media (max-width: 1024px) {
+  .agendamento-grid {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .calendar-box {
+    height: 340px;
+  }
+}
+
+@media (max-width: 600px) {
+  .topo2 {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-agendar {
+    width: 100%;
+  }
+
+  .calendar-box{
+    height: 380px;
+  }
+}
+
+.calendar-container {
+  width: 350px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  font-family: 'Poppins', sans-serif;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.calendar-header button {
+  background: #f1f1f1;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.calendar-header button:hover {
+  background: #e0e0e0;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.weekdays div {
+  padding: 5px 0;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.days div {
+  padding: 10px 0;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: .3s;
+}
+
+.days div:hover {
+  background: #ededed;
+}
+
+.days .today {
+  background: #2ecc71;
+  color: #fff;
+  font-weight: 700;
+}
+
+.empty {
+  visibility: hidden;
+}
+
+.input-error {
+  border: 2px solid red !important;
+  background-color: #ffe6e6;
+  border-radius: 10px;
+}
+
+.erro-service {
+  color: red;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+
+  .icon {
+    display: none; /* remove o ícone no mobile */
+  }
+
+  .topo2 {
+    justify-content: flex-start; /* título vai para a esquerda */
+    text-align: left;
+  }
+}

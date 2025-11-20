@@ -11,6 +11,11 @@ import Administracao from "./pages/Administracao";
 import ProtectedRoute from "./components/ProtectedRoute"; // <--- importe aqui
 import Criarconta from "./pages/Criar_conta";
 import Minhaconta from "./pages/Minha_conta";
+import Clientes from "./pages/Clientes";
+import Agendamentos from "./pages/Agendamentos";
+import PetsCadastrados from "./pages/Pets_cadastrados";
+import Status from "./pages/Status";
+
 
 const App = () => (
   <Router>
@@ -33,7 +38,46 @@ const App = () => (
             </ProtectedRoute>
           }
         />
+
+        
+         <Route
+            path="/admin/agendamentos"
+            element={
+              <ProtectedRoute>
+                <Agendamentos />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/clientes"
+            element={
+              <ProtectedRoute>
+                <Clientes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/pets"
+            element={
+              <ProtectedRoute>
+                <PetsCadastrados />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/status"
+            element={
+              <ProtectedRoute>
+                <Status />
+              </ProtectedRoute>
+            }
+          />
       </Routes>
+
+      
     </main>
     <Footer />
   </Router>
