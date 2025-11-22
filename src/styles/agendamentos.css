@@ -1,20 +1,26 @@
-:root {
+:root{
   --petnet-blue: #3370EB;
   --petnet-yellow: #F9EE7C;
   --petnet-black: #000000;
   --petnet-white: #ffffff;
 }
 
+/* --- ESCOPADO FORTEMENTE: tudo começa com .agendamento-container --- */
+.agendamento-container{box-sizing:border-box;}
+.agendamento-container *{box-sizing:inherit;}
+
+/* Container */
 .agendamento-container {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   padding: 10px 40px;
-  box-sizing: border-box;
   margin-top: 0px;
 }
 
-.topo2 {
+/* topo (não escopamos topo2 porque é compartilhado, mas deixamos forte) */
+.agendamento-container .topo2,
+.agendamento-container > .topo2 {
   color: var(--petnet-blue);
   text-align: left;
   font-weight: 800;
@@ -25,11 +31,8 @@
   gap: 10px;
 }
 
-.topo2 .icon {
-  font-size: 42px;
-}
-
-.agendamento-grid {
+/* Grid */
+.agendamento-container .agendamento-grid {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -38,46 +41,48 @@
   flex-wrap: wrap;
 }
 
-/* ------- FORMULÁRIO ESQUERDA ------- */
-
-.form-left-agendamento {
+/* Form left */
+.agendamento-container .form-left-agendamento {
   flex: 1.4;
   min-width: 320px;
 }
 
-label {
-  display: block;
-  color: var(--petnet-blue);
-  font-weight: 700;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  font-size: 13px;
-  margin-left: 10px;
+/* Escopando labels/inputs para essa página */
+.agendamento-container label {
+  display: block !important;
+  color: var(--petnet-blue) !important;
+  font-weight: 700 !important;
+  margin-top: 15px !important;
+  margin-bottom: 5px !important;
+  font-size: 13px !important;
+  margin-left: 10px !important;
 }
 
-input,
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  height: 38px;
-  outline: none;
-  transition: border-color 0.3s ease;
-  background-color: var(--petnet-white);
+/* Inputs e select apenas aqui */
+.agendamento-container input,
+.agendamento-container select,
+.agendamento-container textarea {
+  width: 100% !important;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid #ccc !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  outline: none !important;
+  transition: border-color 0.3s ease !important;
+  background-color: var(--petnet-white) !important;
 }
 
-input:focus,
-select:focus {
-  border: 2px solid var(--petnet-blue);
+/* foco apenas para este container */
+.agendamento-container input:focus,
+.agendamento-container select:focus,
+.agendamento-container textarea:focus {
+  border: 2px solid var(--petnet-blue) !important;
 }
 
-.input-icon-right {
-  position: relative;
-}
-
-.input-icon-right span {
+/* ícones dentro do input (scoped) */
+.agendamento-container .input-icon-right { position: relative; }
+.agendamento-container .input-icon-right span {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -87,20 +92,19 @@ select:focus {
   cursor: pointer;
 }
 
-/* ------- SERVIÇOS ------- */
-
-.services-grid {
+/* services grid (scoped) */
+.agendamento-container .services-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px 16px;
   margin-top: 10px;
 }
 
-.service-btn {
+.agendamento-container .service-btn {
   padding: 10px;
   font-size: 13px;
   border-radius: 6px;
-  border: 1px solid #3370EB;
+  border: 1px solid var(--petnet-blue);
   cursor: pointer;
   background-color: var(--petnet-white);
   transition: 0.3s;
@@ -108,220 +112,96 @@ select:focus {
   color: var(--petnet-blue);
 }
 
-.service-btn.active,
-.service-btn:hover {
+.agendamento-container .service-btn.active,
+.agendamento-container .service-btn:hover {
   background-color: var(--petnet-blue);
   color: var(--petnet-white);
 }
 
-/* ------- CAMPOS DE HORÁRIO ------- */
-
-.linhas-dupla {
+/* linhas dupla */
+.agendamento-container .linhas-dupla {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   width: 100%;
 }
 
-.linhas-dupla div {
-  width: 100%;
-}
+.agendamento-container .linhas-dupla > div { width: 100%; }
 
-/* ------- ÁREA DE CALENDÁRIO ------- */
-
-.calendar-area {
+/* calendar area */
+.agendamento-container .calendar-area {
   flex: 1;
   min-width: 350px;
   margin-top: 0px;
 }
 
-.calendar-box {
+.agendamento-container .calendar-box {
   width: 100%;
   height: 564px;
   border-radius: 12px;
   padding: 10px;
   box-sizing: border-box;
+  background: #fff;
 }
 
-/* legenda */
-.legend {
-  margin-top: 15px;
+/* legenda (scoped) */
+.agendamento-container .legend { margin-top: 15px; }
+.agendamento-container .legend p { font-size: 13px; font-weight: 500; display:flex; align-items:center; gap:8px; }
+.agendamento-container .leg { width:14px; height:14px; border-radius:4px; display:inline-block; }
+.agendamento-container .leg.invalid { background-color:#F9D57D; }
+.agendamento-container .leg.full { background-color:#E95757; }
+.agendamento-container .leg.available { background-color:#56C86F; }
+
+/* botão */
+.agendamento-container .btn-agendar {
+  display:block;
+  margin:45px auto 80px auto;
+  background-color:var(--petnet-blue);
+  color:var(--petnet-white);
+  border:none;
+  padding:16px 80px;
+  font-size:22px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  transition:0.3s;
+}
+.agendamento-container .btn-agendar:hover{ opacity:0.92; }
+
+/* input-error (scoped) */
+.agendamento-container .input-error {
+  border:2px solid red !important;
+  background-color:#ffe6e6 !important;
+  border-radius:10px !important;
 }
 
-.legend p {
-  font-size: 13px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* erro service */
+.agendamento-container .erro-service { color:red; margin-top:5px; font-size:14px; font-weight:600; }
+
+/* calendar internal - scoped so it won't affect other calendars */
+.agendamento-container .calendar-container { width:100%; margin:0 auto; background:#fff; border-radius:16px; padding:12px; box-shadow:0 4px 14px rgba(0,0,0,0.12); font-family:inherit; }
+.agendamento-container .calendar-header { display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:16px; margin-bottom:10px; }
+.agendamento-container .calendar-header button { background:#f1f1f1; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
+.agendamento-container .weekdays { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-weight:600; padding-bottom:10px; border-bottom:1px solid #eee; }
+.agendamento-container .weekdays div { padding:5px 0; font-size:12px; }
+.agendamento-container .days { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; gap:6px; margin-top:10px; }
+.agendamento-container .days div { padding:8px 0; cursor:pointer; border-radius:10px; transition:.2s; }
+.agendamento-container .days div:hover { background:#f5f5f5; }
+
+/* esconder elementos que por ventura venham de outros css e atrapalhem: */
+.agendamento-container img[alt="icon"], 
+.agendamento-container .icon-legacy { display: none !important; }
+
+/* Responsividade */
+@media (max-width:1024px){
+  .agendamento-container .agendamento-grid{ flex-direction:column; gap:30px; }
+  .agendamento-container .calendar-box{ height:340px !important; }
 }
-
-.leg {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.leg.invalid {
-  background-color: #F9D57D;
-}
-
-.leg.full {
-  background-color: #E95757;
-}
-
-.leg.available {
-  background-color: #56C86F;
-}
-
-/* ------- BOTÃO ------- */
-
-.btn-agendar {
-  display: block;
-  margin: 45px auto 80px auto;
-  background-color: var(--petnet-blue);
-  color: var(--petnet-white);
-  border: none;
-  padding: 16px 80px;
-  font-size: 22px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 800;
-  transition: 0.3s;
-}
-
-.btn-agendar:hover {
-  opacity: 0.92;
-}
-
-/* ------- RESPONSIVIDADE ------- */
-
-@media (max-width: 1024px) {
-  .agendamento-grid {
-    flex-direction: column;
-    gap: 40px;
-  }
-
-  .calendar-box {
-    height: 340px;
-  }
-}
-
-@media (max-width: 600px) {
-  .topo2 {
-    font-size: 32px;
-    text-align: center;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .btn-agendar {
-    width: 100%;
-  }
-
-  .calendar-box{
-    height: 380px;
-  }
-}
-
-.calendar-container {
-  width: 350px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-  font-family: 'Poppins', sans-serif;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  font-size: 20px;
-  margin-bottom: 15px;
-}
-
-.calendar-header button {
-  background: #f1f1f1;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: .3s;
-}
-
-.calendar-header button:hover {
-  background: #e0e0e0;
-}
-
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  font-weight: 600;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.weekdays div {
-  padding: 5px 0;
-}
-
-.days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.days div {
-  padding: 10px 0;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: .3s;
-}
-
-.days div:hover {
-  background: #ededed;
-}
-
-.days .today {
-  background: #2ecc71;
-  color: #fff;
-  font-weight: 700;
-}
-
-.empty {
-  visibility: hidden;
-}
-
-.input-error {
-  border: 2px solid red !important;
-  background-color: #ffe6e6;
-  border-radius: 10px;
-}
-
-.erro-service {
-  color: red;
-  margin-top: 5px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-@media (max-width: 480px) {
-
-  .icon {
-    display: none; /* remove o ícone no mobile */
-  }
-
-  .topo2 {
-    justify-content: flex-start; /* título vai para a esquerda */
-    text-align: left;
-  }
+@media (max-width:600px){
+  .agendamento-container .topo2{ font-size:32px; text-align:center; }
+  .agendamento-container .services-grid{ grid-template-columns:1fr; }
+  .agendamento-container .btn-agendar{ width:100%; }
+  .agendamento-container .calendar-box{ height:380px !important; }
+  .agendamento-container .icon { display:none; }
+  .agendamento-container .topo2 { justify-content:flex-start; text-align:left; }
 }
