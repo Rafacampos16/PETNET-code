@@ -36,43 +36,47 @@ const Agendamentos = () => {
     setServiceErrorMsg(""); // remove mensagem quando selecionar algo
   };
 
-  const validarCampos = () => {
-    const cliente = document.querySelector("input[placeholder='Digite o CPF']").value;
-    const pet = document.querySelector("select").value;
-    const data = document.getElementById("dataInput").value;
-    const horaInicio = document.getElementById("horaInicio").value;
-    const horaFim = document.getElementById("horaFim").value;
+ const validarCampos = () => {
+  const cliente = cpf;
+  const pet = document.querySelector("select").value;
+  const data = document.getElementById("dataInput").value;
+  const horaInicio = document.getElementById("horaInicio").value;
+  const horaFim = document.getElementById("horaFim").value;
 
-    let newErrors = {};
+  let newErrors = {};
 
-    if (!cliente) newErrors.cliente = true;
-    if (!pet || pet === "Selecione o nome do pet") newErrors.pet = true;
-    if (!data) newErrors.data = true;
-    if (!horaInicio) newErrors.inicio = true;
-    if (!horaFim) newErrors.fim = true;
-    if (selectedServices.length === 0) {
-      newErrors.servicos = true;
-      setServiceErrorMsg("Selecione pelo menos um serviço");
-    }
+  if (!cliente) newErrors.cliente = true;
+  if (!pet || pet === "Selecione o nome do pet") newErrors.pet = true;
+  if (!data) newErrors.data = true;
+  if (!horaInicio) newErrors.inicio = true;
+  if (!horaFim) newErrors.fim = true;
+  if (selectedServices.length === 0) {
+    newErrors.servicos = true;
+    setServiceErrorMsg("Selecione pelo menos um serviço");
+  }
 
-    setErrors(newErrors);
+  setErrors(newErrors);
 
-    // Se tiver erro, parar
-    if (Object.keys(newErrors).length > 0) return;
+  // Se tiver erro -> alerta e para execução
+  if (Object.keys(newErrors).length > 0) {
+    alert("Existem campos que precisam ser preenchidos!");
+    return; 
+  }
 
-    // Se tudo ok
-    alert("Agendamento realizado com sucesso!");
+  // Se chegou aqui está certo -> sucesso + limpar os campos
+  alert("Agendamento realizado com sucesso!");
 
-    // Limpar campos
-    setCpf("");
-    document.querySelector("input[placeholder='Digite o CPF']").value = "";
-    document.getElementById("dataInput").value = "";
-    document.getElementById("horaInicio").value = "";
-    document.getElementById("horaFim").value = "";
-    document.querySelector("select").value = "Selecione o nome do pet";
-    setSelectedServices([]);
-    setServiceErrorMsg("");
-  };
+  // LIMPA OS CAMPOS
+  setCpf("");
+  document.querySelector("select").value = "Selecione o nome do pet";
+  document.getElementById("dataInput").value = "";
+  document.getElementById("horaInicio").value = "";
+  document.getElementById("horaFim").value = "";
+  setSelectedServices([]);
+  setServiceErrorMsg("");
+  setErrors({});
+};
+
 
   return (
     <div className="agendamento-container">
