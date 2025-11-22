@@ -1,0 +1,194 @@
+.petsReg-container {
+  width: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.petsReg-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #3370eb;
+  margin-bottom: 20px;
+}
+
+/* SEARCH */
+.petsReg-search-container {
+  width: 75%;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.petsReg-search-input {
+  width: 100%;
+  padding: 13px 45px 13px 18px;
+  border: 3px solid #3370EB;
+  border-radius: 32px;
+  font-size: 16px;
+}
+
+.petsReg-search-icon {
+  width: 22px;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* SUGESTÕES */
+.petsReg-suggestions-box {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 14px;
+  border: 2px solid #3370EB;
+  list-style: none;
+  overflow: hidden;
+  z-index: 50;
+}
+
+.petsReg-suggestions-box li {
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.petsReg-suggestions-box li:hover {
+  background-color: #F9EE7C;
+}
+
+/* LISTA */
+.petsReg-list {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+}
+
+/* CARD */
+.petsReg-card {
+  width: 75%;
+  margin: 15px auto;
+  padding: 20px;
+  border: 2px solid #1E6DE3;
+  border-radius: 15px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.petsReg-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 100px;
+  width: 55%;
+}
+
+.petsReg-img {
+  width: 110px;
+  height: 110px;
+  margin-left: 65px;
+  margin-top: 18px;
+}
+
+.petsReg-info h3 {
+  margin: 0;
+  margin-bottom: 8px;
+  margin-top: 16px;
+  font-size: 32px;
+  color: #1E6DE3;
+}
+
+.petsReg-info p {
+  margin-bottom: 20px;
+}
+
+.petsReg-info strong {
+  color: #1E6DE3;
+}
+
+.petsReg-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 6px;
+  column-gap: 50px;
+  font-size: 17px;
+  padding-right: 25px;
+}
+
+.petsReg-details strong {
+  color: #1E6DE3;
+}
+
+.petsReg-details .petsReg-obs {
+  grid-column: 1 / -1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 8px;
+}
+
+/* ============================
+   MOBILE - até 768px
+   ============================ */
+@media (max-width: 768px) {
+
+  .petsReg-card {
+    flex-direction: column;
+    width: 90%;
+    padding: 15px;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .petsReg-left {
+    width: 100%;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .petsReg-img {
+    width: 75px;
+    height: 75px;
+    margin: 0;
+  }
+
+  .petsReg-info h3 {
+    font-size: 22px;
+    margin-top: 5px;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .petsReg-info p {
+    font-size: 15px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .petsReg-details {
+    grid-template-columns: 1fr;
+    text-align: center;
+    width: 100%;
+    row-gap: 6px;
+    padding: 10px 0;
+  }
+
+  .petsReg-details p {
+    font-size: 15px;
+  }
+
+  .petsReg-obs {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    margin-top: 10px;
+  }
+}

@@ -1,8 +1,12 @@
 import React from "react";
 import "../styles/services.css";
 import { Bath, Stethoscope, Package, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 const Services = () => {
+
+  const navigate = useNavigate();
   const services = [
     {
       icon: Bath,
@@ -57,7 +61,9 @@ const Services = () => {
                 </ul>
               </div>
 
-              <button className="service-button">Ver mais</button>
+              <button className="service-button" onClick={() => navigate("/servicos")}>
+                Ver mais
+              </button>
             </div>
           ))}
         </div>
