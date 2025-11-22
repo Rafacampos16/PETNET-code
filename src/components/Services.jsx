@@ -31,9 +31,9 @@ const Services = () => {
     <section id="services" className="services-section">
       <div className="container">
         <h2 className="services-title">Nossos Serviços</h2>
-        <div className="linha"></div>
+        <div className="linha-amarela"></div>
         <p className="services-subtitle">
-          Oferecemos uma variedade de serviços
+          Oferecemos uma variedade de serviços para garantir que seu pet esteja sempre saudável, limpo e feliz.
         </p>
 
         <div className="services-grid">

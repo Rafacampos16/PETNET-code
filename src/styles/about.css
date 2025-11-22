@@ -56,6 +56,14 @@
   margin-top: 1rem;
 }
 
+.linha-amarela {
+  width: 100px;
+  height: 4px;
+  background-color: #F9EE7C;
+  margin: 0.5rem auto 1.5rem auto;
+  border-radius: 2px;
+}
+
 .check-item {
   display: flex;
   align-items: flex-start;

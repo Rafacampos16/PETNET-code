@@ -23,9 +23,9 @@ const Servicos = () => {
     { title: "Tosa da raça", desc: "Tosa específica seguindo o padrão da raça, valorizando as características de cada pet." , icon: tosaracaIcon},
     { title: "Corte de unhas", desc: "Corte seguro e preciso para manter as patinhas do seu pet sempre bem cuidadas." , icon: unhaIcon},
     { title: "Higiene dos Ouvidos", desc: "Limpeza delicada e completa dos ouvidos, evitando desconfortos e infecções." , icon: ouvidoIcon},
-    { title: "Escovação Dental", desc: "Higiene bucal para saúde dos dentes e hálito fresco." , icon: dentalIcon },
+    { title: "Escovação Dental", desc: "Limpeza completa dos dentes, garantindo saúde bucal, prevenção de tártaro e hálito sempre fresco.", icon: dentalIcon },
     { title: "Cronograma Capilar", desc: "Tratamento completo para os pelos, fortalecendo e revitalizando a pelagem.", icon: cronogramaIcon },
-    { title: "Hidratação de Pelagem", desc: "Tratamento profundo que devolve brilho, maciez e vitalidade aos pelos.", icon: hidratacaoIcon },
+    { title: "Hidratação de Pelagem", desc: "Tratamento nutritivo que hidrata profundamente os pelos, devolvendo brilho, maciez e proteção.", icon: hidratacaoIcon },
     { title: "Hidratação de Pele", desc: "Cuidado especial para peles sensíveis, ajudando a mantê-las saudáveis e protegidas.", icon: peleIcon },
     { title: "Teste de Porosidade", desc: "Análise da saúde dos pelos para definir o tratamento ideal para o seu pet.", icon: porosidadeIcon },
   ];

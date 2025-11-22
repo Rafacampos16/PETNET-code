@@ -15,7 +15,7 @@ const About = () => {
     <section id="about" className="section-padding about-section">
       <div className="container">
         <h1 className="section-title-large">Sobre o PETNET</h1>
-        <div className="linha"></div>
+        <div className="linha-amarela"></div>
 
         <div className="about-content">
           {/* Imagem */}
