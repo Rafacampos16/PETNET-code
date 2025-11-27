@@ -8,6 +8,8 @@ import IconEdit from "../assets/icons/edit.png";
 import IconEditHover from "../assets/icons/edit-h.png";
 import IconLogout from "../assets/icons/logout.png";
 import IconLogoutHover from "../assets/icons/logout-h.png";
+import { Eye, EyeOff } from "lucide-react";
+
 
 
 export default function MinhaConta() {
@@ -19,15 +21,66 @@ export default function MinhaConta() {
   const [hoverSenha, setHoverSenha] = useState(false);
   const [hoverEdit, setHoverEdit] = useState(false);
   const [hoverLogout, setHoverLogout] = useState(false);
+  const handleSaveUser = () => {
+  alert("Dados atualizados com sucesso!");
+};
+  const [openModalSenha, setOpenModalSenha] = useState(false);
+
+ const handleSavePassword = () => {
+  alert("Senha alterada com sucesso!");
+
+  // Limpa os campos e os estados dos olhos 🔥
+  setNewPassword("");
+  setConfirmPassword("");
+  setShowOld(false);
+  setShowNew(false);
+  setShowConfirm(false);
+
+  setOpenModalSenha(false);
+};
 
 
 
-  const [dados, setDados] = useState({
-    nome: "Mariana Oliveira Silva",
-    email: "marina.oliveira@gmail.com",
-    telefone: "(12) 98876-4321",
-    endereco: "Rua das Orquídeas, 245 – Guaratinguetá/SP",
-  });
+  const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+
+const [showOld, setShowOld] = useState(false);
+const [showNew, setShowNew] = useState(false);
+const [showConfirm, setShowConfirm] = useState(false);
+
+const validatePassword = (password) => {
+  const minChar = password.length >= 8;
+  const upper = /[A-Z]/.test(password);
+  const number = /[0-9]/.test(password);
+
+  return { minChar, upper, number };
+};
+
+const { minChar, upper, number } = validatePassword(newPassword);
+
+const passwordValid = minChar && upper && number;
+
+const passwordStrength = passwordValid
+  ? "Senha forte ✓"
+  : "A senha deve conter: mínimo 8 caracteres, letra maiúscula e número";
+
+
+const [dados, setDados] = useState({
+  nome: "Mariana Oliveira Silva",
+  email: "marina.oliveira@gmail.com",
+  telefone: "(12) 98876-4321",
+  endereco: "Rua das Orquídeas, 245 – Guaratinguetá/SP",
+
+  // 🔽 Informações do PET já preenchidas
+  nomePet: "Luna",
+  especiePet: "Cachorro",
+  racaPet: "Poodle",
+  portePet: "Pequeno",
+  pesoPet: "6",
+  nascimentoPet: "2021-04-10",
+  sexoPet: "Fêmea"
+});
+
 
   const [formEditar, setFormEditar] = useState(dados);
   const [abaEditar, setAbaEditar] = useState("pessoal");
@@ -250,6 +303,7 @@ export default function MinhaConta() {
         <p
             onMouseEnter={() => setHoverSenha(true)}
             onMouseLeave={() => setHoverSenha(false)}
+            onClick={() => setOpenModalSenha(true)}
         >
             <img
             src={hoverSenha ? IconSenhaHover : IconSenha}
@@ -260,16 +314,21 @@ export default function MinhaConta() {
         </p>
 
         <p
-            onMouseEnter={() => setHoverEdit(true)}
-            onMouseLeave={() => setHoverEdit(false)}
+          onClick={() => {
+            setAbaEditar("pet");
+            setModalEditar(true);
+          }}
+          onMouseEnter={() => setHoverEdit(true)}
+          onMouseLeave={() => setHoverEdit(false)}
         >
-            <img
+          <img
             src={hoverEdit ? IconEditHover : IconEdit}
             alt="Atualizar informações do pet"
             className="acao-icon"
-            />
-            Atualizar informações do pet
+          />
+          Atualizar informações do pet
         </p>
+
 
         <p
             className="sair-btn"
@@ -360,6 +419,12 @@ export default function MinhaConta() {
               >
                 Endereço
               </button>
+                <button
+                  className={abaEditar === "pet" ? "tab ativa" : "tab"}
+                  onClick={() => setAbaEditar("pet")}
+                >
+                  Pet
+                </button>
             </div>
 
             <h2 className="modal-titulo">Editar Informações</h2>
@@ -413,6 +478,98 @@ export default function MinhaConta() {
                 </>
               )}
 
+             {abaEditar === "pet" && (
+                <>
+                  <label>
+                    NOME DO PET/APELIDO
+                    <input
+                      name="nomePet"
+                      type="text"
+                      placeholder="Digite o nome/apelido do seu pet"
+                      value={formEditar.nomePet}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    ESPÉCIE
+                    <select
+                      name="especiePet"
+                      value={formEditar.especiePet}
+                      onChange={atualizarCampo}
+                    >
+                      <option value="">Escolha a espécie</option>
+                      <option value="Cachorro">Cachorro</option>
+                      <option value="Gato">Gato</option>
+                      <option value="Pássaro">Pássaro</option>
+                      <option value="Roedor">Roedor</option>
+                      <option value="Outro">Outro</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    RAÇA
+                    <input
+                      name="racaPet"
+                      type="text"
+                      placeholder="Informe a raça do seu pet"
+                      value={formEditar.racaPet}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    PORTE
+                    <select
+                      name="portePet"
+                      value={formEditar.portePet}
+                      onChange={atualizarCampo}
+                    >
+                      <option value="">Escolha o porte</option>
+                      <option value="Pequeno">Pequeno</option>
+                      <option value="Médio">Médio</option>
+                      <option value="Grande">Grande</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    PESO (kg)
+                    <input
+                      name="pesoPet"
+                      type="number"
+                      placeholder="Informe o peso em kg"
+                      value={formEditar.pesoPet}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    DATA DE NASCIMENTO
+                    <input
+                      name="nascimentoPet"
+                      type="date"
+                      value={formEditar.nascimentoPet}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    SEXO
+                    <select
+                      name="sexoPet"
+                      value={formEditar.sexoPet}
+                      onChange={atualizarCampo}
+                    >
+                      <option value="">Selecione</option>
+                      <option value="Macho">Macho</option>
+                      <option value="Fêmea">Fêmea</option>
+                    </select>
+                  </label>
+                </>
+              )}
+
+
+
               <div className="botoes-editar">
                 <button
                   type="button"
@@ -422,7 +579,7 @@ export default function MinhaConta() {
                   Cancelar
                 </button>
 
-                <button type="submit" className="btn-salvar">
+                <button type="submit" className="btn-salvar" onClick={handleSaveUser}>
                   Salvar
                 </button>
               </div>
@@ -458,6 +615,92 @@ export default function MinhaConta() {
             </div>
         </div>
         )}
+
+  {/* ============================
+          MODAL SENHA
+      ============================ */}
+      {openModalSenha && (
+  <div className="modal-bg">
+    <div className="modal-alterar-senha">
+
+      <div className="senha-topo">
+        <h2>Alterar Senha</h2>
+        <button className="btn-close-x-senha" onClick={() => setOpenModalSenha(false)}>×</button>
+      </div>
+
+      <form className="form-senha">
+        
+        {/* SENHA ATUAL */}
+        <label>
+          Senha Atual
+          <div className="input-group">
+            <input
+              type={showOld ? "text" : "password"}
+            />
+            <span className="eye-btn" onClick={() => setShowOld(!showOld)}>
+              {showOld ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
+            </span>
+          </div>
+        </label>
+
+        {/* NOVA SENHA */}
+        <label>
+          Nova Senha
+          <div className="input-group">
+            <input
+              type={showNew ? "text" : "password"}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <span className="eye-btn" onClick={() => setShowNew(!showNew)}>
+              {showNew ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
+            </span>
+          </div>
+
+          <p className="password-strength">{passwordStrength}</p>
+        </label>
+
+        {/* CONFIRMAR SENHA */}
+        <label>
+          Confirmar Nova Senha
+          <div className="input-group">
+            <input
+              type={showConfirm ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <span className="eye-btn" onClick={() => setShowConfirm(!showConfirm)}>
+              {showConfirm ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
+            </span>
+          </div>
+
+          {confirmPassword && confirmPassword !== newPassword && (
+            <p className="erro-senha">As senhas não são iguais</p>
+          )}
+        </label>
+      </form>
+
+      <div className="senha-botoes">
+        <button className="btn-cancelar-senha" onClick={() => setOpenModalSenha(false)}>
+          Cancelar
+        </button>
+
+        <button
+          className="btn-confirmar-senha"
+          disabled={!passwordValid || confirmPassword !== newPassword}
+          onClick={handleSavePassword}
+        >
+          Salvar
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
+
+
+
     </div>
   );
 }
