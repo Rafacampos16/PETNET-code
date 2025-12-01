@@ -3,6 +3,15 @@ import "../styles/promotions.css";
 import { ShoppingCart } from "lucide-react";
 
 const Promotions = () => {
+
+  const handleAproveitar = (promo, price) => {
+    const phone = "5512992136141"; // coloque seu número aqui DDI + DDD
+    const message = `Olá! Quero aproveitar a promoção ${promo} com o valor de R$${price}. Pode me passar mais informações?`;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
+
   const PromoCard = ({ title, subtitle, details, oldPrice, newPrice }) => (
     <div className="promo-card">
       <div className="promo-content">
@@ -16,7 +25,10 @@ const Promotions = () => {
         </div>
       </div>
 
-      <button className="promo-button">
+      <button
+        className="promo-button"
+        onClick={() => handleAproveitar(subtitle, newPrice)}
+      >
         <ShoppingCart size={18} /> <span>Aproveitar</span>
       </button>
     </div>

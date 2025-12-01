@@ -15,6 +15,16 @@ import peleIcon from "../assets/icons/pele.png";
 import porosidadeIcon from "../assets/icons/porosidade.png";
 
 const Servicos = () => {
+
+  const handleAgendar = (servico) => {
+  const phone = "5512992136141"; // coloque seu número com DDI e DDD
+  const message = `Olá! Gostaria de agendar o serviço de ${servico}. Pode me informar os horários disponíveis?`;
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+};
+
+
   const services = [
     { title: "Banho", desc: "Limpeza completa com produtos de qualidade para deixar o seu pet cheiroso e feliz.", icon: banhoIcon },
     { title: "Banho Terapêutico", desc: "Banho medicinal para problemas de pele, alívio e cuidado com produtos suaves e especiais.", icon: terapeuticoIcon},
@@ -54,7 +64,12 @@ const Servicos = () => {
 
                 <h3>{service.title}</h3>
                 <p>{service.desc}</p>
-                <button className="btn-agendar">AGENDAR</button>
+                <button 
+                  className="btn-agendar"
+                  onClick={() => handleAgendar(service.title)}
+                >
+                  AGENDAR
+                </button>
               </div>
             ))}
           </div>
