@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import "../styles/conta.css";
 import { useNavigate } from "react-router-dom";
+import ModalCodigo from "../components/ModalCodigo";
 
 
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
+  const [openModalCodigo, setOpenModalCodigo] = useState(false);
+  const [erroEmail, setErroEmail] = useState("");
 
   const navigate = useNavigate();
 
@@ -91,11 +94,29 @@ export default function App() {
               onChange={handleChange}
             />
 
+            {erroEmail && <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>{erroEmail}</p>}
+
             <div className="senha-top">
               <label className="label">Senha</label>
 
               {/* Esqueci a senha */}
-              <button className="link link-btn" type="button">
+              <button
+                className="link link-btn"
+                type="button"
+                onClick={() => {
+                  if (!login.email) {
+                    setErroEmail("Digite um e-mail para redefinir a senha.");
+                    return;
+                  }
+
+                  setErroEmail("");
+
+                  // Envio do código por email (simulação)
+                  console.log("Código enviado para:", login.email);
+
+                  setOpenModalCodigo(true);
+                }}
+              >
                 Esqueci a senha
               </button>
             </div>
@@ -170,6 +191,17 @@ export default function App() {
           </button>
         </div>
       </div>
+
+          {openModalCodigo && (
+          <ModalCodigo
+            email={login.email}
+            onClose={() => setOpenModalCodigo(false)}
+            onSuccess={() => {
+              setOpenModalCodigo(false);
+              window.location.href = "/minhaconta";
+            }}
+          />
+        )}
     </div>
-  );
+  );  
 }
