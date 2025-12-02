@@ -19,9 +19,13 @@ export default function Cadastro() {
     endereco: "",
     bairro: "",
     cep: "",
+    estado: "",
+    cidade: "",
+    numero: "",
     email: "",
     confirmEmail: "",
   });
+
 
   // QUEM ESTÁ COM ERRO
   const [erroCampo, setErroCampo] = useState({});
@@ -146,7 +150,7 @@ export default function Cadastro() {
             </div>
           </div>
 
-          {/* Segunda linha */}
+      {/* Segunda linha */}
           <div className="linhas">
             <div className="campo">
               <label>ENDEREÇO</label>
@@ -185,29 +189,42 @@ export default function Cadastro() {
             </div>
           </div>
 
-          {/* Terceira linha */}
+          {/* Terceira linha - novos campos */}
           <div className="linhas">
             <div className="campo">
-              <label>E-MAIL</label>
+              <label>ESTADO (UF)</label>
               <input
-                name="email"
-                type="email"
-                placeholder="Digite seu e-mail"
-                value={form.email}
+                name="estado"
+                type="text"
+                placeholder="Ex: SP"
+                value={form.estado}
                 onChange={handleChange}
-                className={erroCampo.email ? "input-erro" : ""}
+                className={erroCampo.estado ? "input-erro" : ""}
+                maxLength="2"
               />
             </div>
 
             <div className="campo">
-              <label>CONFIRME SEU E-MAIL</label>
+              <label>CIDADE</label>
               <input
-                name="confirmEmail"
-                type="email"
-                placeholder="Confirme seu e-mail"
-                value={form.confirmEmail}
+                name="cidade"
+                type="text"
+                placeholder="Digite sua cidade"
+                value={form.cidade}
                 onChange={handleChange}
-                className={erroCampo.confirmEmail ? "input-erro" : ""}
+                className={erroCampo.cidade ? "input-erro" : ""}
+              />
+            </div>
+
+            <div className="campo">
+              <label>NÚMERO</label>
+              <input
+                name="numero"
+                type="text"
+                placeholder="Número"
+                value={form.numero}
+                onChange={handleChange}
+                className={erroCampo.numero ? "input-erro" : ""}
               />
             </div>
           </div>

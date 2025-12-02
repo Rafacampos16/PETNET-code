@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "cleave.js": "^1.6.0",
     "emailjs-com": "^3.2.0",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",
