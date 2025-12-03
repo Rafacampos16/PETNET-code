@@ -28,8 +28,7 @@ export default function Cadastro() {
     estado: "",
     cidade: "",
     numero: "",
-    email: "",
-    confirmEmail: "",
+    email: ""
   });
 
 
@@ -62,16 +61,6 @@ export default function Cadastro() {
     return true;
   }
 
-  function validarEmail() {
-    if (form.email !== form.confirmEmail) {
-      setErroCampo((prev) => ({
-        ...prev,
-        confirmEmail: true,
-      }));
-      return false;
-    }
-    return true;
-  }
 
 async function handleSubmit(e) {
   e.preventDefault();
@@ -79,11 +68,7 @@ async function handleSubmit(e) {
   // valida campos vazios
 // valida campos vazios (menos confirmEmail)
   let erros = {};
-  Object.keys(form).forEach((campo) => {
-    if (campo !== "confirmEmail" && !form[campo].trim()) {
-      erros[campo] = true;
-    }
-  });
+ 
 
   // valida senha e confirmação
   if (!senha.trim()) erros.senha = true;
@@ -97,12 +82,7 @@ async function handleSubmit(e) {
   }
 
 
-  // validar e-mail
-  if (form.email !== form.confirmEmail) {
-    setErroCampo((prev) => ({ ...prev, confirmEmail: true }));
-    alert("Os e-mails não correspondem.");
-    return;
-  }
+  
 
   // validar senha
   if (!validarSenha()) {
@@ -113,21 +93,15 @@ async function handleSubmit(e) {
   try {
     // 🔥 MONTAR BODY PARA O BACK-END (SEM confirmEmail)
     const body = {
-      nome: form.nome,
       cpf: form.cpf,
-      telefone: form.telefone,
-      endereco: form.endereco,
-      bairro: form.bairro,
-      cep: form.cep,
-      estado: form.estado,
-      cidade: form.cidade,
-      numero: form.numero,
-      email: form.email,
-      senha: senha, // senha separada do estado form
+      name: form.nome,
+      email: 'guilhermegostoso@gmail.com',
+      type: 'Usuario', //Padrão como default
+      password: senha, // senha separada do estado form
     };
 
     // CHAMADA AO BACK-END
-    await userService.criar(body);
+    await userService.createUser(body);
 
     alert("Usuário cadastrado com sucesso!");
     window.location.href = "/conta";
