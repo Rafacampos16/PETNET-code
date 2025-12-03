@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import "../styles/criar_conta.css";
+import { userService } from "../services/userService";
+
+
+
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +14,8 @@ export default function Cadastro() {
 
   const [erroSenha, setErroSenha] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
+
+  
 
   // ESTADO DOS CAMPOS
   const [form, setForm] = useState({
@@ -22,19 +28,16 @@ export default function Cadastro() {
     estado: "",
     cidade: "",
     numero: "",
-    email: "",
-    confirmEmail: "",
+    email: ""
   });
 
 
-  // QUEM ESTÁ COM ERRO
   const [erroCampo, setErroCampo] = useState({});
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
 
-    // remove erro ao digitar
     setErroCampo({ ...erroCampo, [name]: false });
   }
 
@@ -58,38 +61,28 @@ export default function Cadastro() {
     return true;
   }
 
-  function validarEmail() {
-    if (form.email !== form.confirmEmail) {
-      setErroCampo((prev) => ({
-        ...prev,
-        confirmEmail: true,
-      }));
-      return false;
-    }
-    return true;
-  }
 
-  function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
 
   // valida campos vazios
+// valida campos vazios (menos confirmEmail)
   let erros = {};
-  Object.keys(form).forEach((campo) => {
-    if (!form[campo].trim()) erros[campo] = true;
-  });
+ 
+
+  // valida senha e confirmação
+  if (!senha.trim()) erros.senha = true;
+  if (!confirmSenha.trim()) erros.confirmSenha = true;
 
   setErroCampo(erros);
+
   if (Object.keys(erros).length > 0) {
     alert("Preencha todos os campos obrigatórios.");
     return;
   }
 
-  // validar e-mail
-  if (form.email !== form.confirmEmail) {
-    setErroCampo((prev) => ({ ...prev, confirmEmail: true }));
-    alert("Os e-mails não correspondem.");
-    return;
-  }
+
+  
 
   // validar senha
   if (!validarSenha()) {
@@ -97,13 +90,28 @@ export default function Cadastro() {
     return;
   }
 
-  // sucesso
-  alert("Cadastro concluído com sucesso!");
+  try {
+    // 🔥 MONTAR BODY PARA O BACK-END (SEM confirmEmail)
+    const body = {
+      cpf: form.cpf,
+      name: form.nome,
+      email: 'guilherme@gmail.com', //somente para preenchimento temporario
+      type: 'Usuario', //Padrão como default
+      password: senha, // senha separada do estado form
+    };
 
-  // redirecionar
-  window.location.href = "/conta";
+    // CHAMADA AO BACK-END
+    await userService.createUser(body);
+
+    alert("Usuário cadastrado com sucesso!");
+    window.location.href = "/conta";
+
+  } catch (error) {
+    console.error("Erro ao criar usuário:", error);
+
+    alert(error.response?.data?.error || "Erro ao cadastrar usuário.");
+  }
 }
-
 
   return (
     <div className="cadastro-container">
