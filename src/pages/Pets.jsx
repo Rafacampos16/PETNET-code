@@ -16,6 +16,22 @@ function Pets() {
     picture_url: null,
   });
 
+  function resetForm() {
+  setForm({
+    name: "",
+    species: "",
+    breed: "",
+    size: "",
+    weight: "",
+    birth_date: "",
+    sex: "",
+    picture_url: null,
+  });
+
+  setErros({});
+}
+
+
   const [erros, setErros] = useState({});
 
   function handleChange(e) {
@@ -27,11 +43,38 @@ function Pets() {
     setForm({ ...form, picture_url: e.target.files[0] });
   }
 
+  // VALIDAÇÃO DOS CAMPOS
+ function validarCampos() {
+  const novosErros = {};
+  const faltando = [];
+
+  if (!form.name.trim()) { novosErros.name = true; faltando.push("Nome"); }
+  if (!form.species.trim()) { novosErros.species = true; faltando.push("Espécie"); }
+  if (!form.breed.trim()) { novosErros.breed = true; faltando.push("Raça"); }
+  if (!form.size.trim()) { novosErros.size = true; faltando.push("Porte"); }
+  if (!form.weight) { novosErros.weight = true; faltando.push("Peso"); }
+  if (!form.birth_date.trim()) { novosErros.birth_date = true; faltando.push("Data de Nascimento"); }
+  if (!form.sex.trim()) { novosErros.sex = true; faltando.push("Sexo"); }
+
+  return { novosErros, faltando };
+}
+
+
+
   const handleSubmit = async (e) => {
   e.preventDefault();
 
+  // Executa validação
+  const { novosErros, faltando } = validarCampos();
+  setErros(novosErros);
+
+  // Se houver campos faltando, mostrar alert e impedir envio
+  if (faltando.length > 0) {
+    alert("Preencha os seguintes campos obrigatórios:\n\n- " + faltando.join("\n- "));
+    return;
+  }
+
   try {
-    //  CPF temporário até ter autenticação
     const user_cpf = "58389179890";
 
     const speciesMap = {
@@ -59,8 +102,6 @@ function Pets() {
       weight: Number(form.weight),
       birth_date: new Date(form.birth_date).toISOString(),
       sex: sexMap[form.sex],
-
-      // CPF provisório
       user_cpf: user_cpf,
     };
 
@@ -70,14 +111,15 @@ function Pets() {
     console.log("SUCESSO:", response);
     alert("Pet cadastrado com sucesso!");
 
+    resetForm(); // limpa os campos
+
+
   } catch (erro) {
     console.error("ERRO COMPLETO ===> ", erro);
     console.error("ERRO DATA ===> ", erro.response?.data);
     alert("Erro ao cadastrar o pet.");
   }
 };
-
-
 
   function enviarFormularioExternamente() {
     const f = document.getElementById("petForm");
@@ -124,13 +166,15 @@ function Pets() {
             </select>
 
             <label>RAÇA</label>
-            <input
+           <input
               type="text"
               name="breed"
               placeholder="Informe a raça do seu pet"
               onChange={handleChange}
               value={form.breed}
+              className={erros.breed ? "input-erro" : ""}
             />
+
 
             <div className="linhas dupla">
               <div>
@@ -158,6 +202,7 @@ function Pets() {
                   min="0"
                   step="0.5"
                   value={form.weight}
+                  className={erros.weight ? "input-erro" : ""}
                 />
               </div>
             </div>
@@ -170,6 +215,7 @@ function Pets() {
                   name="birth_date"
                   onChange={handleChange}
                   value={form.birth_date}
+                  className={erros.birth_date ? "input-erro" : ""}
                 />
               </div>
 
@@ -179,6 +225,7 @@ function Pets() {
                   name="sex"
                   onChange={handleChange}
                   value={form.sex}
+                  className={erros.sex ? "input-erro" : ""}
                 >
                   <option value="">Selecione</option>
                   <option value="FEMEA">FÊMEA</option>

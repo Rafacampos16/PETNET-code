@@ -300,6 +300,11 @@ select {
   font-weight: 700;
 }
 
+.input-erro {
+  border: 2px solid red !important;
+  background-color: #ffe6e6;
+}
+
 
 @media (max-width: 900px) {
   .linhas.dupla {
