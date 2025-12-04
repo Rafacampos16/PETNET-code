@@ -68,6 +68,22 @@ async function handleSubmit(e) {
   // valida campos vazios
 // valida campos vazios (menos confirmEmail)
   let erros = {};
+
+  if (!form.nome.trim()) erros.nome = true;
+  if (!form.cpf.trim()) erros.cpf = true;
+  if (!form.telefone.trim()) erros.telefone = true;
+  if (!form.endereco.trim()) erros.endereco = true;
+  if (!form.bairro.trim()) erros.bairro = true;
+  if (!form.cep.trim()) erros.cep = true;
+  if (!form.estado.trim()) erros.estado = true;
+  if (!form.cidade.trim()) erros.cidade = true;
+  if (!form.numero.trim()) erros.numero = true;
+  if (!form.email.trim()) erros.email = true;   // <---- ADICIONADO
+
+  // senha
+  if (!senha.trim()) erros.senha = true;
+  if (!confirmSenha.trim()) erros.confirmSenha = true;
+
  
 
   // valida senha e confirmação
@@ -95,7 +111,7 @@ async function handleSubmit(e) {
     const body = {
       cpf: form.cpf,
       name: form.nome,
-      email: 'guilherme@gmail.com', //somente para preenchimento temporario
+      email: form.email,
       type: 'Cliente', //Padrão como default
       password: senha, // senha separada do estado form
     };
@@ -157,6 +173,19 @@ async function handleSubmit(e) {
               />
             </div>
           </div>
+
+          <div className="campo">
+            <label>E-MAIL</label>
+            <input
+              name="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              value={form.email}
+              onChange={handleChange}
+              className={erroCampo.email ? "input-erro" : ""}
+            />
+          </div>
+
 
       {/* Segunda linha */}
           <div className="linhas">
