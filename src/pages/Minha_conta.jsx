@@ -69,9 +69,14 @@ const [dados, setDados] = useState({
   nome: "Mariana Oliveira Silva",
   email: "marina.oliveira@gmail.com",
   telefone: "(12) 98876-4321",
-  endereco: "Rua das Orquídeas, 245 – Guaratinguetá/SP",
+  endereco: "Rua das Orquídeas, 245",
+  bairro: "Centro",
+  cep: "12500-000",
+  estado: "SP",
+  cidade: "Guaratinguetá",
+  numero: "245",
 
-  // 🔽 Informações do PET já preenchidas
+  // Informações do PET
   nomePet: "Luna",
   especiePet: "Cachorro",
   racaPet: "Poodle",
@@ -163,7 +168,7 @@ const [dados, setDados] = useState({
             <h2 className="titulo-section">E-mail</h2>
             <p className="info-item">
               {dados.email}
-              <button className="edit-btn" onClick={abrirModalEditar}>
+               <button className="edit-btn" onClick={abrirModalEditar}>
                 Editar
               </button>
             </p>
@@ -173,7 +178,7 @@ const [dados, setDados] = useState({
             <h2 className="titulo-section">Telefone</h2>
             <p className="info-item">
               {dados.telefone}
-              <button className="edit-btn" onClick={abrirModalEditar}>
+               <button className="edit-btn" onClick={abrirModalEditar}>
                 Editar
               </button>
             </p>
@@ -182,13 +187,17 @@ const [dados, setDados] = useState({
           <div className="info-bloco">
             <h2 className="titulo-section">Endereço</h2>
             <p className="info-item">
-              {dados.endereco}
+              {dados.endereco}, Nº {dados.numero} <br />
+              Bairro: {dados.bairro} <br />
+              CEP: {dados.cep} <br />
+              Cidade: {dados.cidade} - {dados.estado}
               <button className="edit-btn" onClick={abrirModalEditar}>
                 Editar
               </button>
             </p>
           </div>
         </div>
+
 
        {/* DIREITA - FOTO */}
 <div className="foto-area">
@@ -467,16 +476,73 @@ const [dados, setDados] = useState({
               {abaEditar === "endereco" && (
                 <>
                   <label>
-                    Endereço completo
+                    Endereço
                     <input
                       name="endereco"
                       type="text"
+                      placeholder="Digite seu endereço"
                       value={formEditar.endereco}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    Bairro
+                    <input
+                      name="bairro"
+                      type="text"
+                      placeholder="Digite seu bairro"
+                      value={formEditar.bairro}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    CEP
+                    <input
+                      name="cep"
+                      type="text"
+                      placeholder="Digite seu CEP"
+                      value={formEditar.cep}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    Estado (UF)
+                    <input
+                      name="estado"
+                      type="text"
+                      placeholder="Ex: SP"
+                      value={formEditar.estado}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    Cidade
+                    <input
+                      name="cidade"
+                      type="text"
+                      placeholder="Digite sua cidade"
+                      value={formEditar.cidade}
+                      onChange={atualizarCampo}
+                    />
+                  </label>
+
+                  <label>
+                    Número
+                    <input
+                      name="numero"
+                      type="text"
+                      placeholder="Digite o número"
+                      value={formEditar.numero}
                       onChange={atualizarCampo}
                     />
                   </label>
                 </>
               )}
+
 
              {abaEditar === "pet" && (
                 <>
