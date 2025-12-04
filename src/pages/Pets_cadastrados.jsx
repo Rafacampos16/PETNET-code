@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../styles/petsRegistrados.css"; 
 import SearchIcon from "../assets/icons/search.png";
-import PetImg from "../assets/images/patas.png";
+import PetImg from "../assets/images/cao.png";
+import PetImg2 from "../assets/images/gato.png";
 import petService from "../services/petService";
 
 const Pets_cadastrados = () => {
@@ -90,7 +91,17 @@ const Pets_cadastrados = () => {
           <div key={index} className="petsReg-card">
 
             <div className="petsReg-left">
-              <img src={PetImg} alt="cliente" className="petsReg-img" />
+              <img
+                src={
+                  cliente.species?.toLowerCase() === "cachorro" ||
+                  cliente.species?.toLowerCase() === "dog"
+                    ? PetImg
+                    : PetImg2
+                }
+                alt="cliente"
+                className="petsReg-img"
+              />
+
 
               <div className="petsReg-info">
                 <h3>{cliente.name}</h3>

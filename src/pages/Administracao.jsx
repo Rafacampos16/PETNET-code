@@ -53,7 +53,8 @@ const Administracao = () => {
         </Link>
       </div>
 
-      <Dashboard />
+     {/*  <Dashboard /> EM DESENVOLVIMENTO */}
+
     </div>
   );
 };

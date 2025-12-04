@@ -92,10 +92,14 @@
 }
 
 .petsReg-img {
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   margin-left: 65px;
   margin-top: 18px;
+  border-radius: 45%;
+  border: 3px solid var(--petnet-blue);
+  padding: 10px;
+  object-fit: contain;
 }
 
 .petsReg-info h3 {

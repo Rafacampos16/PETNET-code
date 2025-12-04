@@ -14,6 +14,7 @@ function Pets() {
     birth_date: "",
     sex: "",
     picture_url: null,
+    observations: "", 
   });
 
   function resetForm() {
@@ -26,6 +27,7 @@ function Pets() {
     birth_date: "",
     sex: "",
     picture_url: null,
+    observations: ""
   });
 
   setErros({});
@@ -103,6 +105,7 @@ function Pets() {
       birth_date: new Date(form.birth_date).toISOString(),
       sex: sexMap[form.sex],
       user_cpf: user_cpf,
+      observations: form.observations,
     };
 
     console.log("BODY FINAL MAPEADO ===>", data);
@@ -174,6 +177,16 @@ function Pets() {
               value={form.breed}
               className={erros.breed ? "input-erro" : ""}
             />
+
+            <label>OBSERVAÇÃO</label>
+            <input
+              type="text"
+              name="observations"
+              placeholder="Digite uma observação sobre o pet (opcional)"
+              onChange={handleChange}
+              value={form.observations}
+            />
+
 
 
             <div className="linhas dupla">
