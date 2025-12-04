@@ -89,29 +89,46 @@ const Clientes = () => {
       </div>
 
       <main className="clientes-list">
-        {filteredClientes.map((cliente, index) => (
-          <div key={cliente.cpf ?? index} className="card-cliente">
+        {filteredClientes.map((cliente, index) => {
+          const contato = cliente.contacts?.[0];   // primeiro contato
+          const endereco = cliente.addresses?.[0]; // primeiro endereço
 
-            <div className="card-left">
-              <img
-                src={cliente.picture_url || ClienteImg}
-                alt={displayName(cliente)}
-                className="cliente-img"
-              />
+          return (
+            <div key={cliente.cpf ?? index} className="card-cliente">
 
-              <div className="cliente-info-principal">
-                <h3>{displayName(cliente)}</h3>
-                <p><strong>Email:</strong> {cliente.email || "—"}</p>
+              {/* LADO ESQUERDO */}
+              <div className="card-left">
+                <img
+                  src={cliente.picture_url || ClienteImg}
+                  alt={displayName(cliente)}
+                  className="cliente-img"
+                />
+
+                <div className="cliente-info-principal">
+                  <h3>{displayName(cliente)}</h3>
+
+                  <p><strong>Email:</strong> {cliente.email || "—"}</p>
+
+                  <p><strong>Telefone:</strong> {contato?.number || "—"}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="card-infos">
-              <p><strong>CPF:</strong> {cliente.cpf || "—"}</p>
-              <p><strong>Tipo:</strong> {cliente.type || "—"}</p>
-            </div>
+              {/* LADO DIREITO */}
+              <div className="card-infos">
+                <p><strong>CPF:</strong> {cliente.cpf || "—"}</p>
+                <p><strong>Tipo:</strong> {cliente.type || "—"}</p>
 
-          </div>
-        ))}
+                <p>
+                  <strong>Endereço:</strong>{" "}
+                  {endereco
+                    ? `${endereco.location}${endereco.complement ? " - " + endereco.complement : ""}`
+                    : "—"}
+                </p>
+              </div>
+
+            </div>
+          );
+        })}
       </main>
     </div>
   );

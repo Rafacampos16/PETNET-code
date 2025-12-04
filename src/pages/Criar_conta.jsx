@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import "../styles/criar_conta.css";
 import { userService } from "../services/userService";
 
-
-
-
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -14,8 +11,6 @@ export default function Cadastro() {
 
   const [erroSenha, setErroSenha] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
-
-  
 
   // ESTADO DOS CAMPOS
   const [form, setForm] = useState({
@@ -27,21 +22,45 @@ export default function Cadastro() {
     cep: "",
     estado: "",
     cidade: "",
-    numero: "",
+    complement: "",
     email: ""
   });
 
-
   const [erroCampo, setErroCampo] = useState({});
 
-  function handleChange(e) {
+  // ---------------------------- VALIDAR DIGITAÇÃO ----------------------------
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
 
+    let novoValor = value;
+
+    if (name === "cpf") {
+      novoValor = value.replace(/\D/g, "").slice(0, 11);
+    }
+
+    if (name === "telefone") {
+      novoValor = value.replace(/\D/g, "").slice(0, 11);
+    }
+
+    if (name === "cep") {
+      novoValor = value.replace(/\D/g, "").slice(0, 8);
+    }
+
+    if (name === "nome") {
+      novoValor = value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+    }
+
+    if (name === "email") {
+      novoValor = value.replace(/\s/g, "");
+    }
+
+    setForm({ ...form, [name]: novoValor });
     setErroCampo({ ...erroCampo, [name]: false });
-  }
+  };
 
-  // REGRAS DE SENHA (tempo real)
+  // ---------------------------- REGRA DE SENHA ----------------------------
+
   const regraTamanho = senha.length >= 8;
   const regraMaiuscula = /[A-Z]/.test(senha);
   const regraNumero = /\d/.test(senha);
@@ -61,73 +80,70 @@ export default function Cadastro() {
     return true;
   }
 
+  // ---------------------------- SUBMIT ----------------------------
 
-async function handleSubmit(e) {
-  e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  // valida campos vazios
-// valida campos vazios (menos confirmEmail)
-  let erros = {};
+    let erros = {};
 
-  if (!form.nome.trim()) erros.nome = true;
-  if (!form.cpf.trim()) erros.cpf = true;
-  if (!form.telefone.trim()) erros.telefone = true;
-  if (!form.endereco.trim()) erros.endereco = true;
-  if (!form.bairro.trim()) erros.bairro = true;
-  if (!form.cep.trim()) erros.cep = true;
-  if (!form.estado.trim()) erros.estado = true;
-  if (!form.cidade.trim()) erros.cidade = true;
-  if (!form.numero.trim()) erros.numero = true;
-  if (!form.email.trim()) erros.email = true;   // <---- ADICIONADO
+    if (!form.nome.trim()) erros.nome = true;
+    if (!form.cpf.trim()) erros.cpf = true;
+    if (!form.telefone.trim()) erros.telefone = true;
+    if (!form.endereco.trim()) erros.endereco = true;
+    if (!form.bairro.trim()) erros.bairro = true;
+    if (!form.cep.trim()) erros.cep = true;
+    if (!form.estado.trim()) erros.estado = true;
+    if (!form.cidade.trim()) erros.cidade = true;
+    if (!form.complement.trim()) erros.complement = true;
+    if (!form.email.trim()) erros.email = true;
 
-  // senha
-  if (!senha.trim()) erros.senha = true;
-  if (!confirmSenha.trim()) erros.confirmSenha = true;
+    if (!senha.trim()) erros.senha = true;
+    if (!confirmSenha.trim()) erros.confirmSenha = true;
 
- 
+    setErroCampo(erros);
 
-  // valida senha e confirmação
-  if (!senha.trim()) erros.senha = true;
-  if (!confirmSenha.trim()) erros.confirmSenha = true;
+    if (Object.keys(erros).length > 0) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
 
-  setErroCampo(erros);
+    if (!validarSenha()) {
+      alert("As senhas não correspondem ou não seguem as regras.");
+      return;
+    }
 
-  if (Object.keys(erros).length > 0) {
-    alert("Preencha todos os campos obrigatórios.");
-    return;
+    try {
+      const body = {
+        name: form.nome,
+        cpf: form.cpf,
+        email: form.email,
+        password: senha,
+
+        address: {
+          type: "Casa",
+          cep: form.cep,
+          location: `${form.endereco}, ${form.bairro}, ${form.cidade}, ${form.estado}`,
+          complement: `${form.complement}`
+        },
+
+        contact: {
+          name: form.nome,
+          number: form.telefone
+        }
+      };
+
+      await userService.createUser(body);
+
+      alert("Usuário cadastrado com sucesso!");
+      window.location.href = "/conta";
+
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
+      alert(error.response?.data?.error || "Erro ao cadastrar usuário.");
+    }
   }
 
-
-  
-
-  // validar senha
-  if (!validarSenha()) {
-    alert("As senhas não correspondem ou não seguem as regras.");
-    return;
-  }
-
-  try {
-    // 🔥 MONTAR BODY PARA O BACK-END (SEM confirmEmail)
-    const body = {
-      cpf: form.cpf,
-      name: form.nome,
-      email: form.email,
-      type: 'Cliente', //Padrão como default
-      password: senha, // senha separada do estado form
-    };
-
-    // CHAMADA AO BACK-END
-    await userService.createUser(body);
-
-    alert("Usuário cadastrado com sucesso!");
-    window.location.href = "/conta";
-
-  } catch (error) {
-    console.error("Erro ao criar usuário:", error);
-
-    alert(error.response?.data?.error || "Erro ao cadastrar usuário.");
-  }
-}
 
   return (
     <div className="cadastro-container">
@@ -135,6 +151,7 @@ async function handleSubmit(e) {
         <h1 className="titulo">CRIE SUA CONTA</h1>
 
         <form className="formulario" onSubmit={handleSubmit}>
+          
           {/* Primeira linha */}
           <div className="linhas">
             <div className="campo">
@@ -186,8 +203,7 @@ async function handleSubmit(e) {
             />
           </div>
 
-
-      {/* Segunda linha */}
+          {/* Segunda linha */}
           <div className="linhas">
             <div className="campo">
               <label>ENDEREÇO</label>
@@ -226,7 +242,7 @@ async function handleSubmit(e) {
             </div>
           </div>
 
-          {/* Terceira linha - novos campos */}
+          {/* Terceira linha */}
           <div className="linhas">
             <div className="campo">
               <label>ESTADO (UF)</label>
@@ -236,8 +252,8 @@ async function handleSubmit(e) {
                 placeholder="Ex: SP"
                 value={form.estado}
                 onChange={handleChange}
-                className={erroCampo.estado ? "input-erro" : ""}
                 maxLength="2"
+                className={erroCampo.estado ? "input-erro" : ""}
               />
             </div>
 
@@ -256,12 +272,12 @@ async function handleSubmit(e) {
             <div className="campo">
               <label>NÚMERO</label>
               <input
-                name="numero"
-                type="text"
+                name="complement"
+                type="number"
                 placeholder="Número"
-                value={form.numero}
+                value={form.complement}
                 onChange={handleChange}
-                className={erroCampo.numero ? "input-erro" : ""}
+                className={erroCampo.complement ? "input-erro" : ""}
               />
             </div>
           </div>
@@ -278,10 +294,7 @@ async function handleSubmit(e) {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                   />
-                  <span
-                    className="olho"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
+                  <span className="olho" onClick={() => setShowPassword(!showPassword)}>
                     <img
                       src={
                         showPassword
@@ -290,7 +303,6 @@ async function handleSubmit(e) {
                       }
                       width="22"
                       alt=""
-                      className="olho-cor"
                     />
                   </span>
                 </div>
@@ -307,9 +319,7 @@ async function handleSubmit(e) {
                   />
                   <span
                     className="olho"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     <img
                       src={
@@ -325,7 +335,6 @@ async function handleSubmit(e) {
               </div>
             </div>
 
-            {/* REQUISITOS com verde/vermelho */}
             <div className="padrao-senha bloco requisitos">
               <strong>PADRÃO DE SENHA</strong>
               <ul>
@@ -343,9 +352,7 @@ async function handleSubmit(e) {
           </div>
 
           {erroSenha && <p className="erro-senha">{erroSenha}</p>}
-          {mensagemSucesso && (
-            <p className="sucesso-cadastro">{mensagemSucesso}</p>
-          )}
+          {mensagemSucesso && <p className="sucesso-cadastro">{mensagemSucesso}</p>}
 
           <button type="submit" className="btn">CRIAR CONTA</button>
         </form>
