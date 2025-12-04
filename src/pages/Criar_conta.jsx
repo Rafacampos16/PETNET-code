@@ -96,7 +96,7 @@ async function handleSubmit(e) {
       cpf: form.cpf,
       name: form.nome,
       email: 'guilherme@gmail.com', //somente para preenchimento temporario
-      type: 'Usuario', //Padrão como default
+      type: 'Cliente', //Padrão como default
       password: senha, // senha separada do estado form
     };
 

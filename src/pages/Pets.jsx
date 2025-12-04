@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import "../styles/Pets.css";
 import Header from "../components/Header";
+import petService from "../services/petService";
 import Footer from "../components/Footer";
 
 function Pets() {
   const [form, setForm] = useState({
-    nome: "",
-    especie: "",
-    raca: "",
-    porte: "",
-    peso: "",
-    nascimento: "",
-    sexo: "",
-    foto: null,
+    name: "",
+    species: "",
+    breed: "",
+    size: "",
+    weight: "",
+    birth_date: "",
+    sex: "",
+    picture_url: null,
   });
-
 
   const [erros, setErros] = useState({});
 
@@ -24,71 +24,70 @@ function Pets() {
   }
 
   function handleFileChange(e) {
-    setForm({ ...form, foto: e.target.files[0] });
+    setForm({ ...form, picture_url: e.target.files[0] });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const camposObrigatorios = [
-      "nome",
-      "especie",
-      "raca",
-      "porte",
-      "peso",
-      "nascimento",
-      "sexo",
-    ];
+  try {
+    //  CPF temporário até ter autenticação
+    const user_cpf = "58389179890";
 
-    let novosErros = {};
+    const speciesMap = {
+      CACHORRO: "dog",
+      GATO: "cat",
+    };
 
-    camposObrigatorios.forEach((campo) => {
-      if (!form[campo] || form[campo].toString().trim() === "") {
-        novosErros[campo] = true;
-      }
-    });
+    const sizeMap = {
+      PEQUENO: "S",
+      MEDIO: "M",
+      GRANDE: "L",
+      GIGANTE: "G",
+    };
 
-    if (Object.keys(novosErros).length > 0) {
-      setErros(novosErros);
-      alert("Preencha todos os campos obrigatorios!");
-      return;
-    }
+    const sexMap = {
+      MACHO: "M",
+      FEMEA: "F",
+    };
 
-    setErros({});
+    const data = {
+      name: form.name,
+      species: speciesMap[form.species],
+      breed: form.breed,
+      size: sizeMap[form.size],
+      weight: Number(form.weight),
+      birth_date: new Date(form.birth_date).toISOString(),
+      sex: sexMap[form.sex],
+
+      // CPF provisório
+      user_cpf: user_cpf,
+    };
+
+    console.log("BODY FINAL MAPEADO ===>", data);
+
+    const response = await petService.criar(data);
+    console.log("SUCESSO:", response);
     alert("Pet cadastrado com sucesso!");
-    // aqui você pode limpar o form ou fazer o envio real (API)...
 
-    if (Object.keys(novosErros).length > 0) {
-      setErros(novosErros);
-      alert("Preencha todos os campos obrigatorios!");
-      return;
-    }
-
-    // 🔥 LIMPAR CAMPOS DEPOIS DO SUCESSO
-    setForm({
-      nome: "",
-      especie: "",
-      raca: "",
-      porte: "",
-      peso: "",
-      nascimento: "",
-      sexo: "",
-    });
-
+  } catch (erro) {
+    console.error("ERRO COMPLETO ===> ", erro);
+    console.error("ERRO DATA ===> ", erro.response?.data);
+    alert("Erro ao cadastrar o pet.");
   }
+};
 
-  // função auxiliar para garantir submit quando o botão está fora do form
+
+
   function enviarFormularioExternamente() {
     const f = document.getElementById("petForm");
     if (!f) return;
 
-    // requestSubmit dispara o evento submit e respeita validações nativas
     if (typeof f.requestSubmit === "function") {
       f.requestSubmit();
       return;
     }
 
-    // fallback: dispatchEvent de um submit cancelable (também chama onSubmit)
     const ev = new Event("submit", { bubbles: true, cancelable: true });
     f.dispatchEvent(ev);
   }
@@ -100,54 +99,52 @@ function Pets() {
       <div className="container pets-container">
         <h1 className="topo2">CADASTRE SEU PET</h1>
 
-        {/* observação: id igual a petForm */}
         <form id="petForm" className="form" onSubmit={handleSubmit}>
           <div className="form-left font">
             <label>NOME DO PET/APELIDO</label>
             <input
               type="text"
-              name="nome"
+              name="name"
               placeholder="Digite o nome/apelido do seu pet"
               onChange={handleChange}
-              value={form.nome}
-              className={erros.nome ? "input-erro" : ""}
+              value={form.name}
+              className={erros.name ? "input-erro" : ""}
             />
 
             <label>ESPÉCIE</label>
             <select
-              name="especie"
+              name="species"
               onChange={handleChange}
-              value={form.especie}
-              className={erros.especie ? "input-erro" : ""}
+              value={form.species}
+              className={erros.species ? "input-erro" : ""}
             >
               <option value="">Escolha a espécie</option>
-              <option value="Cachorro">Cachorro</option>
-              <option value="Gato">Gato</option>
+              <option value="CACHORRO">CACHORRO</option>
+              <option value="GATO">GATO</option>
             </select>
 
             <label>RAÇA</label>
             <input
               type="text"
-              name="raca"
+              name="breed"
               placeholder="Informe a raça do seu pet"
               onChange={handleChange}
-              value={form.raca}
-              className={erros.raca ? "input-erro" : ""}
+              value={form.breed}
             />
 
             <div className="linhas dupla">
               <div>
                 <label>PORTE</label>
                 <select
-                  name="porte"
+                  name="size"
                   onChange={handleChange}
-                  value={form.porte}
-                  className={erros.porte ? "input-erro" : ""}
+                  value={form.size}
+                  className={erros.size ? "input-erro" : ""}
                 >
                   <option value="">Escolha o porte</option>
-                  <option value="Pequeno">Pequeno</option>
-                  <option value="Médio">Médio</option>
-                  <option value="Grande">Grande</option>
+                  <option value="PEQUENO">PEQUENO</option>
+                  <option value="MEDIO">MEDIO</option>
+                  <option value="GRANDE">GRANDE</option>
                 </select>
               </div>
 
@@ -155,13 +152,12 @@ function Pets() {
                 <label>PESO</label>
                 <input
                   type="number"
-                  name="peso"
+                  name="weight"
                   placeholder="Informe o peso em kg"
                   onChange={handleChange}
                   min="0"
                   step="0.5"
-                  value={form.peso}
-                  className={erros.peso ? "input-erro" : ""}
+                  value={form.weight}
                 />
               </div>
             </div>
@@ -171,41 +167,39 @@ function Pets() {
                 <label>DATA DE NASCIMENTO</label>
                 <input
                   type="date"
-                  name="nascimento"
+                  name="birth_date"
                   onChange={handleChange}
-                  value={form.nascimento}
-                  className={erros.nascimento ? "input-erro" : ""}
+                  value={form.birth_date}
                 />
               </div>
 
               <div>
                 <label>SEXO</label>
                 <select
-                  name="sexo"
+                  name="sex"
                   onChange={handleChange}
-                  value={form.sexo}
-                  className={erros.sexo ? "input-erro" : ""}
+                  value={form.sex}
                 >
                   <option value="">Selecione</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
+                  <option value="FEMEA">FÊMEA</option>
+                  <option value="MACHO">MACHO</option>
                 </select>
               </div>
             </div>
           </div>
 
           <div className="upload-area">
-            {form.foto ? (
+            {form.picture_url ? (
               <div className="preview-container">
                 <img
-                  src={URL.createObjectURL(form.foto)}
+                  src={URL.createObjectURL(form.picture_url)}
                   alt="Prévia do pet"
                   className="preview-img"
                 />
                 <button
                   type="button"
                   className="remove-btn"
-                  onClick={() => setForm({ ...form, foto: null })}
+                  onClick={() => setForm({ ...form, picture_url: null })}
                 >
                   REMOVER A FOTO
                 </button>
@@ -219,7 +213,6 @@ function Pets() {
           </div>
         </form>
 
-        {/* botão fora do form - centralizado - chama requestSubmit/fallback */}
         <button
           type="button"
           className="btn"
@@ -230,6 +223,7 @@ function Pets() {
         </button>
       </div>
 
+      <Footer />
     </>
   );
 }
