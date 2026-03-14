@@ -1,202 +1,348 @@
 .petsReg-container {
-  width: 100%;
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  min-height: 60vh; /* <--- impede espaço em branco */
-  box-sizing: border-box;
+  max-width: 1280px;
+  margin: auto;
+  padding: 40px 24px;
+  min-height: calc(80vh - 120px);
 }
-
 
 .petsReg-title {
-  font-size: 2.6rem;
+  font-size: 2.3rem;
   font-weight: 900;
   color: #3370eb;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  text-align: center;
 }
 
-/* SEARCH */
-.petsReg-search-container {
-  width: 75%;
+/* TOPO */
+.pets-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.pets-search-box {
   position: relative;
-  margin-bottom: 30px;
+  flex: 1;
+  min-width: 280px;
+  max-width: 680px;
 }
 
-.petsReg-search-input {
-  width: 100%;
-  padding: 13px 45px 13px 18px;
-  border: 3px solid #3370EB;
-  border-radius: 32px;
-  font-size: 16px;
-}
-
-.petsReg-search-icon {
-  width: 22px;
+.pets-search-icon-modern {
   position: absolute;
-  right: 15px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none;
+  color: #3370eb;
+  font-size: 18px;
 }
 
-/* SUGESTÕES */
-.petsReg-suggestions-box {
-  position: absolute;
-  top: 56px;
-  left: 0;
+.pets-search-input-modern {
   width: 100%;
-  background: white;
-  border-radius: 14px;
-  border: 2px solid #3370EB;
-  list-style: none;
-  overflow: hidden;
-  z-index: 50;
-}
-
-.petsReg-suggestions-box li {
-  padding: 12px 18px;
-  cursor: pointer;
+  height: 52px;
+  padding: 0 18px 0 46px;
   font-size: 15px;
+  border-radius: 14px;
+  border: 2px solid #d9e6ff;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(51, 112, 235, 0.08);
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.petsReg-suggestions-box li:hover {
-  background-color: #F9EE7C;
+.pets-search-input-modern:focus {
+  border-color: #3370eb;
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.12);
 }
 
-/* LISTA */
-.petsReg-list {
-  width: 75%;
+.pets-filters {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pets-filter-group {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  align-items: center;
-}
-
-/* CARD */
-.petsReg-card {
-  width: 75%;
-  margin: 15px auto;
-  padding: 20px;
-  border: 2px solid #1E6DE3;
-  border-radius: 15px;
-  display: flex;
   gap: 6px;
-  align-items: flex-start;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  min-width: 180px;
 }
 
-.petsReg-left {
+.pets-filter-small {
+  min-width: 130px;
+}
+
+.pets-filter-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4b5b7a;
+  margin-left: 4px;
+}
+
+.pets-filter-group select {
+  height: 52px;
+  border-radius: 14px;
+  border: 2px solid #d9e6ff;
+  background: #ffffff;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #22304a;
+  outline: none;
+  box-shadow: 0 8px 24px rgba(51, 112, 235, 0.05);
+  transition: 0.2s ease;
+  cursor: pointer;
+}
+
+.pets-filter-group select:focus {
+  border-color: #3370eb;
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.12);
+}
+
+.pets-filter-group select:hover {
+  border-color: #3370eb;
+}
+
+/* CARD DA TABELA */
+.pets-table-card {
+  background: #ffffff;
+  border: 1px solid #e8efff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 35px rgba(28, 63, 140, 0.08);
+}
+
+.pets-table-top {
   display: flex;
-  align-items: flex-start;
-  gap: 100px;
-  width: 55%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 24px 10px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 }
 
-.petsReg-img {
-  width: 120px;
-  height: 120px;
-  margin-left: 65px;
-  margin-top: 18px;
-  border-radius: 45%;
-  border: 3px solid var(--petnet-blue);
-  padding: 10px;
+.pets-table-top h2 {
+  font-size: 1.1rem;
+  color: #1f3d7a;
+  margin: 0;
+  font-weight: 800;
+}
+
+.pets-table-top p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* CELULAS */
+.pet-main-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pet-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eef4ff 0%, #dce8ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #dbe7ff;
+}
+
+.pet-avatar-img {
+  width: 30px;
+  height: 30px;
   object-fit: contain;
 }
 
-.petsReg-info h3 {
-  margin: 0;
-  margin-bottom: 8px;
-  margin-top: 16px;
-  font-size: 32px;
-  color: #1E6DE3;
+.pet-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.petsReg-info p {
-  margin-bottom: 20px;
+.pet-name-cell {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 14px;
 }
 
-.petsReg-info strong {
-  color: #1E6DE3;
+.pet-owner-cell {
+  font-size: 12px;
+  color: #6b7280;
 }
 
-.petsReg-details {
+.pet-stack-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pet-species-badge {
+  display: inline-flex;
+  width: fit-content;
+  background: #eef4ff;
+  color: #2457bd;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pet-secondary-text {
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge-size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #fff8c9;
+  color: #7a6200;
+  font-weight: 800;
+  font-size: 12px;
+  border: 1px solid rgba(249, 238, 124, 0.8);
+}
+
+.badge-weight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 66px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #2b5cff;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.badge-sex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.badge-sex.female {
+  background: #fff0f6;
+  color: #c0357a;
+}
+
+.badge-sex.male {
+  background: #eef4ff;
+  color: #2457bd;
+}
+
+.birth-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* EXPANSÃO */
+.pet-expand {
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  padding: 20px 24px;
+  border-top: 1px solid #e5ecff;
+}
+
+.pet-expand-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  color: #2b5cff;
+  font-size: 15px;
+}
+
+.pet-expand-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  row-gap: 6px;
-  column-gap: 50px;
-  font-size: 17px;
-  padding-right: 25px;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
 }
 
-.petsReg-details strong {
-  color: #1E6DE3;
+.pet-expand-card {
+  background: #ffffff;
+  border: 1px solid #e6ecff;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.petsReg-details .petsReg-obs {
-  grid-column: 1 / -1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 8px;
+.pet-expand-card label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #3370eb;
 }
 
-/* ============================
-   MOBILE - até 768px
-   ============================ */
-@media (max-width: 768px) {
+.pet-expand-card span {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.4;
+}
 
-  .petsReg-card {
-    flex-direction: column;
-    width: 90%;
-    padding: 15px;
-    gap: 18px;
-    align-items: center;
-  }
+.pets-empty-table {
+  padding: 30px;
+  color: #6b7280;
+  font-size: 14px;
+}
 
-  .petsReg-left {
-    width: 100%;
-    justify-content: center;
-    gap: 15px;
-  }
-
-  .petsReg-img {
-    width: 75px;
-    height: 75px;
-    margin: 0;
-  }
-
-  .petsReg-info h3 {
-    font-size: 22px;
-    margin-top: 5px;
-    margin-bottom: 6px;
-    text-align: center;
-  }
-
-  .petsReg-info p {
-    font-size: 15px;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-
-  .petsReg-details {
+/* RESPONSIVO */
+@media (max-width: 900px) {
+  .pet-expand-grid {
     grid-template-columns: 1fr;
-    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .petsReg-container {
+    padding: 28px 14px;
+  }
+
+  .petsReg-title {
+    font-size: 1.8rem;
+  }
+
+  .pets-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pets-search-box {
+    max-width: 100%;
+  }
+
+  .pets-filters {
     width: 100%;
-    row-gap: 6px;
-    padding: 10px 0;
   }
 
-  .petsReg-details p {
-    font-size: 15px;
-  }
-
-  .petsReg-obs {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    margin-top: 10px;
+  .pets-filter-group,
+  .pets-filter-small {
+    flex: 1;
+    min-width: 140px;
   }
 }

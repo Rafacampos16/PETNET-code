@@ -8,95 +8,128 @@ import IconEdit from "../assets/icons/edit.png";
 import IconEditHover from "../assets/icons/edit-h.png";
 import IconLogout from "../assets/icons/logout.png";
 import IconLogoutHover from "../assets/icons/logout-h.png";
-import { Eye, EyeOff } from "lucide-react";
-
-
+import {
+  Eye,
+  EyeOff,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  PawPrint,
+  Bell,
+  User,
+  Heart,
+} from "lucide-react";
 
 export default function MinhaConta() {
-  // ============================
-  // ESTADOS PRINCIPAIS
-  // ============================
   const [foto, setFoto] = useState(null);
   const [hoverSino, setHoverSino] = useState(false);
   const [hoverSenha, setHoverSenha] = useState(false);
   const [hoverEdit, setHoverEdit] = useState(false);
   const [hoverLogout, setHoverLogout] = useState(false);
-  const handleSaveUser = () => {
-  alert("Dados atualizados com sucesso!");
-};
+
   const [openModalSenha, setOpenModalSenha] = useState(false);
-
- const handleSavePassword = () => {
-  alert("Senha alterada com sucesso!");
-
-  // Limpa os campos e os estados dos olhos 🔥
-  setNewPassword("");
-  setConfirmPassword("");
-  setShowOld(false);
-  setShowNew(false);
-  setShowConfirm(false);
-
-  setOpenModalSenha(false);
-};
-
-
-
-  const [newPassword, setNewPassword] = useState("");
-const [confirmPassword, setConfirmPassword] = useState("");
-
-const [showOld, setShowOld] = useState(false);
-const [showNew, setShowNew] = useState(false);
-const [showConfirm, setShowConfirm] = useState(false);
-
-const validatePassword = (password) => {
-  const minChar = password.length >= 8;
-  const upper = /[A-Z]/.test(password);
-  const number = /[0-9]/.test(password);
-
-  return { minChar, upper, number };
-};
-
-const { minChar, upper, number } = validatePassword(newPassword);
-
-const passwordValid = minChar && upper && number;
-
-const passwordStrength = passwordValid
-  ? "Senha forte ✓"
-  : "A senha deve conter: mínimo 8 caracteres, letra maiúscula e número";
-
-
-const [dados, setDados] = useState({
-  nome: "Mariana Oliveira Silva",
-  email: "marina.oliveira@gmail.com",
-  telefone: "(12) 98876-4321",
-  endereco: "Rua das Orquídeas, 245",
-  bairro: "Centro",
-  cep: "12500-000",
-  estado: "SP",
-  cidade: "Guaratinguetá",
-  numero: "245",
-
-  // Informações do PET
-  nomePet: "Luna",
-  especiePet: "Cachorro",
-  racaPet: "Poodle",
-  portePet: "Pequeno",
-  pesoPet: "6",
-  nascimentoPet: "2021-04-10",
-  sexoPet: "Fêmea"
-});
-
-
-  const [formEditar, setFormEditar] = useState(dados);
-  const [abaEditar, setAbaEditar] = useState("pessoal");
-
   const [modalAgendamentos, setModalAgendamentos] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [modalNotificacoes, setModalNotificacoes] = useState(false);
 
-  // ============================
-  // FUNÇÕES
-  // ============================
+  const [abaEditar, setAbaEditar] = useState("pessoal");
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const [receberLembretes, setReceberLembretes] = useState(true);
+  const [receberPromocoes, setReceberPromocoes] = useState(false);
+
+  const [dados, setDados] = useState({
+    nome: "Mariana Oliveira Silva",
+    email: "marina.oliveira@gmail.com",
+    telefone: "(12) 98876-4321",
+    endereco: "Rua das Orquídeas",
+    bairro: "Centro",
+    cep: "12500-000",
+    estado: "SP",
+    cidade: "Guaratinguetá",
+    numero: "245",
+
+    nomePet: "Luna",
+    especiePet: "Cachorro",
+    racaPet: "Poodle",
+    portePet: "Pequeno",
+    pesoPet: "6",
+    nascimentoPet: "2021-04-10",
+    sexoPet: "Fêmea",
+  });
+
+  const [formEditar, setFormEditar] = useState(dados);
+
+  const agendamentos = [
+    {
+      servico: "Banho e tosa",
+      data: "10/10/2025",
+      horario: "15:00",
+      status: "Concluído",
+    },
+    {
+      servico: "Escovação dental",
+      data: "15/10/2025",
+      horario: "10:30",
+      status: "Aguardando",
+    },
+    {
+      servico: "Hidratação",
+      data: "20/10/2025",
+      horario: "14:00",
+      status: "Agendado",
+    },
+    {
+      servico: "Corte de unhas",
+      data: "25/10/2025",
+      horario: "16:00",
+      status: "Agendado",
+    },
+    {
+      servico: "Consulta veterinária",
+      data: "30/10/2025",
+      horario: "09:00",
+      status: "Aguardando",
+    },
+  ];
+
+  const handleSaveUser = () => {
+    alert("Dados atualizados com sucesso!");
+  };
+
+  const handleSavePassword = () => {
+    alert("Senha alterada com sucesso!");
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowOld(false);
+    setShowNew(false);
+    setShowConfirm(false);
+    setOpenModalSenha(false);
+  };
+
+  const validatePassword = (password) => {
+    const minChar = password.length >= 8;
+    const upper = /[A-Z]/.test(password);
+    const number = /[0-9]/.test(password);
+
+    return { minChar, upper, number };
+  };
+
+  const { minChar, upper, number } = validatePassword(newPassword);
+
+  const passwordValid = minChar && upper && number;
+
+  const passwordStrength = passwordValid
+    ? "Senha forte ✓"
+    : "A senha deve conter: mínimo 8 caracteres, letra maiúscula e número";
+
   function handleFoto(e) {
     const file = e.target.files[0];
     if (file) setFoto(file);
@@ -126,294 +159,443 @@ const [dados, setDados] = useState({
     window.location.href = "/conta";
   }
 
-  // ============================
-  // RENDER
-  // ============================
   return (
-    <div className="container-conta">
-      {/* CABEÇALHO */}
-      <div className="top-bar">
-        <h1 className="titulo-conta">MINHA CONTA</h1>
-
-       <img
-        src={hoverSino ? SinoIconHover : SinoIcon}
-        alt="Notificações"
-        className="icone-sino"
-        onClick={() => setModalNotificacoes(true)}
-        onMouseEnter={() => setHoverSino(true)}
-        onMouseLeave={() => setHoverSino(false)}
-        />
-
-      </div>
-
-      <p className="subtitulo-conta">
-        Mantenha seu perfil sempre atualizado e acompanhe os agendamentos do seu pet.
-      </p>
-
-      {/* ÁREA PRINCIPAL */}
-      <div className="area-info">
-        {/* ESQUERDA */}
-        <div className="info-esquerda">
-          <div className="info-bloco">
-            <h2 className="titulo-section">Nome do tutor</h2>
-            <p className="info-item">
-              {dados.nome}
-              <button className="edit-btn" onClick={abrirModalEditar}>
-                Editar
-              </button>
-            </p>
-          </div>
-
-          <div className="info-bloco">
-            <h2 className="titulo-section">E-mail</h2>
-            <p className="info-item">
-              {dados.email}
-               <button className="edit-btn" onClick={abrirModalEditar}>
-                Editar
-              </button>
-            </p>
-          </div>
-
-          <div className="info-bloco">
-            <h2 className="titulo-section">Telefone</h2>
-            <p className="info-item">
-              {dados.telefone}
-               <button className="edit-btn" onClick={abrirModalEditar}>
-                Editar
-              </button>
-            </p>
-          </div>
-
-          <div className="info-bloco">
-            <h2 className="titulo-section">Endereço</h2>
-            <p className="info-item">
-              {dados.endereco}, Nº {dados.numero} <br />
-              Bairro: {dados.bairro} <br />
-              CEP: {dados.cep} <br />
-              Cidade: {dados.cidade} - {dados.estado}
-              <button className="edit-btn" onClick={abrirModalEditar}>
-                Editar
-              </button>
-            </p>
-          </div>
+    <div className="minha-conta-page">
+      <div className="minha-conta-header">
+        <div>
+          <span className="page-kicker">Área do cliente</span>
+          <h1 className="titulo-conta">Minha conta</h1>
+          <p className="subtitulo-conta">
+            Mantenha seu perfil atualizado e acompanhe tudo sobre você e seu pet
+            em um só lugar.
+          </p>
         </div>
 
-
-       {/* DIREITA - FOTO */}
-<div className="foto-area">
-  <h2 className="titulo-section foto-titulo">Foto do pet ou tutor</h2>
-
-  <div className="foto-container">
-    <label className="upload-box">
-      {foto ? (
-        <img src={URL.createObjectURL(foto)} className="foto-preview" />
-      ) : (
-        <p>SEM FOTO</p>
-      )}
-      <input type="file" accept="image/*" onChange={handleFoto} />
-    </label>
-  </div>
-
-  {!foto ? (
-    <button className="foto-btn" onClick={() => document.querySelector("#fileInputFake").click()}>
-      Adicionar foto
-    </button>
-  ) : (
-    <div className="foto-btns">
-      <button className="foto-btn trocar" onClick={() => document.querySelector("#fileInputFake").click()}>
-        Trocar foto
-      </button>
-      <button className="foto-btn remover" onClick={() => setFoto(null)}>
-        Remover foto
-      </button>
-    </div>
-  )}
-
-  {/* input escondido só pro botão chamar */}
-  <input
-    id="fileInputFake"
-    type="file"
-    accept="image/*"
-    style={{ display: "none" }}
-    onChange={handleFoto}
-  />
-</div>
-      </div>
-
-      <div className="linha"></div>
-
-      {/* PREFERÊNCIAS */}
-      <h2 className="titulo-section">Preferências</h2>
-      <div className="prefs-box">
-        <div className="toggle-line">
-          <span>Receber lembretes</span>
-          <label className="switch">
-            <input type="checkbox" />
-            <span className="slider round"></span>
-          </label>
-        </div>
-
-        <div className="toggle-line">
-          <span>Receber promoções</span>
-          <label className="switch">
-            <input type="checkbox" />
-            <span className="slider round"></span>
-          </label>
-        </div>
-      </div>
-
-      <div className="linha"></div>
-
-      {/* AGENDAMENTOS */}
-      <h2 className="titulo-section">Meus Agendamentos</h2>
-      <table className="tabela-agendamentos">
-        <thead>
-          <tr>
-            <th>Serviço</th>
-            <th>Data</th>
-            <th>Horário</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Banho e tosa</td>
-            <td>10/10/2025</td>
-            <td>15:00</td>
-            <td className="status concluido">Concluído</td>
-          </tr>
-          <tr>
-            <td>Escovação dental</td>
-            <td>15/10/2025</td>
-            <td>10:30</td>
-            <td className="status aguardando">Aguardando</td>
-          </tr>
-          <tr>
-            <td>Hidratação</td>
-            <td>20/10/2025</td>
-            <td>14:00</td>
-            <td className="status agendado">Agendado</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <button
-        className="ver-agendamentos"
-        onClick={() => setModalAgendamentos(true)}
-      >
-        Ver todos os agendamentos
-      </button>
-
-      <div className="linha"></div>
-
-      {/* AÇÕES */}
-      <div className="acoes-lista">
-
-        <p
-            onMouseEnter={() => setHoverSenha(true)}
-            onMouseLeave={() => setHoverSenha(false)}
-            onClick={() => setOpenModalSenha(true)}
-        >
-            <img
-            src={hoverSenha ? IconSenhaHover : IconSenha}
-            alt="Alterar senha"
-            className="acao-icon"
-            />
-            Alterar senha
-        </p>
-
-        <p
-          onClick={() => {
-            setAbaEditar("pet");
-            setModalEditar(true);
-          }}
-          onMouseEnter={() => setHoverEdit(true)}
-          onMouseLeave={() => setHoverEdit(false)}
+        <button
+          className="btn-notificacao"
+          onClick={() => setModalNotificacoes(true)}
+          onMouseEnter={() => setHoverSino(true)}
+          onMouseLeave={() => setHoverSino(false)}
         >
           <img
-            src={hoverEdit ? IconEditHover : IconEdit}
-            alt="Atualizar informações do pet"
-            className="acao-icon"
+            src={hoverSino ? SinoIconHover : SinoIcon}
+            alt="Notificações"
+            className="icone-sino"
           />
-          Atualizar informações do pet
-        </p>
-
-
-        <p
-            className="sair-btn"
-            onClick={sair}
-            onMouseEnter={() => setHoverLogout(true)}
-            onMouseLeave={() => setHoverLogout(false)}
-        >
-            <img
-            src={hoverLogout ? IconLogoutHover : IconLogout}
-            alt="Sair da conta"
-            className="acao-icon"
-            />
-            Sair da conta
-        </p>
-
-        </div>
-
-      {/* ============================
-          MODAL AGENDAMENTOS
-      ============================ */}
-     {modalAgendamentos && (
-  <div className="modal-bg" onClick={() => setModalAgendamentos(false)}>
-    <div className="modal-agendamentos" onClick={(e) => e.stopPropagation()}>
-
-      <div className="agend-topo">
-        <h2>Todos os Agendamentos</h2>
-        <button className="btn-close-x" onClick={() => setModalAgendamentos(false)}>×</button>
+        </button>
       </div>
 
-      <div className="agend-lista">
+      <div className="conta-top-grid">
+        <div className="hero-card">
+          <div className="hero-card-left">
+            <div className="hero-avatar">
+              {foto ? (
+                <img
+                  src={URL.createObjectURL(foto)}
+                  alt="Perfil"
+                  className="hero-avatar-img"
+                />
+              ) : (
+                <User size={34} />
+              )}
+            </div>
 
-        <div className="agend-item">
-          <span className="agend-title">Banho e Tosa</span>
-          <p className="agend-info">10/10/2025 às 15:00</p>
-          <span className="agend-status concluido">Concluído</span>
+            <div className="hero-info">
+              <span className="hero-badge">Tutor(a) Petnet</span>
+              <h2>{dados.nome}</h2>
+              <p>Conta ativa e pronta para acompanhar o cuidado do seu pet.</p>
+            </div>
+          </div>
+
+          <div className="hero-actions">
+            <button className="hero-btn" onClick={abrirModalEditar}>
+              Editar perfil
+            </button>
+          </div>
         </div>
 
-        <div className="agend-item">
-          <span className="agend-title">Escovação Dental</span>
-          <p className="agend-info">15/10/2025 às 10:30</p>
-          <span className="agend-status aguardando">Aguardando</span>
-        </div>
+        <div className="pet-highlight-card">
+          <div className="pet-highlight-top">
+            <div className="pet-mini-icon">
+              <PawPrint size={22} />
+            </div>
+            <span>Pet em destaque</span>
+          </div>
 
-        <div className="agend-item">
-          <span className="agend-title">Hidratação</span>
-          <p className="agend-info">20/10/2025 às 14:00</p>
-          <span className="agend-status agendado">Agendado</span>
-        </div>
+          <h3>{dados.nomePet}</h3>
 
-        {/* Novos itens que você pediu */}
-        <div className="agend-item">
-          <span className="agend-title">Corte de Unhas</span>
-          <p className="agend-info">25/10/2025 às 16:00</p>
-          <span className="agend-status agendado">Agendado</span>
-        </div>
+          <div className="pet-highlight-tags">
+            <span>{dados.especiePet}</span>
+            <span>{dados.racaPet}</span>
+            <span>{dados.portePet}</span>
+          </div>
 
-        <div className="agend-item">
-          <span className="agend-title">Consulta Veterinária</span>
-          <p className="agend-info">30/10/2025 às 09:00</p>
-          <span className="agend-status aguardando">Aguardando</span>
+          <p>
+            Peso: <strong>{dados.pesoPet} kg</strong>
+          </p>
         </div>
-
       </div>
 
-    </div>
-  </div>
-)}
+      <div className="resumo-cards">
+        <div className="resumo-card">
+          <div className="resumo-icon blue">
+            <Calendar size={18} />
+          </div>
+          <div>
+            <h4>Próximos serviços</h4>
+            <p>2 agendamentos futuros</p>
+          </div>
+        </div>
 
+        <div className="resumo-card">
+          <div className="resumo-icon yellow">
+            <Bell size={18} />
+          </div>
+          <div>
+            <h4>Lembretes</h4>
+            <p>{receberLembretes ? "Ativados" : "Desativados"}</p>
+          </div>
+        </div>
 
-      {/* ============================
-          MODAL EDITAR COM TABS
-      ============================ */}
+        <div className="resumo-card">
+          <div className="resumo-icon pink">
+            <Heart size={18} />
+          </div>
+          <div>
+            <h4>Pets cadastrados</h4>
+            <p>1 pet registrado</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="conta-main-grid">
+        <div className="left-column">
+          <section className="card-conta">
+            <div className="card-header">
+              <h3>Dados do tutor</h3>
+              <button className="btn-link" onClick={abrirModalEditar}>
+                Editar
+              </button>
+            </div>
+
+            <div className="info-grid">
+              <div className="info-card">
+                <span className="info-label">
+                  <Mail size={15} /> E-mail
+                </span>
+                <p>{dados.email}</p>
+              </div>
+
+              <div className="info-card">
+                <span className="info-label">
+                  <Phone size={15} /> Telefone
+                </span>
+                <p>{dados.telefone}</p>
+              </div>
+
+              <div className="info-card info-card-full">
+                <span className="info-label">
+                  <MapPin size={15} /> Endereço
+                </span>
+                <p>
+                  {dados.endereco}, Nº {dados.numero} <br />
+                  Bairro: {dados.bairro} <br />
+                  CEP: {dados.cep} <br />
+                  {dados.cidade} - {dados.estado}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="card-conta">
+            <div className="card-header">
+              <h3>Meu pet</h3>
+              <button
+                className="btn-link"
+                onClick={() => {
+                  setAbaEditar("pet");
+                  setModalEditar(true);
+                }}
+              >
+                Atualizar
+              </button>
+            </div>
+
+            <div className="pet-details-grid">
+              <div className="pet-detail-box">
+                <label>Nome</label>
+                <span>{dados.nomePet}</span>
+              </div>
+
+              <div className="pet-detail-box">
+                <label>Espécie</label>
+                <span>{dados.especiePet}</span>
+              </div>
+
+              <div className="pet-detail-box">
+                <label>Raça</label>
+                <span>{dados.racaPet}</span>
+              </div>
+
+              <div className="pet-detail-box">
+                <label>Porte</label>
+                <span>{dados.portePet}</span>
+              </div>
+
+              <div className="pet-detail-box">
+                <label>Peso</label>
+                <span>{dados.pesoPet} kg</span>
+              </div>
+
+              <div className="pet-detail-box">
+                <label>Sexo</label>
+                <span>{dados.sexoPet}</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="card-conta">
+            <div className="card-header">
+              <h3>Meus agendamentos</h3>
+              <button
+                className="btn-link"
+                onClick={() => setModalAgendamentos(true)}
+              >
+                Ver todos
+              </button>
+            </div>
+
+            <div className="agendamentos-lista-home">
+              {agendamentos.slice(0, 3).map((item, index) => (
+                <div className="agendamento-card" key={index}>
+                  <div>
+                    <h4>{item.servico}</h4>
+                    <p>
+                      {item.data} às {item.horario}
+                    </p>
+                  </div>
+
+                  <span
+                    className={`agendamento-badge ${
+                      item.status === "Concluído"
+                        ? "concluido"
+                        : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="right-column">
+          <section className="card-conta foto-card">
+            <div className="card-header">
+              <h3>Foto do tutor ou do pet</h3>
+            </div>
+
+            <div className="foto-area">
+              <label className="upload-box">
+                {foto ? (
+                  <img
+                    src={URL.createObjectURL(foto)}
+                    className="foto-preview"
+                    alt="Prévia"
+                  />
+                ) : (
+                  <div className="foto-placeholder">
+                    <PawPrint size={36} />
+                    <p>Adicionar foto</p>
+                  </div>
+                )}
+                <input type="file" accept="image/*" onChange={handleFoto} />
+              </label>
+
+              {!foto ? (
+                <button
+                  className="foto-btn"
+                  onClick={() =>
+                    document.querySelector("#fileInputFake").click()
+                  }
+                >
+                  Escolher foto
+                </button>
+              ) : (
+                <div className="foto-btns">
+                  <button
+                    className="foto-btn trocar"
+                    onClick={() =>
+                      document.querySelector("#fileInputFake").click()
+                    }
+                  >
+                    Trocar foto
+                  </button>
+
+                  <button
+                    className="foto-btn remover"
+                    onClick={() => setFoto(null)}
+                  >
+                    Remover foto
+                  </button>
+                </div>
+              )}
+
+              <input
+                id="fileInputFake"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFoto}
+              />
+            </div>
+          </section>
+
+          <section className="card-conta">
+            <div className="card-header">
+              <h3>Preferências</h3>
+            </div>
+
+            <div className="prefs-box modern">
+              <div className="toggle-line">
+                <div>
+                  <strong>Receber lembretes</strong>
+                  <p>Notificações sobre próximos serviços</p>
+                </div>
+
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={receberLembretes}
+                    onChange={() => setReceberLembretes(!receberLembretes)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+
+              <div className="toggle-line">
+                <div>
+                  <strong>Receber promoções</strong>
+                  <p>Ofertas e novidades da Petnet</p>
+                </div>
+
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={receberPromocoes}
+                    onChange={() => setReceberPromocoes(!receberPromocoes)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section className="card-conta">
+            <div className="card-header">
+              <h3>Ações rápidas</h3>
+            </div>
+
+            <div className="acoes-lista">
+              <button
+                className="acao-item"
+                onMouseEnter={() => setHoverSenha(true)}
+                onMouseLeave={() => setHoverSenha(false)}
+                onClick={() => setOpenModalSenha(true)}
+              >
+                <img
+                  src={hoverSenha ? IconSenhaHover : IconSenha}
+                  alt="Alterar senha"
+                  className="acao-icon"
+                />
+                <span>Alterar senha</span>
+              </button>
+
+              <button
+                className="acao-item"
+                onClick={() => {
+                  setAbaEditar("pet");
+                  setModalEditar(true);
+                }}
+                onMouseEnter={() => setHoverEdit(true)}
+                onMouseLeave={() => setHoverEdit(false)}
+              >
+                <img
+                  src={hoverEdit ? IconEditHover : IconEdit}
+                  alt="Atualizar informações do pet"
+                  className="acao-icon"
+                />
+                <span>Atualizar informações do pet</span>
+              </button>
+
+              <button
+                className="acao-item sair-btn"
+                onClick={sair}
+                onMouseEnter={() => setHoverLogout(true)}
+                onMouseLeave={() => setHoverLogout(false)}
+              >
+                <img
+                  src={hoverLogout ? IconLogoutHover : IconLogout}
+                  alt="Sair da conta"
+                  className="acao-icon"
+                />
+                <span>Sair da conta</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {modalAgendamentos && (
+        <div className="modal-bg" onClick={() => setModalAgendamentos(false)}>
+          <div
+            className="modal-agendamentos"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="agend-topo">
+              <h2>Todos os Agendamentos</h2>
+              <button
+                className="btn-close-x"
+                onClick={() => setModalAgendamentos(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="agend-lista">
+              {agendamentos.map((item, index) => (
+                <div className="agend-item" key={index}>
+                  <span className="agend-title">{item.servico}</span>
+                  <p className="agend-info">
+                    {item.data} às {item.horario}
+                  </p>
+                  <span
+                    className={`agend-status ${
+                      item.status === "Concluído"
+                        ? "concluido"
+                        : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {modalEditar && (
         <div className="modal-bg" onClick={() => setModalEditar(false)}>
-          <div className="modal modal-editar" onClick={(e) => e.stopPropagation()}>
-            
+          <div
+            className="modal modal-editar"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="tabs-editar">
               <button
                 className={abaEditar === "pessoal" ? "tab ativa" : "tab"}
@@ -428,15 +610,16 @@ const [dados, setDados] = useState({
               >
                 Endereço
               </button>
-                <button
-                  className={abaEditar === "pet" ? "tab ativa" : "tab"}
-                  onClick={() => setAbaEditar("pet")}
-                >
-                  Pet
-                </button>
+
+              <button
+                className={abaEditar === "pet" ? "tab ativa" : "tab"}
+                onClick={() => setAbaEditar("pet")}
+              >
+                Pet
+              </button>
             </div>
 
-            <h2 className="modal-titulo">Editar Informações</h2>
+            <h2 className="modal-titulo">Editar informações</h2>
 
             <form className="form-editar" onSubmit={salvarAlteracoes}>
               {abaEditar === "pessoal" && (
@@ -480,7 +663,6 @@ const [dados, setDados] = useState({
                     <input
                       name="endereco"
                       type="text"
-                      placeholder="Digite seu endereço"
                       value={formEditar.endereco}
                       onChange={atualizarCampo}
                     />
@@ -491,7 +673,6 @@ const [dados, setDados] = useState({
                     <input
                       name="bairro"
                       type="text"
-                      placeholder="Digite seu bairro"
                       value={formEditar.bairro}
                       onChange={atualizarCampo}
                     />
@@ -502,7 +683,6 @@ const [dados, setDados] = useState({
                     <input
                       name="cep"
                       type="text"
-                      placeholder="Digite seu CEP"
                       value={formEditar.cep}
                       onChange={atualizarCampo}
                     />
@@ -513,7 +693,6 @@ const [dados, setDados] = useState({
                     <input
                       name="estado"
                       type="text"
-                      placeholder="Ex: SP"
                       value={formEditar.estado}
                       onChange={atualizarCampo}
                     />
@@ -524,7 +703,6 @@ const [dados, setDados] = useState({
                     <input
                       name="cidade"
                       type="text"
-                      placeholder="Digite sua cidade"
                       value={formEditar.cidade}
                       onChange={atualizarCampo}
                     />
@@ -535,7 +713,6 @@ const [dados, setDados] = useState({
                     <input
                       name="numero"
                       type="text"
-                      placeholder="Digite o número"
                       value={formEditar.numero}
                       onChange={atualizarCampo}
                     />
@@ -543,22 +720,20 @@ const [dados, setDados] = useState({
                 </>
               )}
 
-
-             {abaEditar === "pet" && (
+              {abaEditar === "pet" && (
                 <>
                   <label>
-                    NOME DO PET/APELIDO
+                    Nome do pet/apelido
                     <input
                       name="nomePet"
                       type="text"
-                      placeholder="Digite o nome/apelido do seu pet"
                       value={formEditar.nomePet}
                       onChange={atualizarCampo}
                     />
                   </label>
 
                   <label>
-                    ESPÉCIE
+                    Espécie
                     <select
                       name="especiePet"
                       value={formEditar.especiePet}
@@ -574,18 +749,17 @@ const [dados, setDados] = useState({
                   </label>
 
                   <label>
-                    RAÇA
+                    Raça
                     <input
                       name="racaPet"
                       type="text"
-                      placeholder="Informe a raça do seu pet"
                       value={formEditar.racaPet}
                       onChange={atualizarCampo}
                     />
                   </label>
 
                   <label>
-                    PORTE
+                    Porte
                     <select
                       name="portePet"
                       value={formEditar.portePet}
@@ -599,18 +773,17 @@ const [dados, setDados] = useState({
                   </label>
 
                   <label>
-                    PESO (kg)
+                    Peso (kg)
                     <input
                       name="pesoPet"
                       type="number"
-                      placeholder="Informe o peso em kg"
                       value={formEditar.pesoPet}
                       onChange={atualizarCampo}
                     />
                   </label>
 
                   <label>
-                    DATA DE NASCIMENTO
+                    Data de nascimento
                     <input
                       name="nascimentoPet"
                       type="date"
@@ -620,7 +793,7 @@ const [dados, setDados] = useState({
                   </label>
 
                   <label>
-                    SEXO
+                    Sexo
                     <select
                       name="sexoPet"
                       value={formEditar.sexoPet}
@@ -634,8 +807,6 @@ const [dados, setDados] = useState({
                 </>
               )}
 
-
-
               <div className="botoes-editar">
                 <button
                   type="button"
@@ -645,7 +816,11 @@ const [dados, setDados] = useState({
                   Cancelar
                 </button>
 
-                <button type="submit" className="btn-salvar" onClick={handleSaveUser}>
+                <button
+                  type="submit"
+                  className="btn-salvar"
+                  onClick={handleSaveUser}
+                >
                   Salvar
                 </button>
               </div>
@@ -654,119 +829,140 @@ const [dados, setDados] = useState({
         </div>
       )}
 
-      {/* ============================
-          MODAL NOTIFICAÇÕES
-      ============================ */}
       {modalNotificacoes && (
         <div className="modal-bg" onClick={() => setModalNotificacoes(false)}>
-            <div className="modal modal-notificacoes" onClick={(e) => e.stopPropagation()}>
-
+          <div
+            className="modal modal-notificacoes"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="notif-topo">
-                <h2>Notificações</h2>
-                <button className="btn-close-x" onClick={() => setModalNotificacoes(false)}>×</button>
+              <h2>Notificações</h2>
+              <button
+                className="btn-close-x"
+                onClick={() => setModalNotificacoes(false)}
+              >
+                ×
+              </button>
             </div>
 
             <div className="notif-lista">
-                <div className="notif-item">
+              <div className="notif-item">
                 <span className="notif-titulo">Agendamento amanhã</span>
-                <p className="notif-desc">Seu pet tem um banho marcado amanhã às 15h.</p>
-                </div>
+                <p className="notif-desc">
+                  Seu pet tem um banho marcado amanhã às 15h.
+                </p>
+              </div>
 
-                <div className="notif-item">
+              <div className="notif-item">
                 <span className="notif-titulo">Promoção ativa</span>
-                <p className="notif-desc">Banho e tosa com 20% OFF até sexta!</p>
-                </div>
+                <p className="notif-desc">
+                  Banho e tosa com 20% OFF até sexta!
+                </p>
+              </div>
             </div>
-
-            </div>
+          </div>
         </div>
-        )}
+      )}
 
-  {/* ============================
-          MODAL SENHA
-      ============================ */}
       {openModalSenha && (
-  <div className="modal-bg">
-    <div className="modal-alterar-senha">
+        <div className="modal-bg">
+          <div className="modal-alterar-senha">
+            <div className="senha-topo">
+              <h2>Alterar Senha</h2>
+              <button
+                className="btn-close-x-senha"
+                onClick={() => setOpenModalSenha(false)}
+              >
+                ×
+              </button>
+            </div>
 
-      <div className="senha-topo">
-        <h2>Alterar Senha</h2>
-        <button className="btn-close-x-senha" onClick={() => setOpenModalSenha(false)}>×</button>
-      </div>
+            <form className="form-senha">
+              <label>
+                Senha Atual
+                <div className="input-group">
+                  <input type={showOld ? "text" : "password"} />
+                  <span
+                    className="eye-btn"
+                    onClick={() => setShowOld(!showOld)}
+                  >
+                    {showOld ? (
+                      <EyeOff size={20} color="#275cce" />
+                    ) : (
+                      <Eye size={20} color="#275cce" />
+                    )}
+                  </span>
+                </div>
+              </label>
 
-      <form className="form-senha">
-        
-        {/* SENHA ATUAL */}
-        <label>
-          Senha Atual
-          <div className="input-group">
-            <input
-              type={showOld ? "text" : "password"}
-            />
-            <span className="eye-btn" onClick={() => setShowOld(!showOld)}>
-              {showOld ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
-            </span>
+              <label>
+                Nova Senha
+                <div className="input-group">
+                  <input
+                    type={showNew ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <span
+                    className="eye-btn"
+                    onClick={() => setShowNew(!showNew)}
+                  >
+                    {showNew ? (
+                      <EyeOff size={20} color="#275cce" />
+                    ) : (
+                      <Eye size={20} color="#275cce" />
+                    )}
+                  </span>
+                </div>
+
+                <p className="password-strength">{passwordStrength}</p>
+              </label>
+
+              <label>
+                Confirmar Nova Senha
+                <div className="input-group">
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <span
+                    className="eye-btn"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                  >
+                    {showConfirm ? (
+                      <EyeOff size={20} color="#275cce" />
+                    ) : (
+                      <Eye size={20} color="#275cce" />
+                    )}
+                  </span>
+                </div>
+
+                {confirmPassword && confirmPassword !== newPassword && (
+                  <p className="erro-senha">As senhas não são iguais</p>
+                )}
+              </label>
+            </form>
+
+            <div className="senha-botoes">
+              <button
+                className="btn-cancelar-senha"
+                onClick={() => setOpenModalSenha(false)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="btn-confirmar-senha"
+                disabled={!passwordValid || confirmPassword !== newPassword}
+                onClick={handleSavePassword}
+              >
+                Salvar
+              </button>
+            </div>
           </div>
-        </label>
-
-        {/* NOVA SENHA */}
-        <label>
-          Nova Senha
-          <div className="input-group">
-            <input
-              type={showNew ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <span className="eye-btn" onClick={() => setShowNew(!showNew)}>
-              {showNew ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
-            </span>
-          </div>
-
-          <p className="password-strength">{passwordStrength}</p>
-        </label>
-
-        {/* CONFIRMAR SENHA */}
-        <label>
-          Confirmar Nova Senha
-          <div className="input-group">
-            <input
-              type={showConfirm ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <span className="eye-btn" onClick={() => setShowConfirm(!showConfirm)}>
-              {showConfirm ? <EyeOff size={20} color="#275cce" /> : <Eye size={20} color="#275cce" />}
-            </span>
-          </div>
-
-          {confirmPassword && confirmPassword !== newPassword && (
-            <p className="erro-senha">As senhas não são iguais</p>
-          )}
-        </label>
-      </form>
-
-      <div className="senha-botoes">
-        <button className="btn-cancelar-senha" onClick={() => setOpenModalSenha(false)}>
-          Cancelar
-        </button>
-
-        <button
-          className="btn-confirmar-senha"
-          disabled={!passwordValid || confirmPassword !== newPassword}
-          onClick={handleSavePassword}
-        >
-          Salvar
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
-
-
-
-
+        </div>
+      )}
     </div>
   );
 }

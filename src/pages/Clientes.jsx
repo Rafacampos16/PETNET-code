@@ -1,5 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import DataTable from "react-data-table-component";
+import pawCatIcon from "../assets/icons/paw-cat.png";
+import petClienteIcon from "../assets/icons/pet-cliente.png";
+import {
+  FiSearch,
+  FiEye,
+  FiMapPin,
+  FiPhone,
+  FiMail,
+  FiUser,
+} from "react-icons/fi";
 import "../styles/clientes.css";
 
 const PetsExpand = ({ data }) => {
@@ -13,7 +23,10 @@ const PetsExpand = ({ data }) => {
 
   return (
     <div className="pets-expand">
-      <div className="pets-header">🐾 Pets do cliente</div>
+      <div className="pets-header">
+        <img src={petClienteIcon} alt="pets" className="icon-pets-expand" />
+        Pets do cliente
+      </div>
 
       <div className="pets-grid">
         {data.pets.map((pet, index) => (
@@ -38,13 +51,10 @@ const PetsExpand = ({ data }) => {
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [search, setSearch] = useState("");
-
   const [cidadeFiltro, setCidadeFiltro] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("");
-
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
   const [clienteEditando, setClienteEditando] = useState(null);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
 
@@ -126,152 +136,6 @@ const Clientes = () => {
           { nome: "Bob", tipo: "Cachorro", raca: "Poodle" },
         ],
       },
-      {
-        id: 6,
-        nome: "Pedro Alves",
-        email: "pedro.alves@email.com",
-        cpf: "444.222.888-11",
-        telefone: "(31) 97744-2211",
-        endereco: "Rua Minas Gerais",
-        numero: "780",
-        bairro: "Savassi",
-        cidade: "Belo Horizonte",
-        estado: "MG",
-        cep: "30140-000",
-        pets: [{ nome: "Toby", tipo: "Cachorro", raca: "Beagle" }],
-      },
-      {
-        id: 7,
-        nome: "Juliana Rocha",
-        email: "juliana.rocha@email.com",
-        cpf: "999.888.777-66",
-        telefone: "(19) 98811-2233",
-        endereco: "Rua XV de Novembro",
-        numero: "410",
-        bairro: "Centro",
-        cidade: "Piracicaba",
-        estado: "SP",
-        cep: "13400-000",
-        pets: [{ nome: "Simba", tipo: "Gato", raca: "Maine Coon" }],
-      },
-      {
-        id: 8,
-        nome: "Lucas Martins",
-        email: "lucas.martins@email.com",
-        cpf: "101.202.303-40",
-        telefone: "(41) 97777-1234",
-        endereco: "Rua das Araucárias",
-        numero: "520",
-        bairro: "Centro",
-        cidade: "Curitiba",
-        estado: "PR",
-        cep: "80010-000",
-        pets: [
-          { nome: "Max", tipo: "Cachorro", raca: "Labrador" },
-          { nome: "Bella", tipo: "Cachorro", raca: "Border Collie" },
-        ],
-      },
-      {
-        id: 9,
-        nome: "Patricia Gomes",
-        email: "patricia.gomes@email.com",
-        cpf: "606.707.808-90",
-        telefone: "(51) 98888-4321",
-        endereco: "Rua Borges de Medeiros",
-        numero: "95",
-        bairro: "Centro",
-        cidade: "Porto Alegre",
-        estado: "RS",
-        cep: "90020-000",
-        pets: [{ nome: "Lili", tipo: "Gato", raca: "Angorá" }],
-      },
-      {
-        id: 10,
-        nome: "Ricardo Santos",
-        email: "ricardo.santos@email.com",
-        cpf: "909.808.707-60",
-        telefone: "(62) 99999-5555",
-        endereco: "Av Goiás",
-        numero: "300",
-        bairro: "Centro",
-        cidade: "Goiânia",
-        estado: "GO",
-        cep: "74010-000",
-        pets: [],
-      },
-      {
-        id: 11,
-        nome: "Camila Duarte",
-        email: "camila.duarte@email.com",
-        cpf: "321.654.987-10",
-        telefone: "(27) 98822-5566",
-        endereco: "Rua Vitória",
-        numero: "210",
-        bairro: "Praia do Canto",
-        cidade: "Vitória",
-        estado: "ES",
-        cep: "29055-000",
-        pets: [{ nome: "Fred", tipo: "Cachorro", raca: "Bulldog" }],
-      },
-      {
-        id: 12,
-        nome: "André Oliveira",
-        email: "andre.oliveira@email.com",
-        cpf: "852.741.963-20",
-        telefone: "(71) 98877-9988",
-        endereco: "Av Oceânica",
-        numero: "140",
-        bairro: "Barra",
-        cidade: "Salvador",
-        estado: "BA",
-        cep: "40140-130",
-        pets: [{ nome: "Luna", tipo: "Gato", raca: "Sphynx" }],
-      },
-      {
-        id: 13,
-        nome: "Bruna Carvalho",
-        email: "bruna.carvalho@email.com",
-        cpf: "456.123.789-30",
-        telefone: "(48) 98844-6677",
-        endereco: "Rua das Gaivotas",
-        numero: "65",
-        bairro: "Ingleses",
-        cidade: "Florianópolis",
-        estado: "SC",
-        cep: "88058-000",
-        pets: [{ nome: "Bolt", tipo: "Cachorro", raca: "Husky Siberiano" }],
-      },
-      {
-        id: 14,
-        nome: "Felipe Andrade",
-        email: "felipe.andrade@email.com",
-        cpf: "963.852.741-40",
-        telefone: "(85) 98811-2233",
-        endereco: "Av Beira Mar",
-        numero: "700",
-        bairro: "Meireles",
-        cidade: "Fortaleza",
-        estado: "CE",
-        cep: "60165-121",
-        pets: [{ nome: "Pipoca", tipo: "Gato", raca: "SRD" }],
-      },
-      {
-        id: 15,
-        nome: "Daniela Martins",
-        email: "daniela.martins@email.com",
-        cpf: "741.963.852-50",
-        telefone: "(61) 98866-3322",
-        endereco: "SQN 210",
-        numero: "12",
-        bairro: "Asa Norte",
-        cidade: "Brasília",
-        estado: "DF",
-        cep: "70872-000",
-        pets: [
-          { nome: "Zeus", tipo: "Cachorro", raca: "Doberman" },
-          { nome: "Maya", tipo: "Cachorro", raca: "Akita" },
-        ],
-      },
     ];
 
     setClientes(fakeClientes);
@@ -314,6 +178,9 @@ const Clientes = () => {
     fecharModal();
   };
 
+  const cidadesUnicas = [...new Set(clientes.map((c) => c.cidade))].sort();
+  const estadosUnicos = [...new Set(clientes.map((c) => c.estado))].sort();
+
   const filteredClientes = clientes.filter((cliente) => {
     const termo = search.toLowerCase();
 
@@ -327,147 +194,252 @@ const Clientes = () => {
   });
 
   const customStyles = {
-    rows: {
+    table: {
       style: {
-        fontSize: "14px",
-        minHeight: "55px",
+        backgroundColor: "transparent",
       },
     },
-
+    headRow: {
+      style: {
+        minHeight: "58px",
+        background: "linear-gradient(90deg, #3370eb 0%, #2457bd 100%)",
+        borderTopLeftRadius: "16px",
+        borderTopRightRadius: "16px",
+        borderBottom: "none",
+      },
+    },
     headCells: {
       style: {
-        backgroundColor: "#3370eb",
-        color: "#fff",
-        fontWeight: "600",
+        color: "#ffffff",
+        fontSize: "13px",
+        fontWeight: "700",
+        textTransform: "uppercase",
+        letterSpacing: "0.4px",
       },
     },
-
-    striped: {
-      default: {
-        backgroundColor: "#eef4ff",
+    rows: {
+      style: {
+        minHeight: "68px",
+        fontSize: "14px",
+        color: "#1f2937",
+        backgroundColor: "#ffffff",
+        borderBottom: "1px solid #eef2ff",
+        transition: "all 0.2s ease",
+      },
+      highlightOnHoverStyle: {
+        backgroundColor: "#f8fbff",
+        cursor: "pointer",
+      },
+    },
+    cells: {
+      style: {
+        paddingTop: "14px",
+        paddingBottom: "14px",
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: "1px solid #eef2ff",
+        minHeight: "64px",
+        fontSize: "14px",
+      },
+      pageButtonsStyle: {
+        borderRadius: "10px",
+        height: "36px",
+        width: "36px",
+        padding: "8px",
+        margin: "0 4px",
+        cursor: "pointer",
+        transition: "0.2s ease",
+        color: "#3370eb",
+        fill: "#3370eb",
+        backgroundColor: "#f4f8ff",
+        "&:hover:not(:disabled)": {
+          backgroundColor: "#F9EE7C",
+        },
+        "&:disabled": {
+          opacity: 0.4,
+        },
+      },
+    },
+    expandableRow: {
+      style: {
+        backgroundColor: "#f8fbff",
       },
     },
   };
 
-  const columns = [
-    {
-      name: "Nome",
-      selector: (row) => row.nome,
-      sortable: true,
-    },
+  const columns = useMemo(
+    () => [
+      {
+        name: "Cliente",
+        sortable: true,
+        grow: 1.5,
+        cell: (row) => (
+          <div className="cell-cliente">
+            <div className="cliente-avatar">
+              <FiUser size={16} />
+            </div>
 
-    {
-      name: "CPF",
-      selector: (row) => row.cpf,
-    },
-
-    {
-      name: "Telefone",
-      selector: (row) => row.telefone,
-    },
-
-    {
-      name: "Email",
-      selector: (row) => row.email,
-    },
-
-    {
-      name: (
-        <div className="coluna-filtro">
-          Cidade
-          <select onChange={(e) => setCidadeFiltro(e.target.value)}>
-            <option value="">Todas</option>
-            <option>Guaratinguetá</option>
-            <option>São Paulo</option>
-            <option>Rio de Janeiro</option>
-          </select>
-        </div>
-      ),
-      selector: (row) => row.cidade,
-    },
-
-    {
-      name: (
-        <div className="coluna-filtro">
-          Estado
-          <select onChange={(e) => setEstadoFiltro(e.target.value)}>
-            <option value="">Todos</option>
-            <option>SP</option>
-            <option>RJ</option>
-          </select>
-        </div>
-      ),
-      selector: (row) => row.estado,
-    },
-
-    {
-      name: "Pets",
-      selector: (row) => row.pets?.length || 0,
-      center: true,
-      width: "90px",
-      cell: (row) => (
-        <span className="pet-count">🐾 {row.pets?.length || 0}</span>
-      ),
-    },
-    {
-      name: "Ações",
-      cell: (row) => (
-        <button className="btn-ver" onClick={() => abrirModal(row)}>
-          Ver Cliente
-        </button>
-      ),
-    },
-  ];
+            <div className="cliente-main-info">
+              <span className="cliente-nome-cell">{row.nome}</span>
+              <span className="cliente-cpf-cell">{row.cpf}</span>
+            </div>
+          </div>
+        ),
+      },
+      {
+        name: "Contato",
+        grow: 1.6,
+        cell: (row) => (
+          <div className="cell-contato">
+            <span>
+              <FiMail size={14} /> {row.email}
+            </span>
+            <span>
+              <FiPhone size={14} /> {row.telefone}
+            </span>
+          </div>
+        ),
+      },
+      {
+        name: "Cidade",
+        sortable: true,
+        cell: (row) => (
+          <span className="badge-local">
+            <FiMapPin size={13} /> {row.cidade}
+          </span>
+        ),
+      },
+      {
+        name: "UF",
+        center: true,
+        width: "120px",
+        cell: (row) => <span className="badge-estado">{row.estado}</span>,
+      },
+      {
+        name: "Pets",
+        center: true,
+        width: "110px",
+        sortable: true,
+        selector: (row) => row.pets?.length || 0,
+        cell: (row) => (
+          <span className="pet-count">
+            <img src={pawCatIcon} alt="pets" className="icon-pet-table" />
+            {row.pets?.length || 0}
+          </span>
+        ),
+      },
+      {
+        name: "Ações",
+        center: true,
+        width: "150px",
+        cell: (row) => (
+          <button className="btn-ver" onClick={() => abrirModal(row)}>
+            <FiEye size={15} />
+            Ver cliente
+          </button>
+        ),
+      },
+    ],
+    [cidadeFiltro, estadoFiltro, cidadesUnicas, estadosUnicos],
+  );
 
   return (
     <div className="clientes-container">
       <h1 className="titulo-clientes">Gerenciamento de Clientes</h1>
 
-      <div className="search-wrapper">
-        <input
-          type="text"
-          placeholder="Buscar cliente por nome, CPF ou email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-big"
+      <div className="table-toolbar">
+        <div className="search-box-professional">
+          <FiSearch className="search-box-icon" />
+          <input
+            type="text"
+            placeholder="Buscar cliente por nome, CPF ou email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-big"
+          />
+        </div>
+
+        <div className="filters-bar">
+          <div className="filter-group">
+            <label>Cidade</label>
+            <select
+              value={cidadeFiltro}
+              onChange={(e) => setCidadeFiltro(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {cidadesUnicas.map((cidade) => (
+                <option key={cidade} value={cidade}>
+                  {cidade}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group filter-uf">
+            <label>UF</label>
+            <select
+              value={estadoFiltro}
+              onChange={(e) => setEstadoFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {estadosUnicos.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="table-card">
+        <div className="table-card-top">
+          <div>
+            <h2>Lista de clientes</h2>
+            <p>{filteredClientes.length} cliente(s) encontrado(s)</p>
+          </div>
+        </div>
+
+        <DataTable
+          columns={columns}
+          data={filteredClientes}
+          pagination
+          highlightOnHover
+          responsive
+          persistTableHead
+          noDataComponent={
+            <div className="empty-table">
+              Nenhum cliente encontrado com os filtros informados.
+            </div>
+          }
+          customStyles={customStyles}
+          expandableRows
+          expandableRowsComponent={PetsExpand}
         />
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredClientes}
-        pagination
-        highlightOnHover
-        striped
-        customStyles={customStyles}
-        expandableRows
-        expandableRowsComponent={PetsExpand}
-      />
-
       {modalOpen && clienteSelecionado && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="modal-cliente">
             <button className="modal-close" onClick={fecharModal}>
               ✕
             </button>
 
-            <h2>Cliente</h2>
-
-            <div className="modal-grid">
-              <div>
-                <label>Nome</label>
-
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.nome}
-                    onChange={(e) => alterarCampo("nome", e.target.value)}
-                  />
-                ) : (
-                  <p>{clienteSelecionado.nome}</p>
-                )}
+            <div className="modal-header-custom">
+              <div className="modal-avatar">
+                <FiUser size={24} />
               </div>
 
               <div>
+                <h2>{clienteSelecionado.nome}</h2>
+                <p>Visualização de cadastro do cliente</p>
+              </div>
+            </div>
+
+            <div className="modal-grid-custom">
+              <div className="info-box">
                 <label>CPF</label>
                 {modoEdicao ? (
                   <input
@@ -475,24 +447,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("cpf", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.cpf}</p>
+                  <span>{clienteSelecionado.cpf}</span>
                 )}
               </div>
 
-              <div>
-                <label>Email</label>
-
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.email}
-                    onChange={(e) => alterarCampo("email", e.target.value)}
-                  />
-                ) : (
-                  <p>{clienteSelecionado.email}</p>
-                )}
-              </div>
-
-              <div>
+              <div className="info-box">
                 <label>Telefone</label>
                 {modoEdicao ? (
                   <input
@@ -500,11 +459,23 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("telefone", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.telefone}</p>
+                  <span>{clienteSelecionado.telefone}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box info-box-full">
+                <label>Email</label>
+                {modoEdicao ? (
+                  <input
+                    value={clienteEditando.email}
+                    onChange={(e) => alterarCampo("email", e.target.value)}
+                  />
+                ) : (
+                  <span>{clienteSelecionado.email}</span>
+                )}
+              </div>
+
+              <div className="info-box">
                 <label>Endereço</label>
                 {modoEdicao ? (
                   <input
@@ -512,11 +483,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("endereco", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.endereco}</p>
+                  <span>{clienteSelecionado.endereco}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box">
                 <label>Número</label>
                 {modoEdicao ? (
                   <input
@@ -524,11 +495,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("numero", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.numero}</p>
+                  <span>{clienteSelecionado.numero}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box">
                 <label>Bairro</label>
                 {modoEdicao ? (
                   <input
@@ -536,11 +507,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("bairro", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.bairro}</p>
+                  <span>{clienteSelecionado.bairro}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box">
                 <label>Cidade</label>
                 {modoEdicao ? (
                   <input
@@ -548,11 +519,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("cidade", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.cidade}</p>
+                  <span>{clienteSelecionado.cidade}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box">
                 <label>Estado</label>
                 {modoEdicao ? (
                   <input
@@ -560,11 +531,11 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("estado", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.estado}</p>
+                  <span>{clienteSelecionado.estado}</span>
                 )}
               </div>
 
-              <div>
+              <div className="info-box">
                 <label>CEP</label>
                 {modoEdicao ? (
                   <input
@@ -572,24 +543,26 @@ const Clientes = () => {
                     onChange={(e) => alterarCampo("cep", e.target.value)}
                   />
                 ) : (
-                  <p>{clienteSelecionado.cep}</p>
+                  <span>{clienteSelecionado.cep}</span>
                 )}
               </div>
             </div>
 
-            <div className="pets-section">
-              <h3>Pets do Cliente</h3>
+            <div className="pets-section-custom">
+              <div className="pets-section-title">🐾 Pets do Cliente</div>
 
               {clienteSelecionado.pets?.length ? (
-                <ul className="pets-list">
+                <div className="pets-list-grid">
                   {clienteSelecionado.pets.map((pet, index) => (
-                    <li key={index}>
-                      <strong>{pet.nome}</strong> — {pet.tipo} ({pet.raca})
-                    </li>
+                    <div className="pet-card-modal" key={index}>
+                      <strong>{pet.nome}</strong>
+                      <span>{pet.tipo}</span>
+                      <small>{pet.raca}</small>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
-                <p>Nenhum pet cadastrado</p>
+                <p className="empty-pets-text">Nenhum pet cadastrado</p>
               )}
             </div>
 
