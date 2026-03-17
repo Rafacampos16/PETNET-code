@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import "../styles/criar_conta.css";
 import { userService } from "../services/userService";
+import {
+  FiEye,
+  FiEyeOff,
+  FiUser,
+  FiMapPin,
+  FiShield,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +20,6 @@ export default function Cadastro() {
   const [erroSenha, setErroSenha] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
 
-  // ESTADO DOS CAMPOS
   const [form, setForm] = useState({
     nome: "",
     cpf: "",
@@ -23,12 +30,10 @@ export default function Cadastro() {
     estado: "",
     cidade: "",
     complement: "",
-    email: ""
+    email: "",
   });
 
   const [erroCampo, setErroCampo] = useState({});
-
-  // ---------------------------- VALIDAR DIGITAÇÃO ----------------------------
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,8 +64,6 @@ export default function Cadastro() {
     setErroCampo({ ...erroCampo, [name]: false });
   };
 
-  // ---------------------------- REGRA DE SENHA ----------------------------
-
   const regraTamanho = senha.length >= 8;
   const regraMaiuscula = /[A-Z]/.test(senha);
   const regraNumero = /\d/.test(senha);
@@ -79,8 +82,6 @@ export default function Cadastro() {
     setErroSenha("");
     return true;
   }
-
-  // ---------------------------- SUBMIT ----------------------------
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -119,243 +120,277 @@ export default function Cadastro() {
         cpf: form.cpf,
         email: form.email,
         password: senha,
-
         address: {
           type: "Casa",
           cep: form.cep,
           location: `${form.endereco}, ${form.bairro}, ${form.cidade}, ${form.estado}`,
-          complement: `${form.complement}`
+          complement: `${form.complement}`,
         },
-
         contact: {
           name: form.nome,
-          number: form.telefone
-        }
+          number: form.telefone,
+        },
       };
 
       await userService.createUser(body);
 
+      setMensagemSucesso("Conta criada com sucesso!");
       alert("Usuário cadastrado com sucesso!");
       window.location.href = "/conta";
-
     } catch (error) {
       console.error("Erro ao criar usuário:", error);
       alert(error.response?.data?.error || "Erro ao cadastrar usuário.");
     }
   }
 
-
   return (
-    <div className="cadastro-container">
-      <div className="cadastro-content">
-        <h1 className="titulo">CRIE SUA CONTA</h1>
+    <div className="cadastro-page">
+      <div className="cadastro-container">
+        <div className="cadastro-hero">
+          <span className="cadastro-badge">Bem-vindo à Petnet</span>
+          <h1 className="titulo">Crie sua conta</h1>
+          <p className="cadastro-subtitulo">
+            Cadastre-se para acompanhar seus pets, manter seus dados organizados
+            e aproveitar a experiência completa da Petnet com mais praticidade e
+            segurança.
+          </p>
+        </div>
 
-        <form className="formulario" onSubmit={handleSubmit}>
-          
-          {/* Primeira linha */}
-          <div className="linhas">
-            <div className="campo">
-              <label>NOME E SOBRENOME</label>
-              <input
-                name="nome"
-                type="text"
-                placeholder="Digite seu nome e sobrenome"
-                value={form.nome}
-                onChange={handleChange}
-                className={erroCampo.nome ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>CPF/CNPJ</label>
-              <input
-                name="cpf"
-                type="text"
-                placeholder="Digite seu CPF/CNPJ"
-                value={form.cpf}
-                onChange={handleChange}
-                className={erroCampo.cpf ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>TELEFONE</label>
-              <input
-                name="telefone"
-                type="text"
-                placeholder="Digite seu telefone"
-                value={form.telefone}
-                onChange={handleChange}
-                className={erroCampo.telefone ? "input-erro" : ""}
-              />
+        <div className="cadastro-card">
+          <div className="cadastro-card-top">
+            <div>
+              <h2>Cadastro do tutor</h2>
+              <p>Preencha suas informações para criar sua conta.</p>
             </div>
           </div>
 
-          <div className="campo">
-            <label>E-MAIL</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="Digite seu e-mail"
-              value={form.email}
-              onChange={handleChange}
-              className={erroCampo.email ? "input-erro" : ""}
-            />
-          </div>
+          <form className="formulario" onSubmit={handleSubmit}>
+            <div className="form-main">
+              <div className="form-section">
+                <div className="section-title">
+                  <FiUser />
+                  <span>Dados pessoais</span>
+                </div>
 
-          {/* Segunda linha */}
-          <div className="linhas">
-            <div className="campo">
-              <label>ENDEREÇO</label>
-              <input
-                name="endereco"
-                type="text"
-                placeholder="Digite seu endereço"
-                value={form.endereco}
-                onChange={handleChange}
-                className={erroCampo.endereco ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>BAIRRO</label>
-              <input
-                name="bairro"
-                type="text"
-                placeholder="Digite seu bairro"
-                value={form.bairro}
-                onChange={handleChange}
-                className={erroCampo.bairro ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>CEP</label>
-              <input
-                name="cep"
-                type="text"
-                placeholder="Digite seu CEP"
-                value={form.cep}
-                onChange={handleChange}
-                className={erroCampo.cep ? "input-erro" : ""}
-              />
-            </div>
-          </div>
-
-          {/* Terceira linha */}
-          <div className="linhas">
-            <div className="campo">
-              <label>ESTADO (UF)</label>
-              <input
-                name="estado"
-                type="text"
-                placeholder="Ex: SP"
-                value={form.estado}
-                onChange={handleChange}
-                maxLength="2"
-                className={erroCampo.estado ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>CIDADE</label>
-              <input
-                name="cidade"
-                type="text"
-                placeholder="Digite sua cidade"
-                value={form.cidade}
-                onChange={handleChange}
-                className={erroCampo.cidade ? "input-erro" : ""}
-              />
-            </div>
-
-            <div className="campo">
-              <label>NÚMERO</label>
-              <input
-                name="complement"
-                type="number"
-                placeholder="Número"
-                value={form.complement}
-                onChange={handleChange}
-                className={erroCampo.complement ? "input-erro" : ""}
-              />
-            </div>
-          </div>
-
-          {/* Senhas */}
-          <div className="linhas">
-            <div className="col-esquerda">
-              <div className="campo senha">
-                <label>SENHA</label>
-                <div className="input-container">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Digite sua senha"
-                    value={senha}
-                    onChange={(e) => setSenha(e.target.value)}
-                  />
-                  <span className="olho" onClick={() => setShowPassword(!showPassword)}>
-                    <img
-                      src={
-                        showPassword
-                          ? "https://cdn-icons-png.flaticon.com/512/159/159604.png"
-                          : "https://cdn-icons-png.flaticon.com/512/709/709612.png"
-                      }
-                      width="22"
-                      alt=""
+                <div className="linhas">
+                  <div className="campo">
+                    <label>NOME E SOBRENOME</label>
+                    <input
+                      name="nome"
+                      type="text"
+                      placeholder="Digite seu nome e sobrenome"
+                      value={form.nome}
+                      onChange={handleChange}
+                      className={erroCampo.nome ? "input-erro" : ""}
                     />
-                  </span>
+                  </div>
+
+                  <div className="campo">
+                    <label>CPF/CNPJ</label>
+                    <input
+                      name="cpf"
+                      type="text"
+                      placeholder="Digite seu CPF/CNPJ"
+                      value={form.cpf}
+                      onChange={handleChange}
+                      className={erroCampo.cpf ? "input-erro" : ""}
+                    />
+                  </div>
+
+                  <div className="campo">
+                    <label>TELEFONE</label>
+                    <input
+                      name="telefone"
+                      type="text"
+                      placeholder="Digite seu telefone"
+                      value={form.telefone}
+                      onChange={handleChange}
+                      className={erroCampo.telefone ? "input-erro" : ""}
+                    />
+                  </div>
+                </div>
+
+                <div className="campo">
+                  <label>E-MAIL</label>
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Digite seu e-mail"
+                    value={form.email}
+                    onChange={handleChange}
+                    className={erroCampo.email ? "input-erro" : ""}
+                  />
                 </div>
               </div>
 
-              <div className="campo senha">
-                <label>CONFIRME SUA SENHA</label>
-                <div className="input-container">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirme sua senha"
-                    value={confirmSenha}
-                    onChange={(e) => setConfirmSenha(e.target.value)}
-                  />
-                  <span
-                    className="olho"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    <img
-                      src={
-                        showConfirmPassword
-                          ? "https://cdn-icons-png.flaticon.com/512/159/159604.png"
-                          : "https://cdn-icons-png.flaticon.com/512/709/709612.png"
-                      }
-                      width="22"
-                      alt=""
+              <div className="form-section">
+                <div className="section-title">
+                  <FiMapPin />
+                  <span>Endereço</span>
+                </div>
+
+                <div className="linhas">
+                  <div className="campo">
+                    <label>ENDEREÇO</label>
+                    <input
+                      name="endereco"
+                      type="text"
+                      placeholder="Digite seu endereço"
+                      value={form.endereco}
+                      onChange={handleChange}
+                      className={erroCampo.endereco ? "input-erro" : ""}
                     />
-                  </span>
+                  </div>
+
+                  <div className="campo">
+                    <label>BAIRRO</label>
+                    <input
+                      name="bairro"
+                      type="text"
+                      placeholder="Digite seu bairro"
+                      value={form.bairro}
+                      onChange={handleChange}
+                      className={erroCampo.bairro ? "input-erro" : ""}
+                    />
+                  </div>
+
+                  <div className="campo">
+                    <label>CEP</label>
+                    <input
+                      name="cep"
+                      type="text"
+                      placeholder="Digite seu CEP"
+                      value={form.cep}
+                      onChange={handleChange}
+                      className={erroCampo.cep ? "input-erro" : ""}
+                    />
+                  </div>
+                </div>
+
+                <div className="linhas">
+                  <div className="campo">
+                    <label>ESTADO (UF)</label>
+                    <input
+                      name="estado"
+                      type="text"
+                      placeholder="Ex: SP"
+                      value={form.estado}
+                      onChange={handleChange}
+                      maxLength="2"
+                      className={erroCampo.estado ? "input-erro" : ""}
+                    />
+                  </div>
+
+                  <div className="campo">
+                    <label>CIDADE</label>
+                    <input
+                      name="cidade"
+                      type="text"
+                      placeholder="Digite sua cidade"
+                      value={form.cidade}
+                      onChange={handleChange}
+                      className={erroCampo.cidade ? "input-erro" : ""}
+                    />
+                  </div>
+
+                  <div className="campo">
+                    <label>NÚMERO</label>
+                    <input
+                      name="complement"
+                      type="number"
+                      placeholder="Número"
+                      value={form.complement}
+                      onChange={handleChange}
+                      className={erroCampo.complement ? "input-erro" : ""}
+                    />
+                  </div>
                 </div>
               </div>
+
+              <div className="form-section">
+                <div className="section-title">
+                  <FiShield />
+                  <span>Segurança da conta</span>
+                </div>
+
+                <div className="senha-layout">
+                  <div className="col-esquerda">
+                    <div className="campo senha">
+                      <label>SENHA</label>
+                      <div className="input-container">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Digite sua senha"
+                          value={senha}
+                          onChange={(e) => setSenha(e.target.value)}
+                          className={erroCampo.senha ? "input-erro" : ""}
+                        />
+                        <span
+                          className="olho"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="campo senha">
+                      <label>CONFIRME SUA SENHA</label>
+                      <div className="input-container">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirme sua senha"
+                          value={confirmSenha}
+                          onChange={(e) => setConfirmSenha(e.target.value)}
+                          className={erroCampo.confirmSenha ? "input-erro" : ""}
+                        />
+                        <span
+                          className="olho"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <FiEyeOff size={20} />
+                          ) : (
+                            <FiEye size={20} />
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="padrao-senha bloco requisitos">
+                    <strong>Padrão de senha</strong>
+                    <ul>
+                      <li className={regraTamanho ? "validado" : "invalido"}>
+                        <FiCheckCircle size={14} />
+                        Mínimo 8 caracteres
+                      </li>
+                      <li className={regraMaiuscula ? "validado" : "invalido"}>
+                        <FiCheckCircle size={14} />
+                        Letra maiúscula
+                      </li>
+                      <li className={regraNumero ? "validado" : "invalido"}>
+                        <FiCheckCircle size={14} />
+                        Número
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {erroSenha && <p className="erro-senha">{erroSenha}</p>}
+              {mensagemSucesso && (
+                <p className="sucesso-cadastro">{mensagemSucesso}</p>
+              )}
+
+              <button type="submit" className="btn">
+                Criar conta
+              </button>
             </div>
-
-            <div className="padrao-senha bloco requisitos">
-              <strong>PADRÃO DE SENHA</strong>
-              <ul>
-                <li className={regraTamanho ? "validado" : "invalido"}>
-                  Mínimo 8 caracteres
-                </li>
-                <li className={regraMaiuscula ? "validado" : "invalido"}>
-                  Letra maiúscula
-                </li>
-                <li className={regraNumero ? "validado" : "invalido"}>
-                  Número
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {erroSenha && <p className="erro-senha">{erroSenha}</p>}
-          {mensagemSucesso && <p className="sucesso-cadastro">{mensagemSucesso}</p>}
-
-          <button type="submit" className="btn">CRIAR CONTA</button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,21 @@
 :root {
-  --petnet-blue: #3370EB;
-  --petnet-yellow: #F9EE7C;
+  --petnet-blue: #3370eb;
+  --petnet-blue-dark: #2457bd;
+  --petnet-yellow: #f9ee7c;
   --petnet-black: #000000;
   --petnet-white: #ffffff;
+  --petnet-bg: #f8fbff;
+  --petnet-border: #dfe9ff;
+  --petnet-text: #1f2937;
+  --petnet-text-soft: #6b7280;
+  --petnet-danger: #ef4444;
+  --petnet-success: #16a34a;
+  --shadow-soft: 0 14px 35px rgba(28, 63, 140, 0.08);
+  --shadow-card: 0 12px 24px rgba(51, 112, 235, 0.08);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
 }
 
 body {
@@ -10,121 +23,290 @@ body {
   background-color: var(--petnet-white);
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
+/* PÁGINA */
+.pets-page {
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.pets-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 42px 24px 70px;
+  box-sizing: border-box;
+}
+
+/* HERO */
+.pets-hero {
+  margin-bottom: 24px;
+}
+
+.pets-hero-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #eef4ff;
+  color: var(--petnet-blue);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
 
 .topo2 {
   color: var(--petnet-blue);
-  text-align: left;
-  padding-left: 40px;
-  font-weight: bold;
-  font-size: 45px;
-  margin-top: 180px;
-  margin-bottom: 20px;
-  padding-left: 0;
+  font-weight: 900;
+  font-size: 2.7rem;
+  margin: 0 0 10px;
 }
 
-.container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 40px 60px;
-  box-sizing: border-box;
-  margin-top: 100px;
+.pets-subtitle {
+  max-width: 760px;
+  color: var(--petnet-text-soft);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
 }
 
-.form {
+/* CARD PRINCIPAL */
+.pets-card {
+  background: var(--petnet-white);
+  border: 1px solid var(--petnet-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.pets-card-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-top: 10px;
-  gap: 60px;
+  gap: 16px;
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid #eef2ff;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.pets-card-top h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #17336c;
+}
+
+.pets-card-top p {
+  margin: 0;
+  color: var(--petnet-text-soft);
+  font-size: 14px;
+}
+
+.pets-top-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pets-top-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8cc;
+  color: #7c6200;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* FORM */
+.form {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 26px;
+  padding: 26px;
   width: 100%;
-  flex-wrap: wrap; 
 }
 
 .form-left {
-  flex: 1.4;
-  text-align: left;
-  min-width: 300px;
+  min-width: 0;
 }
 
-label {
+.form-section {
+  padding: 0;
+  margin-bottom: 22px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  color: #17336c;
+  font-weight: 800;
+}
+
+.form-left label {
   display: block;
   color: var(--petnet-blue);
-  font-weight: 700;
-  margin-bottom: 5px;
-  margin-top: 15px;
-  font-size: 13px;
-  margin-left: 10px;
+  font-weight: 800;
+  margin-bottom: 7px;
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1.8px solid #d9e6ff;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.2s ease;
+  background: #ffffff;
+  color: var(--petnet-text);
 }
 
 input,
 select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  height: 38px;
-  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 14px;
 }
 
+textarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+  font-family: "Inter", sans-serif;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--petnet-blue);
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.12);
+}
+
+/* DUPLAS */
+.linhas.dupla {
+  display: flex;
+  gap: 18px;
+  width: 100%;
+}
+
+.linhas.dupla > div {
+  flex: 1;
+}
+
+/* INPUT COM ÍCONE */
+.input-icon-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--petnet-blue);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input-with-icon {
+  padding-left: 42px !important;
+}
+
+/* UPLOAD */
+.upload-column {
+  min-width: 0;
+}
+
+.upload-card {
+  background: #fbfcff;
+  border: 1px solid var(--petnet-border);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  top: 30px;
+}
+
+.upload-title {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #17336c;
+}
+
+.upload-subtitle {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--petnet-text-soft);
+}
 
 .upload-area {
-  flex: 0.6;
-  border: 2px solid #ccc;
-  border-radius: 10px;
+  border: 2px dashed #bfd5ff;
+  border-radius: 20px;
   height: 380px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-sizing: border-box;
   overflow: hidden;
-  background-color: #ffffff;
-  min-width: 300px;
-  transition: height 0.3s ease;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  transition: 0.2s ease;
+}
+
+.upload-area:hover {
+  border-color: var(--petnet-blue);
 }
 
 .upload-label {
+  width: 100%;
+  height: 100%;
   color: var(--petnet-blue);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 6px;
 }
 
 .upload-label input {
   display: none;
 }
 
-.upload-label::before {
-  content: "⭳";
-  font-size: 32px;
+.upload-placeholder {
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   color: var(--petnet-blue);
 }
 
-.btn {
-  display: block;
-  margin: 40px auto 0 auto;
-  background-color: var(--petnet-blue);
-  color: var(--petnet-white);
-  border: none;
-  padding: 16px 70px;
-  font-size: 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 700;
+.upload-placeholder span {
+  font-size: 14px;
+  font-weight: 800;
+  max-width: 240px;
+  line-height: 1.5;
 }
 
-.btn:hover {
-  background-color: var(--petnet-blue);
+.upload-placeholder small {
+  color: var(--petnet-text-soft);
+  font-size: 12px;
 }
 
 .preview-container {
@@ -137,275 +319,72 @@ select {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 10px;
 }
 
 .remove-btn {
   position: absolute;
-  bottom: 10px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--petnet-blue);
+  background: rgba(36, 87, 189, 0.95);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: 0.2s ease;
 }
 
 .preview-container:hover .remove-btn {
   opacity: 1;
 }
 
-.remove-btn:hover {
-  background-color: var(--petnet-blue);
+.upload-tip {
+  margin-top: 14px;
+  background: #fff8cc;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #6f5a00;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
-@media (max-width: 1024px) {
-  .topo2 {
-    font-size: 36px;
-    padding-left: 20px;
-  }
-
-  .container {
-    padding: 30px 30px;
-  }
-
-  .form {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-  }
-
-  .form-left, .upload-area {
-    width: 100%;
-  }
-
-  .upload-area {
-    height: 480px;
-  }
-}
-
-@media (max-width: 600px) {
-  .topo2 {
-    font-size: 28px;
-    text-align: center;
-    margin-top: 60px;
-  }
-
-  .container {
-    padding: 20px;
-  }
-
-  .form {
-    flex-direction: column;
-    gap: 25px;
-  }
-
-  .linhas {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  label {
-    font-size: 12px;
-    margin-left: 4px;
-  }
-
-  input, select {
-    font-size: 12px;
-    height: 36px;
-  }
-
-  .upload-area {
-    height: 380px;
-  }
-
-  .btn {
-    width: 100%;
-    font-size: 18px;
-    padding: 14px 0;
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  div.upload-area {
-    height: 450px !important;
-    max-height: none !important;
-    flex: none !important;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  div.upload-area {
-    height: 440px !important;
-    max-height: none !important;
-    flex: none !important;
-    }
-}
-
-
-.pets-container {
-  margin-top: 100px;  
-  margin-bottom: 120px; 
-}
-
-
-.linhas.dupla {
+/* BOTÃO */
+.pets-actions {
   display: flex;
-  justify-content: space-between;
-  gap: 60px;
-  width: 100%;
-}
-
-.linhas.dupla > div {
-  flex: 1;
-}
-
-
-.form-left .linhas.dupla {
-  max-width: 100%;
-}
-
-.linhas.dupla input,
-.linhas.dupla select {
-  width: 100%;
-  margin-top: 1px;
-}
-
-.topo2 span[role="img"] {
-  font-size: 40px;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-
-.topo2{
-  margin-top: 60px;
+  justify-content: center;
+  margin-top: 28px;
 }
 
 .btn {
-  display: block;
-  margin: 50px auto 80px auto;
-  background-color: var(--petnet-blue);
+  background: linear-gradient(90deg, var(--petnet-blue) 0%, var(--petnet-blue-dark) 100%);
   color: var(--petnet-white);
   border: none;
-  padding: 16px 70px;
-  font-size: 20px;
-  border-radius: 8px;
+  padding: 16px 42px;
+  font-size: 18px;
+  border-radius: 14px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(51, 112, 235, 0.22);
+  transition: 0.2s ease;
 }
 
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(51, 112, 235, 0.28);
+}
+
+/* ERRO */
 .input-erro {
-  border: 2px solid red !important;
-  background-color: #ffe6e6;
+  border: 2px solid #ef4444 !important;
+  background-color: #fff1f2 !important;
 }
 
-
-@media (max-width: 900px) {
-  .linhas.dupla {
-    flex-direction: column;
-  }
-
-  .pets-container {
-    margin-top: 100px;
-    margin-bottom: 100px;
-  }
-}
-
-.input-erro {
-  border: 2px solid red !important;
-  background-color: #ffe6e6;
-}
-
-/* --- MOBILE --- */
-@media (max-width: 768px) {
-
-  /* Faz todas as fileiras virarem coluna */
-  .linhas.dupla {
-    display: flex;
-    flex-direction: column !important;
-    gap: 15px;
-    width: 100%;
-  }
-
-  /* Garante que todos os inputs e selects tenham o mesmo tamanho */
-  .linhas.dupla div,
-  .form-left input,
-  .form-left select {
-    width: 100% !important;
-  }
-
-  /* Ajusta o input DATE (ele costuma estourar largura) */
-  input[type="date"] {
-    width: 100% !important;
-  }
-
-  /* Ajusta o container da coluna esquerda */
-  .form-left {
-    width: 100% !important;
-  }
-
-  /* Upload ocupa largura total e centralizado */
-  .upload-area {
-    width: 100% !important;
-    margin-top: 25px;
-  }
-}
-
-/* --- TABLET --- */
-@media (min-width: 768px) and (max-width: 1024px) {
-
-  .container {
-    padding: 25px 40px;
-  }
-
-  .topo2 {
-    font-size: 34px;
-    text-align: center;
-    margin-top: 120px;
-  }
-
-  .form {
-    flex-direction: row;
-    gap: 30px;
-    align-items: flex-start;
-  }
-
-  .form-left {
-    flex: 1.2;
-  }
-
-  .linhas.dupla {
-    flex-direction: row !important;
-    gap: 20px !important;   /* antes 60px */
-  }
-
-  .linhas.dupla div {
-    width: 100% !important;
-  }
-
-  input, select {
-    height: 40px;
-    font-size: 14px;
-  }
-
-  .upload-area {
-    flex: 0.8;
-    height: 320px !important; /* menor que celular e desktop */
-  }
-
-  .btn {
-    font-size: 18px;
-    padding: 14px 50px;
-    margin-top: 40px;
-  }
-}
-
+/* BLOQUEIO LOGIN */
 .pet-lock-page {
   width: 100%;
   min-height: calc(100vh - 180px);
@@ -519,7 +498,47 @@ select {
   flex-shrink: 0;
 }
 
+/* RESPONSIVO */
+@media (max-width: 1100px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-card {
+    position: static;
+  }
+
+  .upload-area {
+    height: 340px;
+  }
+}
+
 @media (max-width: 768px) {
+  .pets-container {
+    padding: 28px 14px 50px;
+  }
+
+  .topo2 {
+    font-size: 2rem;
+  }
+
+  .pets-card-top {
+    flex-direction: column;
+  }
+
+  .linhas.dupla {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .upload-area {
+    height: 300px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
   .pet-lock-card {
     padding: 36px 22px;
     border-radius: 22px;
@@ -540,9 +559,5 @@ select {
 
   .pet-lock-login-btn {
     width: 100%;
-  }
-
-  .pet-lock-benefits {
-    text-align: left;
   }
 }

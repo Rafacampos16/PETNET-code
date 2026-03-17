@@ -4,7 +4,14 @@ import Header from "../components/Header";
 import petService from "../services/petService";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import { FiLock, FiCheck } from "react-icons/fi";
+import {
+  FiLock,
+  FiCheck,
+  FiUploadCloud,
+  FiCalendar,
+  FiTag,
+  FiHeart,
+} from "react-icons/fi";
 
 function Pets() {
   const navigate = useNavigate();
@@ -75,7 +82,7 @@ function Pets() {
     }
     if (!form.birth_date.trim()) {
       novosErros.birth_date = true;
-      faltando.push("Data de Nascimento");
+      faltando.push("Data de nascimento");
     }
     if (!form.sex.trim()) {
       novosErros.sex = true;
@@ -92,7 +99,10 @@ function Pets() {
     setErros(novosErros);
 
     if (faltando.length > 0) {
-      alert("Preencha os seguintes campos obrigatórios:\n\n- " + faltando.join("\n- "));
+      alert(
+        "Preencha os seguintes campos obrigatórios:\n\n- " +
+          faltando.join("\n- ")
+      );
       return;
     }
 
@@ -171,8 +181,8 @@ function Pets() {
             <h1 className="pet-lock-title">Cadastre seu pet</h1>
 
             <p className="pet-lock-text">
-              Para cadastrar seu pet e acompanhar as informações dele,
-              faça login na sua conta.
+              Para cadastrar seu pet e acompanhar as informações dele, faça login
+              na sua conta.
             </p>
 
             <button
@@ -208,146 +218,211 @@ function Pets() {
           </div>
         </div>
       ) : (
-        <div className="container pets-container">
-          <h1 className="topo2">CADASTRE SEU PET</h1>
+        <div className="pets-page">
+          <div className="pets-container">
+            <div className="pets-hero">
+              <div className="pets-hero-badge">Cadastro Petnet</div>
+              <h1 className="topo2">Cadastre seu pet</h1>
+              <p className="pets-subtitle">
+                Preencha os dados com carinho para manter o perfil do seu pet
+                sempre completo, organizado e pronto para os próximos cuidados.
+              </p>
+            </div>
 
-          <form id="petForm" className="form" onSubmit={handleSubmit}>
-            <div className="form-left font">
-              <label>NOME DO PET/APELIDO</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Digite o nome/apelido do seu pet"
-                onChange={handleChange}
-                value={form.name}
-                className={erros.name ? "input-erro" : ""}
-              />
+            <div className="pets-card">
+              <div className="pets-card-top">
+                <div>
+                  <h2>Informações do pet</h2>
+                  <p>Todos os campos marcados como obrigatórios devem ser preenchidos.</p>
+                </div>
 
-              <label>ESPÉCIE</label>
-              <select
-                name="species"
-                onChange={handleChange}
-                value={form.species}
-                className={erros.species ? "input-erro" : ""}
+                <div className="pets-top-tags">
+                  <span>
+                    <FiHeart size={14} />
+                    Cadastro seguro
+                  </span>
+                  <span>
+                    <FiTag size={14} />
+                    Perfil completo
+                  </span>
+                </div>
+              </div>
+
+              <form id="petForm" className="form" onSubmit={handleSubmit}>
+                <div className="form-left">
+                  <div className="form-section">
+                    <h3 className="form-section-title">Dados principais</h3>
+
+                    <label>NOME DO PET/APELIDO</label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Digite o nome/apelido do seu pet"
+                      onChange={handleChange}
+                      value={form.name}
+                      className={erros.name ? "input-erro" : ""}
+                    />
+
+                    <label>ESPÉCIE</label>
+                    <select
+                      name="species"
+                      onChange={handleChange}
+                      value={form.species}
+                      className={erros.species ? "input-erro" : ""}
+                    >
+                      <option value="">Escolha a espécie</option>
+                      <option value="CACHORRO">CACHORRO</option>
+                      <option value="GATO">GATO</option>
+                    </select>
+
+                    <label>RAÇA</label>
+                    <input
+                      type="text"
+                      name="breed"
+                      placeholder="Informe a raça do seu pet"
+                      onChange={handleChange}
+                      value={form.breed}
+                      className={erros.breed ? "input-erro" : ""}
+                    />
+                  </div>
+
+                  <div className="form-section">
+                    <h3 className="form-section-title">Características</h3>
+
+                    <div className="linhas dupla">
+                      <div>
+                        <label>PORTE</label>
+                        <select
+                          name="size"
+                          onChange={handleChange}
+                          value={form.size}
+                          className={erros.size ? "input-erro" : ""}
+                        >
+                          <option value="">Escolha o porte</option>
+                          <option value="PEQUENO">PEQUENO</option>
+                          <option value="MEDIO">MEDIO</option>
+                          <option value="GRANDE">GRANDE</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label>PESO</label>
+                        <input
+                          type="number"
+                          name="weight"
+                          placeholder="Informe o peso em kg"
+                          onChange={handleChange}
+                          min="0"
+                          step="0.5"
+                          value={form.weight}
+                          className={erros.weight ? "input-erro" : ""}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="linhas dupla">
+                      <div>
+                        <label>DATA DE NASCIMENTO</label>
+                        <div className="input-icon-wrapper">
+                          <FiCalendar className="input-icon" />
+                          <input
+                            type="date"
+                            name="birth_date"
+                            onChange={handleChange}
+                            value={form.birth_date}
+                            className={erros.birth_date ? "input-erro input-with-icon" : "input-with-icon"}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label>SEXO</label>
+                        <select
+                          name="sex"
+                          onChange={handleChange}
+                          value={form.sex}
+                          className={erros.sex ? "input-erro" : ""}
+                        >
+                          <option value="">Selecione</option>
+                          <option value="FEMEA">FÊMEA</option>
+                          <option value="MACHO">MACHO</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-section">
+                    <h3 className="form-section-title">Observação</h3>
+
+                    <label>OBSERVAÇÃO</label>
+                    <textarea
+                      name="observations"
+                      placeholder="Digite uma observação sobre o pet (opcional)"
+                      onChange={handleChange}
+                      value={form.observations}
+                      rows={5}
+                    />
+                  </div>
+                </div>
+
+                <div className="upload-column">
+                  <div className="upload-card">
+                    <h3 className="upload-title">Foto do pet</h3>
+                    <p className="upload-subtitle">
+                      Adicione uma foto para deixar o perfil ainda mais completo.
+                    </p>
+
+                    <div className="upload-area">
+                      {form.picture_url ? (
+                        <div className="preview-container">
+                          <img
+                            src={URL.createObjectURL(form.picture_url)}
+                            alt="Prévia do pet"
+                            className="preview-img"
+                          />
+                          <button
+                            type="button"
+                            className="remove-btn"
+                            onClick={() =>
+                              setForm({ ...form, picture_url: null })
+                            }
+                          >
+                            Remover foto
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="upload-label">
+                          <input type="file" onChange={handleFileChange} />
+                          <div className="upload-placeholder">
+                            <FiUploadCloud size={42} />
+                            <span>CARREGUE UMA FOTO DO SEU PET AQUI</span>
+                            <small>PNG, JPG ou JPEG</small>
+                          </div>
+                        </label>
+                      )}
+                    </div>
+
+                    <div className="upload-tip">
+                      Uma boa foto ajuda a identificar o pet com mais facilidade.
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="pets-actions">
+              <button
+                type="button"
+                className="btn"
+                onClick={enviarFormularioExternamente}
               >
-                <option value="">Escolha a espécie</option>
-                <option value="CACHORRO">CACHORRO</option>
-                <option value="GATO">GATO</option>
-              </select>
-
-              <label>RAÇA</label>
-              <input
-                type="text"
-                name="breed"
-                placeholder="Informe a raça do seu pet"
-                onChange={handleChange}
-                value={form.breed}
-                className={erros.breed ? "input-erro" : ""}
-              />
-
-              <label>OBSERVAÇÃO</label>
-              <input
-                type="text"
-                name="observations"
-                placeholder="Digite uma observação sobre o pet (opcional)"
-                onChange={handleChange}
-                value={form.observations}
-              />
-
-              <div className="linhas dupla">
-                <div>
-                  <label>PORTE</label>
-                  <select
-                    name="size"
-                    onChange={handleChange}
-                    value={form.size}
-                    className={erros.size ? "input-erro" : ""}
-                  >
-                    <option value="">Escolha o porte</option>
-                    <option value="PEQUENO">PEQUENO</option>
-                    <option value="MEDIO">MEDIO</option>
-                    <option value="GRANDE">GRANDE</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label>PESO</label>
-                  <input
-                    type="number"
-                    name="weight"
-                    placeholder="Informe o peso em kg"
-                    onChange={handleChange}
-                    min="0"
-                    step="0.5"
-                    value={form.weight}
-                    className={erros.weight ? "input-erro" : ""}
-                  />
-                </div>
-              </div>
-
-              <div className="linhas dupla">
-                <div>
-                  <label>DATA DE NASCIMENTO</label>
-                  <input
-                    type="date"
-                    name="birth_date"
-                    onChange={handleChange}
-                    value={form.birth_date}
-                    className={erros.birth_date ? "input-erro" : ""}
-                  />
-                </div>
-
-                <div>
-                  <label>SEXO</label>
-                  <select
-                    name="sex"
-                    onChange={handleChange}
-                    value={form.sex}
-                    className={erros.sex ? "input-erro" : ""}
-                  >
-                    <option value="">Selecione</option>
-                    <option value="FEMEA">FÊMEA</option>
-                    <option value="MACHO">MACHO</option>
-                  </select>
-                </div>
-              </div>
+                Cadastrar pet
+              </button>
             </div>
-
-            <div className="upload-area">
-              {form.picture_url ? (
-                <div className="preview-container">
-                  <img
-                    src={URL.createObjectURL(form.picture_url)}
-                    alt="Prévia do pet"
-                    className="preview-img"
-                  />
-                  <button
-                    type="button"
-                    className="remove-btn"
-                    onClick={() => setForm({ ...form, picture_url: null })}
-                  >
-                    REMOVER A FOTO
-                  </button>
-                </div>
-              ) : (
-                <label className="upload-label">
-                  <input type="file" onChange={handleFileChange} />
-                  <span>CARREGUE UMA FOTO DO SEU PET AQUI</span>
-                </label>
-              )}
-            </div>
-          </form>
-
-          <button
-            type="button"
-            className="btn"
-            onClick={enviarFormularioExternamente}
-            style={{ display: "block", margin: "40px auto 80px auto" }}
-          >
-            CADASTRAR
-          </button>
+          </div>
         </div>
       )}
+
     </>
   );
 }
