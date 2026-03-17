@@ -1,95 +1,87 @@
 import React from "react";
 import "../styles/promotions.css";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Tag, Sparkles } from "lucide-react";
 
 const Promotions = () => {
-
   const handleAproveitar = (promo, price) => {
-    const phone = "5512992136141"; // coloque seu número aqui DDI + DDD
-    const message = `Olá! Quero aproveitar a promoção ${promo} com o valor de R$${price}. Pode me passar mais informações?`;
+    const phone = "5512992136141";
+    const message = `Ola! Quero aproveitar a promocao ${promo} com o valor de R$${price}. Pode me passar mais informacoes?`;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
 
-  const PromoCard = ({ title, subtitle, details, oldPrice, newPrice }) => (
-    <div className="promo-card">
-      <div className="promo-content">
-        <h3 className="promo-title">{title}</h3>
-        <p className="promo-subtitle">{subtitle}</p>
-        <p className="promo-details">{details}</p>
-
-        <div>
-          {oldPrice && <p className="promo-old-price">R$ {oldPrice}</p>}
-          <p className="promo-new-price">R$ {newPrice}</p>
-        </div>
-      </div>
-
-      <button
-        className="promo-button"
-        onClick={() => handleAproveitar(subtitle, newPrice)}
-      >
-        <ShoppingCart size={18} /> <span>Aproveitar</span>
-      </button>
-    </div>
-  );
+  const promoItems = [
+    {
+      badge: "OFERTA ESPECIAL",
+      title: "Pacote Mensal",
+      details: "4 banhos por mes com desconto especial para manter seu pet sempre limpinho.",
+      oldPrice: "240,00",
+      newPrice: "199,90",
+      highlight: "Mais economia no cuidado recorrente"
+    },
+    {
+      badge: "COMBO",
+      title: "Banho + Tosa",
+      details: "Banho completo com tosa higienica em uma combinacao pratica e vantajosa.",
+      oldPrice: "90,00",
+      newPrice: "75,00",
+      highlight: "Um dos servicos mais procurados"
+    },
+    {
+      badge: "NOVOS CLIENTES",
+      title: "Primeira Consulta",
+      details: "Consulta veterinaria com desconto especial para o primeiro atendimento.",
+      oldPrice: "120,00",
+      newPrice: "96,00",
+      highlight: "Recepcao acolhedora para novos pets"
+    }
+  ];
 
   return (
-    <section id="promotions" style={{ backgroundColor: "#EFF6FF", padding: "4rem 0" }}>
-      <div className="container" style={{ textAlign: "center" }}>
-        <h2 style={{ color: "#3370EB", fontSize: "2rem", fontWeight: "700" }}>Promoções Especiais</h2>
+    <section id="promotions" className="promotions-section">
+      <div className="container">
+        <div className="promotions-heading">
+          <h2 className="promotions-title">Promoções Especiais</h2>
+          <div className="promotions-divider"></div>
+          <p className="promotions-subtitle">
+            Aproveite ofertas exclusivas e economize nos cuidados com seu pet
+            sem abrir mao de qualidade, carinho e seguranca.
+          </p>
+        </div>
 
-        <div
-          style={{
-            width: "100px",
-            height: "4px",
-            backgroundColor: "#F9EE7C",
-            margin: "0.5rem auto 2rem auto",
-            borderRadius: "3px",
-          }}
-        ></div>
+        <div className="promotions-grid">
+          {promoItems.map((promo, index) => (
+            <article key={index} className="promo-card">
+              <div className="promo-badge">
+                <Tag size={16} />
+                <span>{promo.badge}</span>
+              </div>
 
-        <p
-          style={{
-            fontSize: "1rem",
-            color: "rgba(0, 0, 0, 0.8)",
-            marginBottom: "3rem",
-            maxWidth: "600px",
-            margin: "0 auto 3rem auto",
-          }}
-        >
-          Aproveite nossas ofertas exclusivas e economize nos cuidados com seu pet.
-        </p>
+              <div className="promo-content">
+                <h3 className="promo-title">{promo.title}</h3>
+                <p className="promo-details">{promo.details}</p>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "2rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <PromoCard
-            title="OFERTA ESPECIAL"
-            subtitle="Pacote Mensal"
-            details="4 banhos por mês com desconto especial."
-            oldPrice="240,00"
-            newPrice="199,90"
-          />
-          <PromoCard
-            title="COMBO"
-            subtitle="Banho + Tosa"
-            details="Banho completo + tosa higiênica."
-            oldPrice="90,00"
-            newPrice="75,00"
-          />
-          <PromoCard
-            title="NOVOS CLIENTES"
-            subtitle="Primeira Consulta"
-            details="Consulta veterinária com 20% de desconto."
-            oldPrice="120,00"
-            newPrice="96,00"
-          />
+                <div className="promo-highlight">
+                  <Sparkles size={16} />
+                  <span>{promo.highlight}</span>
+                </div>
+
+                <div className="promo-price-box">
+                  <p className="promo-old-price">R$ {promo.oldPrice}</p>
+                  <p className="promo-new-price">R$ {promo.newPrice}</p>
+                </div>
+              </div>
+
+              <button
+                className="promo-button"
+                onClick={() => handleAproveitar(promo.title, promo.newPrice)}
+              >
+                <ShoppingCart size={18} />
+                <span>Aproveitar</span>
+              </button>
+            </article>
+          ))}
         </div>
       </div>
     </section>

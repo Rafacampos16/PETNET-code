@@ -1,102 +1,176 @@
 .servicos-section {
-  background-color: #f5f9ff;
-  padding: 60px 0;
+  padding: 5rem 1rem;
+  background:
+    radial-gradient(circle at right top, rgba(51,112,235,0.08), transparent 25%),
+    linear-gradient(180deg,#f5f9ff 0%,#ffffff 100%);
   text-align: center;
 }
 
+/* TITULO */
+
 .servicos-title {
-  color: #3370eb;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 10px;
+  color: var(--petnet-blue);
+  font-size: 2.4rem;
+  font-weight: 900;
+  margin-bottom: .4rem;
+}
+
+.servicos-divider{
+  width:100px;
+  height:4px;
+  background:var(--petnet-yellow);
+  margin:.6rem auto 1.5rem auto;
+  border-radius:999px;
 }
 
 .servicos-subtitle {
-  max-width: 800px;
-  margin: 0 auto 50px;
-  font-size: 1.1rem;
-  color: #444;
-  line-height: 1.6;
+  max-width: 720px;
+  margin: 0 auto 3rem auto;
+  font-size: 1rem;
+  color: rgba(0,0,0,0.75);
+  line-height: 1.7;
 }
 
-/* ===== GRID ===== */
+/* GRID */
+
 .servicos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* ajusta automaticamente */
-  gap: 30px; /* espaço entre os cards */
-  padding: 0 40px; /* margem lateral */
-  justify-items: center; /* centraliza os cards */
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: auto;
 }
 
-/* ===== CARD ===== */
+/* CARD */
+
 .servico-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.3s ease;
+  background: white;
+  border-radius: 26px;
+  padding: 1.6rem 1.4rem;
+  border:1px solid rgba(51,112,235,0.08);
+  box-shadow:0 16px 30px rgba(31,61,123,0.08);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+
+  transition:transform .25s ease, box-shadow .25s ease;
 }
 
-.servico-card:hover {
-  transform: translateY(-6px);
+.servico-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 22px 36px rgba(31,61,123,0.12);
 }
 
-/* ===== ÍCONE ===== */
-/* Círculo azul que envolve o ícone */
-.servico-icon-circle {
-  width: 90px;
-  height: 90px;
-  background-color: #3370EB; /* azul do seu site */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 15px auto; /* centraliza e dá espaço abaixo */
+/* ICONE */
+
+.servico-icon-circle{
+  width:70px;
+  height:70px;
+
+  background:linear-gradient(135deg,#3370EB,#5f94ff);
+
+  border-radius:20px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:1rem;
+
+  box-shadow:0 10px 18px rgba(51,112,235,.25);
 }
 
-/* Ícone dentro do círculo */
-.servico-icon {
-  width: 55px;
-  height: 55px;
-  object-fit: contain;
+.servico-icon{
+  width:36px;
+  height:36px;
+  object-fit:contain;
 }
 
+/* TEXTOS */
 
-
-/* ===== TEXTOS ===== */
-.servico-card h3 {
-  color: #3370eb;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 10px;
+.servico-card h3{
+  color:var(--petnet-blue);
+  font-size:1.05rem;
+  font-weight:800;
+  margin-bottom:.4rem;
 }
 
-.servico-card p {
-  font-size: 0.95rem;
-  color: #333;
-  line-height: 1.4;
-  margin-bottom: 20px;
+.servico-card p{
+  font-size:.92rem;
+  color:rgba(0,0,0,0.72);
+  line-height:1.5;
+  margin-bottom:1.2rem;
+  flex-grow:1;
 }
 
-/* ===== BOTÃO ===== */
-.btn-agendar {
-  background-color: #f9ee7c;
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 0;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.3s ease;
+/* BOTAO */
+
+.servicos-section .btn-agendar{
+  background:#F9EE7C !important;
+  color:#1f2c47;
+
+  border:none;
+  border-radius:14px;
+
+  padding:.7rem 1rem;
+
+  font-weight:800;
+  font-size:.9rem;
+
+  cursor:pointer;
+
+  width:100%;
+
+  transition:all .25s ease;
 }
 
-.btn-agendar:hover {
-  background-color: #f7e54c;
+.servicos-section .btn-agendar:hover{
+  background: var(--petnet-blue) !important;
+  color: #ffffff;
+  transform:translateY(-2px);
+  box-shadow:0 10px 18px rgba(249,238,124,.35);
+}
+
+/* RESPONSIVO */
+
+@media (max-width:768px){
+
+  .servicos-title{
+    font-size:2rem;
+  }
+
+  .servicos-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+.servicos-section .btn-agendar{
+  background:#F9EE7C !important;
+  color:#1f2c47 !important;
+  border:none !important;
+  border-radius:14px;
+  padding:.8rem 1rem;
+  font-weight:800;
+  font-size:.92rem;
+  cursor:pointer;
+  width:100%;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  box-shadow:0 8px 16px rgba(249,238,124,.22);
+}
+
+.servicos-section .btn-agendar:hover{
+  background:var(--petnet-blue) !important;
+  color: #ffffff !important;
+  transform:translateY(-2px);
+  box-shadow:0 14px 22px rgba(249,238,124,.32);
+}
+
+.servico-card h3{
+  color:var(--petnet-blue);
+  font-size:1.1rem;
+  font-weight:900;
+  margin-bottom:.5rem;
 }

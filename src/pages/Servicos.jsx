@@ -17,22 +17,22 @@ import porosidadeIcon from "../assets/icons/porosidade.png";
 const Servicos = () => {
 
   const handleAgendar = (servico) => {
-  const phone = "5512992136141"; // coloque seu número com DDI e DDD
-  const message = `Olá! Gostaria de agendar o serviço de ${servico}. Pode me informar os horários disponíveis?`;
+    const phone = "5512992136141"; // coloque seu número com DDI e DDD
+    const message = `Olá! Gostaria de agendar o serviço de ${servico}. Pode me informar os horários disponíveis?`;
 
-  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-  window.open(url, "_blank");
-};
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
 
 
   const services = [
     { title: "Banho", desc: "Limpeza completa com produtos de qualidade para deixar o seu pet cheiroso e feliz.", icon: banhoIcon },
-    { title: "Banho Terapêutico", desc: "Banho medicinal para problemas de pele, alívio e cuidado com produtos suaves e especiais.", icon: terapeuticoIcon},
+    { title: "Banho Terapêutico", desc: "Banho medicinal para problemas de pele, alívio e cuidado com produtos suaves e especiais.", icon: terapeuticoIcon },
     { title: "Tosa Higiênica", desc: "Cuidados essenciais para garantir conforto, corte nas áreas íntimas para higiene diária.", icon: tosahigIcon },
     { title: "Tosa (Máq. ou Tesoura)", desc: "Tosa completa com máquina ou tesoura, corte personalizado conforme a preferência do tutor.", icon: tosamaqIcon },
-    { title: "Tosa da raça", desc: "Tosa específica seguindo o padrão da raça, valorizando as características de cada pet." , icon: tosaracaIcon},
-    { title: "Corte de unhas", desc: "Corte seguro e preciso para manter as patinhas do seu pet sempre bem cuidadas." , icon: unhaIcon},
-    { title: "Higiene dos Ouvidos", desc: "Limpeza delicada e completa dos ouvidos, evitando desconfortos e infecções." , icon: ouvidoIcon},
+    { title: "Tosa da raça", desc: "Tosa específica seguindo o padrão da raça, valorizando as características de cada pet.", icon: tosaracaIcon },
+    { title: "Corte de unhas", desc: "Corte seguro e preciso para manter as patinhas do seu pet sempre bem cuidadas.", icon: unhaIcon },
+    { title: "Higiene dos Ouvidos", desc: "Limpeza delicada e completa dos ouvidos, evitando desconfortos e infecções.", icon: ouvidoIcon },
     { title: "Escovação Dental", desc: "Limpeza completa dos dentes, garantindo saúde bucal, prevenção de tártaro e hálito sempre fresco.", icon: dentalIcon },
     { title: "Cronograma Capilar", desc: "Tratamento completo para os pelos, fortalecendo e revitalizando a pelagem.", icon: cronogramaIcon },
     { title: "Hidratação de Pelagem", desc: "Tratamento nutritivo que hidrata profundamente os pelos, devolvendo brilho, maciez e proteção.", icon: hidratacaoIcon },
@@ -47,24 +47,24 @@ const Servicos = () => {
       <section className="servicos-section">
         <div className="container">
           <h2 className="servicos-title">NOSSOS SERVIÇOS</h2>
+          <div className="servicos-divider"></div>
           <p className="servicos-subtitle">
             No PETNET, cada pet é tratado com amor, cuidado e muita dedicação!
             <br />
-            Cuidados feitos com amor para deixar seu pet limpo, feliz e ainda mais encantador. 
+            Cuidados feitos com amor para deixar seu pet limpo, feliz e ainda mais encantador.
             Descubra nossos serviços e agende o carinho que ele merece!
           </p>
 
           <div className="servicos-grid">
             {services.map((service, index) => (
               <div key={index} className="servico-card">
-               <div className="servico-icon-circle">
+                <div className="servico-icon-circle">
                   <img src={service.icon} alt={service.title} className="servico-icon" />
                 </div>
-                <div className="service-icon-placeholder"></div>
 
                 <h3>{service.title}</h3>
                 <p>{service.desc}</p>
-                <button 
+                <button
                   className="btn-agendar"
                   onClick={() => handleAgendar(service.title)}
                 >
@@ -76,7 +76,7 @@ const Servicos = () => {
         </div>
       </section>
 
- 
+
     </>
   );
 };

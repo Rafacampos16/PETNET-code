@@ -1,20 +1,67 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import InteractiveCalendar from "../pages/InteractiveCalendar";
 import "../styles/agendamentos.css";
-import Calendar from "../components/Calendar";
 import Pata from "../assets/icons/pata-h.png";
-import CalendarIcon from "../assets/icons/calendar.png";
-import CalendarIconHover from "../assets/icons/calendar-h.png";
-import TimeIcon from "../assets/icons/time.png";
-import TimeIconHover from "../assets/icons/time-h.png";
+
+const SERVICOS = [
+  "Banho",
+  "Banho terapeutico",
+  "Tosa Higienica",
+  "Tosa (maq. ou tesoura)",
+  "Tosa da raca",
+  "Corte de unhas",
+  "Higiene dos ouvidos",
+  "Escovacao dental",
+  "Cronograma Capilar",
+  "Hidratacao Pelagem",
+  "Hidratacao Pele",
+  "Teste de porosidade"
+];
+
+const PETS_POR_CLIENTE = {
+  "123.456.789-00": ["Rex", "Mel"],
+  "987.654.321-00": ["Thor"],
+  "111.222.333-44": ["Luna", "Bob"]
+};
+
+const HORARIOS_POR_DATA = {
+  "2026-03-18": ["09:00", "10:00", "11:00", "14:00", "15:00"],
+  "2026-03-19": ["08:30", "09:30", "13:00", "16:00"],
+  "2026-03-20": ["10:00", "11:30", "15:30"],
+  "2026-03-21": [],
+  "2026-03-22": ["09:00", "12:00", "13:30", "17:00"]
+};
 
 const Agendamentos = () => {
-  const [selectedServices, setSelectedServices] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [serviceErrorMsg, setServiceErrorMsg] = useState("");
   const [cpf, setCpf] = useState("");
+  const [pet, setPet] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [horaInicio, setHoraInicio] = useState("");
+  const [horaFim, setHoraFim] = useState("");
+  const [observacao, setObservacao] = useState("");
+  const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [agendamentoResumo, setAgendamentoResumo] = useState(null);
 
-    const handleCpfChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // remove tudo que não é número
+  const petsDisponiveis = useMemo(() => {
+    return PETS_POR_CLIENTE[cpf] || [];
+  }, [cpf]);
+
+  const selectedDateKey = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
+  const horariosDisponiveis = selectedDateKey
+    ? HORARIOS_POR_DATA[selectedDateKey] || []
+    : [];
+
+  const horariosFimDisponiveis = horaInicio
+    ? horariosDisponiveis.filter((hora) => hora > horaInicio)
+    : horariosDisponiveis;
+
+  const handleCpfChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
 
     if (value.length > 11) value = value.slice(0, 11);
 
@@ -23,8 +70,10 @@ const Agendamentos = () => {
     value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 
     setCpf(value);
-    };
-
+    setPet("");
+    setErrors((prev) => ({ ...prev, cliente: false, pet: false }));
+    setSuccessMsg("");
+  };
 
   const toggleService = (service) => {
     setSelectedServices((prev) =>
@@ -33,104 +82,138 @@ const Agendamentos = () => {
         : [...prev, service]
     );
 
-    setServiceErrorMsg(""); // remove mensagem quando selecionar algo
+    setErrors((prev) => ({ ...prev, servicos: false }));
+    setSuccessMsg("");
   };
 
- const validarCampos = () => {
-  const cliente = cpf;
-  const pet = document.querySelector("select").value;
-  const data = document.getElementById("dataInput").value;
-  const horaInicio = document.getElementById("horaInicio").value;
-  const horaFim = document.getElementById("horaFim").value;
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setHoraInicio("");
+    setHoraFim("");
+    setErrors((prev) => ({ ...prev, data: false, inicio: false, fim: false }));
+    setSuccessMsg("");
+  };
 
-  let newErrors = {};
+  const handleSubmit = () => {
+    const newErrors = {};
 
-  if (!cliente) newErrors.cliente = true;
-  if (!pet || pet === "Selecione o nome do pet") newErrors.pet = true;
-  if (!data) newErrors.data = true;
-  if (!horaInicio) newErrors.inicio = true;
-  if (!horaFim) newErrors.fim = true;
-  if (selectedServices.length === 0) {
-    newErrors.servicos = true;
-    setServiceErrorMsg("Selecione pelo menos um serviço");
-  }
+    if (!cpf || cpf.length < 14) newErrors.cliente = true;
+    if (!pet) newErrors.pet = true;
+    if (!selectedDate) newErrors.data = true;
+    if (!horaInicio) newErrors.inicio = true;
+    if (!horaFim) newErrors.fim = true;
+    if (selectedServices.length === 0) newErrors.servicos = true;
 
-  setErrors(newErrors);
+    if (horaInicio && horaFim && horaFim <= horaInicio) {
+      newErrors.fim = true;
+    }
 
-  // Se tiver erro -> alerta e para execução
-  if (Object.keys(newErrors).length > 0) {
-    alert("Existem campos que precisam ser preenchidos!");
-    return; 
-  }
+    setErrors(newErrors);
 
-  // Se chegou aqui está certo -> sucesso + limpar os campos
-  alert("Agendamento realizado com sucesso!");
+    if (Object.keys(newErrors).length > 0) {
+      setSuccessMsg("");
+      return;
+    }
 
-  // LIMPA OS CAMPOS
-  setCpf("");
-  document.querySelector("select").value = "Selecione o nome do pet";
-  document.getElementById("dataInput").value = "";
-  document.getElementById("horaInicio").value = "";
-  document.getElementById("horaFim").value = "";
-  setSelectedServices([]);
-  setServiceErrorMsg("");
-  setErrors({});
-};
+    const resumo = {
+      cpf,
+      pet,
+      data: selectedDate,
+      dataFormatada: format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+        locale: ptBR
+      }),
+      horaInicio,
+      horaFim,
+      servicos: selectedServices,
+      observacao
+    };
 
+    setAgendamentoResumo(resumo);
+    setShowConfirmModal(true);
+  };
+
+  const confirmarAgendamento = () => {
+    console.log("Agendamento confirmado:", agendamentoResumo);
+
+    setSuccessMsg("Agendamento realizado com sucesso!");
+    setCpf("");
+    setPet("");
+    setSelectedDate(null);
+    setHoraInicio("");
+    setHoraFim("");
+    setSelectedServices([]);
+    setObservacao("");
+    setErrors({});
+    setAgendamentoResumo(null);
+    setShowConfirmModal(false);
+  };
 
   return (
-    <div className="agendamento-container">
-      <h1 className="topo2">
-        <span className="icon"><img src={Pata} alt="pata" /></span> AGENDAMENTO
-      </h1>
+    <div className="agendamento-page">
+      <div className="agendamento-header">
+        <div>
+          <span className="agendamento-badge">Painel de Agendamentos</span>
+          <h1 className="topo2">
+            <span className="icon">
+              <img src={Pata} alt="pata" />
+            </span>
+            AGENDAMENTO
+          </h1>
+          <p className="agendamento-subtitle">
+            Organize atendimentos com uma agenda visual, horarios disponiveis e
+            formulario mais inteligente.
+          </p>
+        </div>
+      </div>
 
       <div className="agendamento-grid">
-
-        <div className="form-left-agendamento">
+        <div className="form-card">
+          <div className="card-head">
+            <h2>Novo agendamento</h2>
+            <p>Preencha os dados para reservar um horario.</p>
+          </div>
 
           <label>Selecione o cliente</label>
-            <input
+          <input
             type="text"
             placeholder="Digite o CPF"
             value={cpf}
             onChange={handleCpfChange}
             maxLength="14"
             className={errors.cliente ? "input-error" : ""}
-            />
-
+          />
 
           <label>Selecione o pet</label>
-          <div className={`input-icon-right ${errors.pet ? "input-error" : ""}`}>
-            <select>
-              <option>Selecione o nome do pet</option>
-              <option>Rex</option>
-              <option>Mel</option>
-              <option>Thor</option>
-              <option>Luna</option>
-              <option>Bob</option>
-            </select>
-          </div>
+          <select
+            value={pet}
+            onChange={(e) => {
+              setPet(e.target.value);
+              setErrors((prev) => ({ ...prev, pet: false }));
+            }}
+            className={errors.pet ? "input-error" : ""}
+          >
+            <option value="">Selecione o nome do pet</option>
+            {petsDisponiveis.map((petNome) => (
+              <option key={petNome} value={petNome}>
+                {petNome}
+              </option>
+            ))}
+          </select>
 
-          <label>Selecione a data</label>
-          <div className={`input-icon-right ${errors.data ? "input-error" : ""}`}>
-            <input 
-              type="date"
-              id="dataInput"
-              onFocus={(e) => e.target.showPicker()}
-            />
-          </div>
+          {cpf && petsDisponiveis.length === 0 && (
+            <p className="helper-text">
+              Nenhum pet encontrado para este CPF.
+            </p>
+          )}
 
-          <label>Escolha o(s) serviços</label>
-          <div className="services-grid">
-            {[
-              "Banho", "Banho terapêutico", "Tosa Higiênica",
-              "Tosa(máq. ou tesoura)", "Tosa da raça", "Corte de unhas",
-              "Higiene dos ouvidos", "Escovação dental", "Cronograma Capilar",
-              "Hidratação Pelagem", "Hidratação Pele", "Teste de porosidade"
-            ].map((service) => (
+          <label>Escolha o(s) servicos</label>
+          <div className={`services-grid ${errors.servicos ? "services-error" : ""}`}>
+            {SERVICOS.map((service) => (
               <button
                 key={service}
-                className={`service-btn ${selectedServices.includes(service) ? "active" : ""}`}
+                type="button"
+                className={`service-btn ${selectedServices.includes(service) ? "active" : ""
+                  }`}
                 onClick={() => toggleService(service)}
               >
                 {service}
@@ -138,40 +221,229 @@ const Agendamentos = () => {
             ))}
           </div>
 
-          {serviceErrorMsg && <p className="erro-service">{serviceErrorMsg}</p>}
+          {errors.servicos && (
+            <p className="erro-service">Selecione pelo menos um servico.</p>
+          )}
 
-          <label>Defina o horário do agendamento</label>
           <div className="linhas-dupla">
             <div>
-              <label>Início</label>
-              <div className={`input-icon-right ${errors.inicio ? "input-error" : ""}`}>
-                <input type="time" id="horaInicio" onFocus={(e) => e.target.showPicker()}/>
-              </div>
+              <label>Horario de inicio</label>
+              <select
+                value={horaInicio}
+                onChange={(e) => {
+                  setHoraInicio(e.target.value);
+                  setHoraFim("");
+                  setErrors((prev) => ({ ...prev, inicio: false }));
+                }}
+                className={errors.inicio ? "input-error" : ""}
+                disabled={!selectedDate || horariosDisponiveis.length === 0}
+              >
+                <option value="">Selecione</option>
+                {horariosDisponiveis.map((hora) => (
+                  <option key={hora} value={hora}>
+                    {hora}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label>Término</label>
-              <div className={`input-icon-right ${errors.fim ? "input-error" : ""}`}>
-                <input type="time" id="horaFim" onFocus={(e) => e.target.showPicker()}/>
-              </div>
+              <label>Horario de termino</label>
+              <select
+                value={horaFim}
+                onChange={(e) => {
+                  setHoraFim(e.target.value);
+                  setErrors((prev) => ({ ...prev, fim: false }));
+                }}
+                className={errors.fim ? "input-error" : ""}
+                disabled={!horaInicio}
+              >
+                <option value="">Selecione</option>
+                {horariosFimDisponiveis.map((hora) => (
+                  <option key={hora} value={hora}>
+                    {hora}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+
+          <label>Observacoes</label>
+          <textarea
+            rows="4"
+            placeholder="Escreva detalhes importantes do atendimento..."
+            value={observacao}
+            onChange={(e) => setObservacao(e.target.value)}
+          />
+
+          {successMsg && <p className="success-msg">{successMsg}</p>}
+
+          <button className="btn-agendar" onClick={handleSubmit}>
+            AGENDAR
+          </button>
         </div>
 
-        <div className="calendar-area">
-          <div className="calendar-box">
-            <Calendar />
+        <div className="calendar-card">
+          <div className="card-head">
+            <h2>Agenda interativa</h2>
+            <p>Selecione a data e visualize a disponibilidade.</p>
           </div>
 
-          <div className="legend">
-            <p><span className="leg invalid"></span> Data inválida</p>
-            <p><span className="leg full"></span> Horários esgotados</p>
-            <p><span className="leg available"></span> Horários disponíveis</p>
+          <div className="calendar-content-layout">
+            <div className="calendar-main-box">
+              <InteractiveCalendar
+                selectedDate={selectedDate}
+                onSelectDate={handleDateSelect}
+                horariosPorData={HORARIOS_POR_DATA}
+              />
+            </div>
+
+            <div className="calendar-side-info">
+              <div className="selected-day-box">
+                <h3>Resumo do dia</h3>
+
+                {selectedDate ? (
+                  <>
+                    <p>
+                      <strong>Data:</strong>{" "}
+                      {format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+                        locale: ptBR
+                      })}
+                    </p>
+
+                    <div className="horarios-box">
+                      <strong>Horarios disponiveis</strong>
+
+                      <div className="horarios-chips">
+                        {horariosDisponiveis.length > 0 ? (
+                          horariosDisponiveis.map((hora) => (
+                            <span key={hora} className="horario-chip">
+                              {hora}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="sem-horarios">
+                            Nenhum horario disponivel
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <p>Selecione uma data no calendario para ver os horarios.</p>
+                )}
+              </div>
+
+              <div className="legend legend-modern">
+                <div className="legend-card">
+                  <span className="leg invalid"></span>
+                  <div>
+                    <strong>Data indisponivel</strong>
+                    <p>Datas bloqueadas para agendamento</p>
+                  </div>
+                </div>
+
+                <div className="legend-card">
+                  <span className="leg full"></span>
+                  <div>
+                    <strong>Dia sem horarios</strong>
+                    <p>Sem vagas disponiveis no momento</p>
+                  </div>
+                </div>
+
+                <div className="legend-card">
+                  <span className="leg available"></span>
+                  <div>
+                    <strong>Horarios disponiveis</strong>
+                    <p>Dia liberado para novos agendamentos</p>
+                  </div>
+                </div>
+
+                <div className="legend-card">
+                  <span className="leg selected"></span>
+                  <div>
+                    <strong>Data selecionada</strong>
+                    <p>Dia que esta sendo visualizado</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <button className="btn-agendar" onClick={validarCampos}>AGENDAR</button>
+      {showConfirmModal && agendamentoResumo && (
+        <div className="confirm-modal-overlay">
+          <div className="confirm-modal">
+            <div className="confirm-modal-header">
+              <h2>Confirmar agendamento</h2>
+              <p>Confira os dados antes de finalizar.</p>
+            </div>
+
+            <div className="confirm-summary">
+              <div className="summary-item">
+                <span>Cliente</span>
+                <strong>{agendamentoResumo.cpf}</strong>
+              </div>
+
+              <div className="summary-item">
+                <span>Pet</span>
+                <strong>{agendamentoResumo.pet}</strong>
+              </div>
+
+              <div className="summary-item">
+                <span>Data</span>
+                <strong>{agendamentoResumo.dataFormatada}</strong>
+              </div>
+
+              <div className="summary-item">
+                <span>Horario</span>
+                <strong>
+                  {agendamentoResumo.horaInicio} ate {agendamentoResumo.horaFim}
+                </strong>
+              </div>
+
+              <div className="summary-item summary-full">
+                <span>Servicos</span>
+                <div className="summary-tags">
+                  {agendamentoResumo.servicos.map((servico) => (
+                    <span key={servico} className="summary-tag">
+                      {servico}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="summary-item summary-full">
+                <span>Observacoes</span>
+                <strong>
+                  {agendamentoResumo.observacao?.trim()
+                    ? agendamentoResumo.observacao
+                    : "Nenhuma observacao informada"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="confirm-actions">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Voltar e editar
+              </button>
+
+              <button
+                type="button"
+                className="btn-confirm"
+                onClick={confirmarAgendamento}
+              >
+                Confirmar agendamento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
