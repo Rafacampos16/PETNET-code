@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import "../styles/conta.css";
 import { useNavigate } from "react-router-dom";
 import ModalCodigo from "../components/ModalCodigo";
-
+import authService from "../services/authService";
 
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [openModalCodigo, setOpenModalCodigo] = useState(false);
   const [erroEmail, setErroEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,54 +24,49 @@ export default function App() {
     setLogin({ ...login, [name]: value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const { email, senha } = login;
 
-    // LOGIN DO ADMIN
-    if (email === "netpetpi@gmail.com" && senha === "petnetFatec25") {
-      setMensagem("Login de administrador realizado com sucesso!");
-
-      localStorage.setItem("isAdmin", "true");
-      localStorage.removeItem("isUser");
-      localStorage.removeItem("isColaborador");
-
-      setLogin({ email: "", senha: "" });
-
-      window.location.href = "/admin";
+    if (!email || !senha) {
+      setMensagem("Preencha e-mail e senha.");
       return;
     }
 
-    // LOGIN DO COLABORADOR
-    if (email === "colaborador@petnet.com" && senha === "petnetColab25") {
-      setMensagem("Login de colaborador realizado com sucesso!");
+    setLoading(true);
+    setMensagem("");
 
-      localStorage.setItem("isColaborador", "true");
-      localStorage.removeItem("isAdmin");
-      localStorage.removeItem("isUser");
+    try {
+      const { user } = await authService.login(email, senha);
 
-      setLogin({ email: "", senha: "" });
+      // Salva as infos do usuário logado no localStorage
+      localStorage.setItem("userCpf", user.cpf);
+      localStorage.setItem("userName", user.name);
+      localStorage.setItem("userType", user.type);
 
-      window.location.href = "/colaborador";
-      return;
-    }
-
-    // LOGIN USER PADRÃO
-    if (email === "usuario@petnet.com" && senha === "123456") {
-      setMensagem("Login realizado com sucesso!");
-
-      localStorage.setItem("isUser", "true");
+      // Limpa os outros flags
       localStorage.removeItem("isAdmin");
       localStorage.removeItem("isColaborador");
+      localStorage.removeItem("isUser");
 
-      setLogin({ email: "", senha: "" });
+      // Redireciona conforme o tipo
+      if (user.type === "Gerente") {
+        localStorage.setItem("isAdmin", "true");
+        window.location.href = "/admin";
+      } else if (user.type === "Colaborador") {
+        localStorage.setItem("isColaborador", "true");
+        window.location.href = "/colaborador";
+      } else {
+        localStorage.setItem("isUser", "true");
+        window.location.href = "/minhaconta";
+      }
 
-      window.location.href = "/minhaconta";
-      return;
+    } catch (error) {
+      setMensagem(error.response?.data?.error || "E-mail ou senha incorretos. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
-
-    setMensagem("E-mail ou senha incorretos. Tente novamente.");
   }
 
   return (
@@ -81,12 +77,10 @@ export default function App() {
         <div className="left">
           <h1 className="titulo">ACESSE SUA CONTA</h1>
 
-          {/* EXIBE MENSAGEM */}
           {mensagem && (
             <p
               style={{
-                color:
-                  mensagem.includes("sucesso") ? "green" : "red",
+                color: mensagem.includes("sucesso") ? "green" : "red",
                 fontWeight: "600",
                 marginBottom: "15px",
                 marginTop: "-10px",
@@ -97,22 +91,25 @@ export default function App() {
           )}
 
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <label className="label">E-mail ou CPF/CNPJ</label>
+            <label className="label">E-mail</label>
             <input
               className="input"
               name="email"
               type="text"
-              placeholder="Digite seu e-mail ou CPF/CNPJ"
+              placeholder="Digite seu e-mail"
               value={login.email}
               onChange={handleChange}
             />
 
-            {erroEmail && <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>{erroEmail}</p>}
+            {erroEmail && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {erroEmail}
+              </p>
+            )}
 
             <div className="senha-top">
               <label className="label">Senha</label>
 
-              {/* Esqueci a senha */}
               <button
                 className="link link-btn"
                 type="button"
@@ -121,12 +118,8 @@ export default function App() {
                     setErroEmail("Digite um e-mail para redefinir a senha.");
                     return;
                   }
-
                   setErroEmail("");
-
-                  // Envio do código por email (simulação)
                   console.log("Código enviado para:", login.email);
-
                   setOpenModalCodigo(true);
                 }}
               >
@@ -154,8 +147,7 @@ export default function App() {
                     alt="Ocultar senha"
                     width="22"
                     style={{
-                      filter:
-                        "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
+                      filter: "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
                     }}
                   />
                 ) : (
@@ -164,16 +156,15 @@ export default function App() {
                     alt="Mostrar senha"
                     width="22"
                     style={{
-                      filter:
-                        "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
+                      filter: "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
                     }}
                   />
                 )}
               </span>
             </div>
 
-            <button className="btn" type="submit">
-              ENTRAR
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "ENTRANDO..." : "ENTRAR"}
             </button>
           </form>
 

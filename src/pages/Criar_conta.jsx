@@ -9,6 +9,7 @@ import {
   FiShield,
   FiCheckCircle,
 } from "react-icons/fi";
+import authService from "../services/authService";
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -119,9 +120,9 @@ export default function Cadastro() {
         name: form.nome,
         cpf: form.cpf,
         email: form.email,
-        password: senha,
-        address: {
-          type: "Casa",
+        password: senha, 
+        address: {     
+          type: "Casa", 
           cep: form.cep,
           location: `${form.endereco}, ${form.bairro}, ${form.cidade}, ${form.estado}`,
           complement: `${form.complement}`,
@@ -132,7 +133,7 @@ export default function Cadastro() {
         },
       };
 
-      await userService.createUser(body);
+      await authService.register(body); //atualizar rota no backend para aceitar dados de endereço e contato
 
       setMensagemSucesso("Conta criada com sucesso!");
       alert("Usuário cadastrado com sucesso!");

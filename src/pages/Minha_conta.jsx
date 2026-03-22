@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/minha_conta.css";
 import SinoIcon from "../assets/icons/sininho.png";
 import SinoIconHover from "../assets/icons/sininho-h.png";
@@ -20,6 +20,8 @@ import {
   User,
   Heart,
 } from "lucide-react";
+
+import { userService } from "../services/userService";
 
 export default function MinhaConta() {
   const [foto, setFoto] = useState(null);
@@ -45,25 +47,37 @@ export default function MinhaConta() {
   const [receberLembretes, setReceberLembretes] = useState(true);
   const [receberPromocoes, setReceberPromocoes] = useState(false);
 
-  const [dados, setDados] = useState({
-    nome: "Mariana Oliveira Silva",
-    email: "marina.oliveira@gmail.com",
-    telefone: "(12) 98876-4321",
-    endereco: "Rua das Orquídeas",
-    bairro: "Centro",
-    cep: "12500-000",
-    estado: "SP",
-    cidade: "Guaratinguetá",
-    numero: "245",
+  const [dados, setDados] = useState(null);
 
-    nomePet: "Luna",
-    especiePet: "Cachorro",
-    racaPet: "Poodle",
-    portePet: "Pequeno",
-    pesoPet: "6",
-    nascimentoPet: "2021-04-10",
-    sexoPet: "Fêmea",
-  });
+ useEffect(() => {
+  const cpf = localStorage.getItem("userCpf");
+
+  if (!cpf) return;
+
+  userService.showUser(cpf)
+    .then(res => {
+      const user = res.data;
+      setDados({
+        nome: user.name,
+        email: user.email,
+        telefone: user.contacts?.[0]?.number || "",
+        endereco: user.addresses?.[0]?.location || "",
+        bairro: "",
+        cep: user.addresses?.[0]?.cep || "",
+        estado: "",
+        cidade: "",
+        numero: user.addresses?.[0]?.complement || "",
+        nomePet: "",
+        especiePet: "",
+        racaPet: "",
+        portePet: "",
+        pesoPet: "",
+        nascimentoPet: "",
+        sexoPet: "",
+      });
+    })
+    .catch(err => console.error("Erro ao buscar usuário:", err));
+}, []);
 
   const [formEditar, setFormEditar] = useState(dados);
 
@@ -159,6 +173,7 @@ export default function MinhaConta() {
     window.location.href = "/conta";
   }
 
+  if (!dados) return <p>Carregando...</p>;
   return (
     <div className="minha-conta-page">
       <div className="minha-conta-header">
@@ -376,13 +391,12 @@ export default function MinhaConta() {
                   </div>
 
                   <span
-                    className={`agendamento-badge ${
-                      item.status === "Concluído"
+                    className={`agendamento-badge ${item.status === "Concluído"
                         ? "concluido"
                         : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                    }`}
+                          ? "aguardando"
+                          : "agendado"
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -573,13 +587,12 @@ export default function MinhaConta() {
                     {item.data} às {item.horario}
                   </p>
                   <span
-                    className={`agend-status ${
-                      item.status === "Concluído"
+                    className={`agend-status ${item.status === "Concluído"
                         ? "concluido"
                         : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                    }`}
+                          ? "aguardando"
+                          : "agendado"
+                      }`}
                   >
                     {item.status}
                   </span>
