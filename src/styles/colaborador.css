@@ -1,0 +1,559 @@
+:root {
+  --petnet-blue: #3370EB;
+  --petnet-yellow: #F9EE7C;
+  --petnet-black: #000000;
+  --petnet-white: #ffffff;
+}
+
+.colaborador-page {
+  min-height: 100vh;
+  padding: 1.6rem;
+  background:
+    radial-gradient(circle at top left, rgba(249, 238, 124, 0.18), transparent 24%),
+    radial-gradient(circle at top right, rgba(51, 112, 235, 0.14), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+}
+
+.colaborador-shell {
+  max-width: 1380px;
+  margin: 0 auto;
+}
+
+/* topo */
+.colab-top-strip {
+  display: grid;
+  grid-template-columns: 1.5fr 0.75fr 0.75fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.top-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(51, 112, 235, 0.12);
+  border-radius: 26px;
+  box-shadow: 0 16px 36px rgba(43, 73, 136, 0.08);
+}
+
+.top-card.main {
+  padding: 1.4rem 1.5rem;
+}
+
+.top-card.main h1 {
+  margin: 0;
+  color: #1d3772;
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.top-card.main p {
+  margin: 0.7rem 0 0;
+  color: #6f7f9f;
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.colab-badge {
+  display: inline-block;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(51, 112, 235, 0.1);
+  color: var(--petnet-blue);
+  font-size: 0.84rem;
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+
+.top-card.mini {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.top-card.mini small {
+  color: #7080a0;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.top-card.mini strong {
+  margin: 0.4rem 0 0.2rem;
+  color: #1d3772;
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+.top-card.mini span {
+  color: #6f7f9f;
+  font-size: 0.9rem;
+}
+
+.top-card.mini.soft {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* layout principal */
+.colab-board {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+/* coluna esquerda */
+.fila-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(51, 112, 235, 0.12);
+  border-radius: 28px;
+  padding: 1.2rem;
+  box-shadow: 0 18px 40px rgba(43, 73, 136, 0.08);
+  min-height: 100%;
+}
+
+.fila-head-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-head h2 {
+  margin: 0;
+  color: #1d3772;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.panel-head p {
+  margin: 0.35rem 0 0;
+  color: #7a88a6;
+  font-size: 0.92rem;
+}
+
+.panel-tag {
+  white-space: nowrap;
+  background: rgba(51, 112, 235, 0.08);
+  color: var(--petnet-blue);
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.soft-tag {
+  background: rgba(249, 238, 124, 0.45);
+  color: #8f7600;
+}
+
+.panel-count {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #edf4ff;
+  color: var(--petnet-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.search-box {
+  margin-bottom: 0.9rem;
+}
+
+.search-box input {
+  width: 100%;
+  border: 1px solid rgba(51, 112, 235, 0.16);
+  background: #f9fbff;
+  border-radius: 18px;
+  padding: 0.95rem 1rem;
+  font-size: 0.94rem;
+  outline: none;
+  color: #31466e;
+  transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: rgba(51, 112, 235, 0.35);
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.08);
+  background: #fff;
+}
+
+.fila-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 0.1rem;
+}
+
+.fila-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #e7eefb;
+  border-radius: 22px;
+  padding: 0.95rem;
+  cursor: grab;
+  box-shadow: 0 10px 22px rgba(43, 73, 136, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.fila-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(43, 73, 136, 0.07);
+  border-color: rgba(51, 112, 235, 0.22);
+}
+
+.fila-card:active {
+  cursor: grabbing;
+}
+
+.fila-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.pet-avatar {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    rgba(51, 112, 235, 0.18),
+    rgba(51, 112, 235, 0.1)
+  );
+  color: var(--petnet-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+.fila-identidade {
+  min-width: 0;
+}
+
+.fila-identidade strong {
+  display: block;
+  color: #23407d;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.fila-identidade span {
+  display: block;
+  color: #7a88a6;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
+.fila-card-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+
+.servico-badge {
+  background: rgba(249, 238, 124, 0.45);
+  color: #8e7400;
+  border: 1px solid rgba(249, 238, 124, 0.6);
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.fila-meta {
+  text-align: right;
+}
+
+.fila-meta small {
+  display: block;
+  color: #7e8dab;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.fila-meta b {
+  display: block;
+  margin-top: 0.18rem;
+  color: #30456f;
+  font-size: 0.98rem;
+}
+
+/* coluna direita */
+.agenda-panel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(51, 112, 235, 0.12);
+  border-radius: 28px;
+  padding: 1.25rem;
+  box-shadow: 0 18px 42px rgba(43, 73, 136, 0.08);
+}
+
+.agenda-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.agenda-stat {
+  background: #f8fbff;
+  border: 1px solid #e8effb;
+  border-radius: 18px;
+  padding: 0.85rem 0.95rem;
+}
+
+.agenda-stat small {
+  display: block;
+  color: #7c8baa;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.agenda-stat strong {
+  color: #23407d;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.agenda-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.agenda-slot {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+.agenda-hora {
+  border-radius: 18px;
+  background: #eef4ff;
+  color: #2e5fca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.96rem;
+  border: 1px solid #dce8ff;
+  min-height: 82px;
+}
+
+.agenda-conteudo {
+  min-height: 82px;
+  border-radius: 22px;
+  border: 2px dashed #dce7fb;
+  background: #fbfdff;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.9rem;
+}
+
+.agenda-slot.livre:hover .agenda-conteudo {
+  border-color: rgba(51, 112, 235, 0.35);
+  background: #f7fbff;
+}
+
+.agenda-vazia {
+  color: #8a97b2;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.agenda-card-preenchido {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    rgba(51, 112, 235, 0.08),
+    rgba(249, 238, 124, 0.16)
+  );
+  border: 1px solid rgba(51, 112, 235, 0.12);
+  border-radius: 18px;
+  padding: 0.8rem 0.95rem;
+}
+
+.agenda-card-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.agenda-pet-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 13px;
+  background: var(--petnet-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.agenda-card-text {
+  min-width: 0;
+}
+
+.agenda-card-text strong {
+  display: block;
+  color: #23407d;
+  font-size: 0.96rem;
+  line-height: 1.1;
+}
+
+.agenda-card-text span {
+  display: block;
+  color: #6f7f9f;
+  font-size: 0.87rem;
+  margin-top: 0.15rem;
+}
+
+.agenda-card-text p {
+  margin: 0.26rem 0 0;
+  color: #355188;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.agenda-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.agenda-card-side small {
+  color: #6f7f9f;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.agenda-remove-btn {
+  border: none;
+  background: #fff;
+  color: #2f5fc7;
+  padding: 0.62rem 0.9rem;
+  border-radius: 14px;
+  font-size: 0.83rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid rgba(51, 112, 235, 0.12);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.agenda-remove-btn:hover {
+  background: #f4f8ff;
+  transform: translateY(-1px);
+}
+
+.empty-state {
+  background: #f9fbff;
+  border: 1px dashed #dbe6fa;
+  border-radius: 22px;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.empty-state strong {
+  display: block;
+  color: #315189;
+  margin-bottom: 0.35rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #7d8baa;
+  line-height: 1.5;
+}
+
+/* responsivo */
+@media (max-width: 1180px) {
+  .colab-top-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .colab-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .colaborador-page {
+    padding: 1rem;
+  }
+
+  .agenda-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .fila-card {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .fila-card-middle {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .fila-meta {
+    text-align: left;
+  }
+
+  .agenda-slot {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda-hora {
+    min-height: 56px;
+  }
+
+  .agenda-card-preenchido {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .agenda-card-side {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

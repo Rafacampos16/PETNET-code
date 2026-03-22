@@ -8,14 +8,14 @@ import Pets from "./pages/Pets";
 import Conta from "./pages/Conta";
 import GlobalStyles from "./components/GlobalStyles";
 import Administracao from "./pages/Administracao";
-import ProtectedRoute from "./components/ProtectedRoute"; // <--- importe aqui
+import ProtectedRoute from "./components/ProtectedRoute";
 import Criarconta from "./pages/Criar_conta";
 import Minhaconta from "./pages/Minha_conta";
 import Clientes from "./pages/Clientes";
 import Agendamentos from "./pages/Agendamentos";
 import PetsCadastrados from "./pages/Pets_cadastrados";
 import Status from "./pages/Status";
-
+import Colaborador from "./pages/Colaborador";
 
 const App = () => (
   <Router>
@@ -39,45 +39,51 @@ const App = () => (
           }
         />
 
-        
-         <Route
-            path="/admin/agendamentos"
-            element={
-              <ProtectedRoute>
-                <Agendamentos />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/admin/agendamentos"
+          element={
+            <ProtectedRoute>
+              <Agendamentos />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/admin/clientes"
-            element={
-              <ProtectedRoute>
-                <Clientes />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/admin/clientes"
+          element={
+            <ProtectedRoute>
+              <Clientes />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/admin/pets"
-            element={
-              <ProtectedRoute>
-                <PetsCadastrados />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/admin/pets"
+          element={
+            <ProtectedRoute>
+              <PetsCadastrados />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/admin/status"
-            element={
-              <ProtectedRoute>
-                <Status />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/admin/status"
+          element={
+            <ProtectedRoute>
+              <Status />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/colaborador"
+          element={
+            <ProtectedRoute>
+              <Colaborador />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-
-      
     </main>
     <Footer />
   </Router>

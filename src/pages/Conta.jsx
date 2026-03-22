@@ -28,34 +28,47 @@ export default function App() {
 
     const { email, senha } = login;
 
-    //  LOGIN DO ADMIN
-    
+    // LOGIN DO ADMIN
     if (email === "netpetpi@gmail.com" && senha === "petnetFatec25") {
-  setMensagem("Login de administrador realizado com sucesso!");
+      setMensagem("Login de administrador realizado com sucesso!");
 
-  // Marca que o usuário é admin
-  localStorage.setItem("isAdmin", "true");
+      localStorage.setItem("isAdmin", "true");
+      localStorage.removeItem("isUser");
+      localStorage.removeItem("isColaborador");
 
-  // limpa campos
-  setLogin({ email: "", senha: "" });
+      setLogin({ email: "", senha: "" });
 
-  // redireciona para admin
-  window.location.href = "/admin";
-  return;
-}
+      window.location.href = "/admin";
+      return;
+    }
 
- // LOGIN USER PADRÃO
-  if (email === "usuario@petnet.com" && senha === "123456") {
-    setMensagem("Login realizado com sucesso!");
+    // LOGIN DO COLABORADOR
+    if (email === "colaborador@petnet.com" && senha === "petnetColab25") {
+      setMensagem("Login de colaborador realizado com sucesso!");
 
-    localStorage.setItem("isUser", "true");
-    localStorage.removeItem("isAdmin");
+      localStorage.setItem("isColaborador", "true");
+      localStorage.removeItem("isAdmin");
+      localStorage.removeItem("isUser");
 
-    setLogin({ email: "", senha: "" });
+      setLogin({ email: "", senha: "" });
 
-    window.location.href = "/minhaconta";
-    return;
-  }
+      window.location.href = "/colaborador";
+      return;
+    }
+
+    // LOGIN USER PADRÃO
+    if (email === "usuario@petnet.com" && senha === "123456") {
+      setMensagem("Login realizado com sucesso!");
+
+      localStorage.setItem("isUser", "true");
+      localStorage.removeItem("isAdmin");
+      localStorage.removeItem("isColaborador");
+
+      setLogin({ email: "", senha: "" });
+
+      window.location.href = "/minhaconta";
+      return;
+    }
 
     setMensagem("E-mail ou senha incorretos. Tente novamente.");
   }
@@ -183,7 +196,7 @@ export default function App() {
             especialmente para seu pet. Crie sua conta agora!
           </p>
 
-          <button 
+          <button
             className="btn-outline"
             onClick={() => navigate("/criarconta")}
           >
@@ -192,16 +205,16 @@ export default function App() {
         </div>
       </div>
 
-          {openModalCodigo && (
-          <ModalCodigo
-            email={login.email}
-            onClose={() => setOpenModalCodigo(false)}
-            onSuccess={() => {
-              setOpenModalCodigo(false);
-              window.location.href = "/minhaconta";
-            }}
-          />
-        )}
+      {openModalCodigo && (
+        <ModalCodigo
+          email={login.email}
+          onClose={() => setOpenModalCodigo(false)}
+          onSuccess={() => {
+            setOpenModalCodigo(false);
+            window.location.href = "/minhaconta";
+          }}
+        />
+      )}
     </div>
-  );  
+  );
 }

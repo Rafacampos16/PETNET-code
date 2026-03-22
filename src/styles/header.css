@@ -159,3 +159,21 @@
   width: 28px;
   height: 28px;
 }
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-1px);
+}
+
+.menu-item span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
