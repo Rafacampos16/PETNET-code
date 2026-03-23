@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import "../styles/clientes.css";
 import { userService } from "../services/userService";
+import petService from "../services/petService";
 
 const PetsExpand = ({ data }) => {
   if (!data.pets || data.pets.length === 0) {
@@ -141,31 +142,48 @@ const Clientes = () => {
 
     //setClientes(fakeClientes);
 
+
     const carregar = async () => {
       try {
-        const response = await userService.listUsers();
-        const dados = response.data;
-        const dadosForm = dados.map((user) => ({
-          id: user.cpf,
-          nome: user.name,
-          cpf: user.cpf,
-          email: user.email,
-          telefone: "", // não tm ainda
-          cidade: "",   // não tem ainda
-          estado: "",   // não tem ainda
-          pets: [],     // não tem ainda
-        }));
+        const responseUsuarios = await userService.listUsers();
+        const responsePets = await petService.listar();
+        console.log("responseUsuarios:", responseUsuarios);
+        console.log("responsePets:", responsePets);
 
-        if (Array.isArray(dados) && dados.length > 0) {
+        const usuarios = responseUsuarios.data;
+        const pets = responsePets;
+
+        const dadosForm = usuarios.map((user) => {
+          const petsDoUsuario = pets.filter(
+            (pet) => pet.user_cpf === user.cpf
+          );
+
+          return {
+            id: user.cpf,
+            nome: user.name,
+            cpf: user.cpf,
+            email: user.email,
+            telefone: "",
+            cidade: "",
+            estado: "",
+            pets: petsDoUsuario.map((pet) => ({
+              nome: pet.name,
+              tipo: pet.species,
+              raca: pet.breed,
+            })),
+          };
+        });
+
+        if (Array.isArray(usuarios) && usuarios.length > 0) {
           setClientes(dadosForm);
         } else {
-          setClientes([]); // veio vazio, limpa a tela
+          setClientes([]);
         }
       } catch (err) {
         console.error("Erro ao carregar usuários:", err);
-        setClientes([]); // limpa tla
+        setClientes([]);
       }
-    }
+    };
 
     carregar();
   }, []);
