@@ -102,6 +102,28 @@ const ExpandedPetInfo = ({ data }) => {
   );
 };
 
+const traduzirPorte = (size) => {
+  switch (size) {
+    case "S": return "Pequeno";
+    case "M": return "Médio";
+    case "L": return "Grande";
+    default: return size;
+  }
+};
+
+const formatarData = (data) => {
+  if (!data) return "";
+  return new Date(data).toLocaleDateString("pt-BR");
+};
+
+const traduzirSexo = (sex) => {
+  return sex === "M" ? "Macho" : "Fêmea";
+};
+
+const traduzirEspecie = (species) => {
+  return species === "dog" ? "Cachorro" : "Gato";
+};
+
 const Pets_cadastrados = () => {
   const [pets, setPets] = useState([]);
   const [search, setSearch] = useState("");
@@ -114,7 +136,22 @@ const Pets_cadastrados = () => {
         const dados = await petService.listar();
 
         if (Array.isArray(dados) && dados.length > 0) {
-          setPets(dados);
+          const petsFormatados = dados.map((pet) => {
+            return {
+              id: pet.id,
+              name: pet.name,
+              species: traduzirEspecie(pet.species),
+              breed: pet.breed,
+              size: traduzirPorte(pet.size),
+              weight: `${pet.weight} kg`,
+              birth_date: formatarData(pet.birth_date),
+              sex: traduzirSexo(pet.sex),
+              observations: pet.observations,
+              user_cpf: pet.user_cpf,
+              photo: pet.picture_blob || "",
+            }
+          })
+          setPets(petsFormatados);
         } else {
           setPets(mockPets);
         }
