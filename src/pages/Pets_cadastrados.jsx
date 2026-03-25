@@ -102,7 +102,7 @@ const ExpandedPetInfo = ({ data }) => {
   );
 };
 
-const traduzirPorte = (size) => {
+export const traduzirPorte = (size) => {
   switch (size) {
     case "S": return "Pequeno";
     case "M": return "Médio";
@@ -120,7 +120,7 @@ const traduzirSexo = (sex) => {
   return sex === "M" ? "Macho" : "Fêmea";
 };
 
-const traduzirEspecie = (species) => {
+export const traduzirEspecie = (species) => {
   return species === "dog" ? "Cachorro" : "Gato";
 };
 

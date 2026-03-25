@@ -21,7 +21,9 @@ import {
   Heart,
 } from "lucide-react";
 
+import { traduzirPorte, traduzirEspecie } from "./Pets_cadastrados";
 import { userService } from "../services/userService";
+import petService from "../services/petService";
 
 export default function MinhaConta() {
   const [foto, setFoto] = useState(null);
@@ -49,6 +51,7 @@ export default function MinhaConta() {
 
   const [dados, setDados] = useState(null);
 
+  const [pets, setPets] = useState(null);
  useEffect(() => {
   const cpf = localStorage.getItem("userCpf");
 
@@ -77,6 +80,24 @@ export default function MinhaConta() {
       });
     })
     .catch(err => console.error("Erro ao buscar usuário:", err));
+
+
+     // busca os pets do usuário
+  petService.listar_meus_pets()
+    .then(res => {
+      const meusPets = res;
+      const PetsFormatados = meusPets.map((pet) => {
+        return{
+          ...pet,
+          size: traduzirPorte(pet.size), //conversão para melhor exibição 
+          species: traduzirEspecie(pet.species)
+        }
+
+      })
+      setPets(PetsFormatados);
+      console.log(PetsFormatados)
+    })
+    .catch(err => console.error("Erro ao buscar pets:", err));
 }, []);
 
   const [formEditar, setFormEditar] = useState(dados);
@@ -237,16 +258,16 @@ export default function MinhaConta() {
             <span>Pet em destaque</span>
           </div>
 
-          <h3>{dados.nomePet}</h3>
+          <h3>{pets[0].name}</h3>
 
           <div className="pet-highlight-tags">
-            <span>{dados.especiePet}</span>
-            <span>{dados.racaPet}</span>
-            <span>{dados.portePet}</span>
+            <span>{pets[0].species}</span>
+            <span>{pets[0].breed}</span>
+            <span>{pets[0].size}</span>
           </div>
 
           <p>
-            Peso: <strong>{dados.pesoPet} kg</strong>
+            Peso: <strong>{pets[0].weight} kg</strong>
           </p>
         </div>
       </div>
@@ -278,7 +299,7 @@ export default function MinhaConta() {
           </div>
           <div>
             <h4>Pets cadastrados</h4>
-            <p>1 pet registrado</p>
+            <p> {pets.length} pet(s) registrado(s)</p>
           </div>
         </div>
       </div>
