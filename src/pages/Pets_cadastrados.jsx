@@ -63,9 +63,16 @@ const Pets_cadastrados = () => {
   const [porteFiltro, setPorteFiltro] = useState("");
 
   useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
     const carregar = async () => {
       try {
-        const dados = await petService.listar();
+        let dados = [];
+        //Se for admin chama função para listar todos os pets cadastrados no sistema, caso contrário, somente os pets do cliente cadastrado
+        if(isAdmin) { 
+           dados = await petService.listar();
+        } else {
+           dados = await petService.listar_meus_pets();
+        }
 
         if (Array.isArray(dados) && dados.length > 0) {
           const petsFormatados = dados.map((pet) => {
@@ -85,11 +92,11 @@ const Pets_cadastrados = () => {
           })
           setPets(petsFormatados);
         } else {
-          setPets(mockPets);
+          setPets([]);
         }
       } catch (err) {
         console.error("Erro ao carregar pets:", err);
-        setPets(mockPets);
+        setPets([]);
       }
     };
 

@@ -51,7 +51,7 @@ export default function MinhaConta() {
 
   const [dados, setDados] = useState(null);
 
-  const [pets, setPets] = useState(null);
+  const [pets, setPets] = useState([]);
  useEffect(() => {
   const cpf = localStorage.getItem("userCpf");
 
@@ -100,7 +100,7 @@ export default function MinhaConta() {
     .catch(err => console.error("Erro ao buscar pets:", err));
 }, []);
 
-  const [formEditar, setFormEditar] = useState(dados);
+  const [formEditar, setFormEditar] = useState({});
 
   const agendamentos = [
     {
@@ -171,11 +171,12 @@ export default function MinhaConta() {
   }
 
   function abrirModalEditar() {
+  if (dados) {
     setFormEditar(dados);
-    setAbaEditar("pessoal");
-    setModalEditar(true);
   }
-
+  setAbaEditar("pessoal");
+  setModalEditar(true);
+}
   function atualizarCampo(e) {
     setFormEditar({
       ...formEditar,
