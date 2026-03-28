@@ -85,8 +85,8 @@ const Clientes = () => {
             endereco: user.addresses?.[0]?.location.split(",")[0],
             numero: user.addresses?.[0]?.complement,
             bairro: user.addresses?.[0]?.location.split(",")[1],
-            cep: user.addresses?.[0]?.cep,  
-            cidade:  user.addresses?.[0]?.location.split(",")[2],
+            cep: user.addresses?.[0]?.cep,
+            cidade: user.addresses?.[0]?.location.split(",")[2],
             estado: user.addresses?.[0]?.location.split(",")[3],
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
@@ -128,23 +128,42 @@ const Clientes = () => {
     });
   };
 
-  const salvarEdicao = () => {
-    const novosClientes = clientes.map((c) => {
-      if (c.id === clienteEditando.id) {
-        return clienteEditando;
-      }
-      return c;
-    });
+  const salvarEdicao = async () => {
+    const body = {
+      name: clienteEditando.nome,
+      email: clienteEditando.email,
+      contact: {
+        name: clienteEditando.nome,
+        number: clienteEditando.telefone,
+      },
+      address: {
+        type: "Casa",
+        cep: clienteEditando.cep,
+        location: `${clienteEditando.endereco}, ${clienteEditando.bairro}, ${clienteEditando.cidade}, ${clienteEditando.estado}`,
+        complement: clienteEditando.numero,
+      },
+    };
 
-    setClientes(novosClientes);
-    setClienteSelecionado(clienteEditando);
-    setModoEdicao(false);
+    try {
+      await userService.updateUser(clienteEditando.cpf, body);
+      setClientes(clientes.map(c => c.id === clienteEditando.id ? clienteEditando : c));
+      setClienteSelecionado(clienteEditando);
+      setModoEdicao(false);
+      alert("Cliente atualizado com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao atualizar cliente.");
+    }
   };
 
-  const excluirCliente = (id) => {
-    const novos = clientes.filter((c) => c.id !== id);
-    setClientes(novos);
-    fecharModal();
+  const excluirCliente = async (id) => {
+    try {
+      await userService.deleteUser(id);
+      setClientes(clientes.filter(c => c.id !== id));
+      fecharModal();
+      alert("Cliente excluído com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao excluir cliente.");
+    }
   };
 
   const cidadesUnicas = [...new Set(clientes.map((c) => c.cidade))].sort();
