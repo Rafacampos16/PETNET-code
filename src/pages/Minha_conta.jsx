@@ -52,53 +52,53 @@ export default function MinhaConta() {
   const [dados, setDados] = useState(null);
 
   const [pets, setPets] = useState([]);
- useEffect(() => {
-  const cpf = localStorage.getItem("userCpf");
+  useEffect(() => {
+    const cpf = localStorage.getItem("userCpf");
 
-  if (!cpf) return;
+    if (!cpf) return;
 
-  userService.showUser(cpf)
-    .then(res => {
-      const user = res.data;
-      setDados({
-        nome: user.name,
-        email: user.email,
-        telefone: user.contacts?.[0]?.number || "",
-        endereco: user.addresses?.[0]?.location.split(",")[0] || "",
-        bairro: user.addresses?.[0]?.location.split(",")[1],
-        cep: user.addresses?.[0]?.cep || "",
-        estado: user.addresses?.[0]?.location.split(",")[3],
-        cidade:  user.addresses?.[0]?.location.split(",")[2],
-        numero: user.addresses?.[0]?.complement || "",
-        nomePet: "",
-        especiePet: "",
-        racaPet: "",
-        portePet: "",
-        pesoPet: "",
-        nascimentoPet: "",
-        sexoPet: "",
-      });
-    })
-    .catch(err => console.error("Erro ao buscar usuário:", err));
-
-
-     // busca os pets do usuário
-  petService.listar_meus_pets()
-    .then(res => {
-      const meusPets = res;
-      const PetsFormatados = meusPets.map((pet) => {
-        return{
-          ...pet,
-          size: traduzirPorte(pet.size), //conversão para melhor exibição 
-          species: traduzirEspecie(pet.species)
-        }
-
+    userService.showUser(cpf)
+      .then(res => {
+        const user = res.data;
+        setDados({
+          nome: user.name,
+          email: user.email,
+          telefone: user.contacts?.[0]?.number || "",
+          endereco: user.addresses?.[0]?.location.split(",")[0] || "",
+          bairro: user.addresses?.[0]?.location.split(",")[1],
+          cep: user.addresses?.[0]?.cep || "",
+          estado: user.addresses?.[0]?.location.split(",")[3],
+          cidade: user.addresses?.[0]?.location.split(",")[2],
+          numero: user.addresses?.[0]?.complement || "",
+          nomePet: "",
+          especiePet: "",
+          racaPet: "",
+          portePet: "",
+          pesoPet: "",
+          nascimentoPet: "",
+          sexoPet: "",
+        });
       })
-      setPets(PetsFormatados);
-      console.log(PetsFormatados)
-    })
-    .catch(err => console.error("Erro ao buscar pets:", err));
-}, []);
+      .catch(err => console.error("Erro ao buscar usuário:", err));
+
+
+    // busca os pets do usuário
+    petService.listar_meus_pets()
+      .then(res => {
+        const meusPets = res;
+        const PetsFormatados = meusPets.map((pet) => {
+          return {
+            ...pet,
+            size: traduzirPorte(pet.size), //conversão para melhor exibição 
+            species: traduzirEspecie(pet.species)
+          }
+
+        })
+        setPets(PetsFormatados);
+        console.log(PetsFormatados)
+      })
+      .catch(err => console.error("Erro ao buscar pets:", err));
+  }, []);
 
   const [formEditar, setFormEditar] = useState({});
 
@@ -171,12 +171,12 @@ export default function MinhaConta() {
   }
 
   function abrirModalEditar() {
-  if (dados) {
-    setFormEditar(dados);
+    if (dados) {
+      setFormEditar(dados);
+    }
+    setAbaEditar("pessoal");
+    setModalEditar(true);
   }
-  setAbaEditar("pessoal");
-  setModalEditar(true);
-}
   function atualizarCampo(e) {
     setFormEditar({
       ...formEditar,
@@ -184,10 +184,35 @@ export default function MinhaConta() {
     });
   }
 
-  function salvarAlteracoes(e) {
+  async function salvarAlteracoes(e) {
     e.preventDefault();
-    setDados(formEditar);
-    setModalEditar(false);
+
+    const cpf = localStorage.getItem("userCpf");
+
+    const body = {
+      name: formEditar.nome,
+      email: formEditar.email,
+      contact: {
+        name: formEditar.nome,
+        number: formEditar.telefone,
+      },
+      address: {
+        type: "Casa",
+        cep: formEditar.cep,
+        location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
+        complement: formEditar.numero,
+      },
+    };
+
+    try {
+      await userService.updateUser(cpf, body);
+      setDados(formEditar);
+      setModalEditar(false);
+      alert("Dados atualizados com sucesso!");
+    } catch (err) {
+      console.error("Erro ao atualizar:", err);
+      alert(err.response?.data?.error || "Erro ao atualizar dados.");
+    }
   }
 
   function sair() {
@@ -414,10 +439,10 @@ export default function MinhaConta() {
 
                   <span
                     className={`agendamento-badge ${item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
-                          ? "aguardando"
-                          : "agendado"
+                      ? "concluido"
+                      : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
                       }`}
                   >
                     {item.status}
@@ -610,10 +635,10 @@ export default function MinhaConta() {
                   </p>
                   <span
                     className={`agend-status ${item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
-                          ? "aguardando"
-                          : "agendado"
+                      ? "concluido"
+                      : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
                       }`}
                   >
                     {item.status}
@@ -854,7 +879,6 @@ export default function MinhaConta() {
                 <button
                   type="submit"
                   className="btn-salvar"
-                  onClick={handleSaveUser}
                 >
                   Salvar
                 </button>
