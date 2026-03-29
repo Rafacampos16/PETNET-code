@@ -81,13 +81,14 @@ const Clientes = () => {
             nome: user.name,
             cpf: user.cpf,
             email: user.email,
-            telefone: user.contacts?.[0]?.number,
-            endereco: user.addresses?.[0]?.location.split(",")[0],
+            telefone: user.contacts?.[0]?.number || "--",
+            endereco: user.addresses?.[0]?.location.split(",")[0]?.trim(),
             numero: user.addresses?.[0]?.complement,
-            bairro: user.addresses?.[0]?.location.split(",")[1],
+            bairro: user.addresses?.[0]?.location.split(",")[1]?.trim(),
+
             cep: user.addresses?.[0]?.cep,
-            cidade: user.addresses?.[0]?.location.split(",")[2],
-            estado: user.addresses?.[0]?.location.split(",")[3],
+            cidade: user.addresses?.[0]?.location.split(",")[2]?.trim() || "--",
+            estado: user.addresses?.[0]?.location.split(",")[3]?.trim() || "--",
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
               tipo: pet.species,
@@ -138,7 +139,7 @@ const Clientes = () => {
       },
       address: {
         type: "Casa",
-        cep: clienteEditando.cep,
+        cep: clienteEditando.cep?.replace(/\D/g, ""),
         location: `${clienteEditando.endereco}, ${clienteEditando.bairro}, ${clienteEditando.cidade}, ${clienteEditando.estado}`,
         complement: clienteEditando.numero,
       },

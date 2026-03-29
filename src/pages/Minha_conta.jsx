@@ -284,17 +284,22 @@ export default function MinhaConta() {
             <span>Pet em destaque</span>
           </div>
 
+
+
           <h3>{pets[0]?.name || "Nenhum pet cadastrado"}</h3>
 
-          <div className="pet-highlight-tags">
-            <span>{pets[0]?.species || "Nenhum pet cadastrado"}</span>
-            <span>{pets[0]?.breed || "Nenhum pet cadastrado"}</span>
-            <span>{pets[0]?.size || "Nenhum pet cadastrado"}</span>
-          </div>
+          {pets.length > 0 && (
+            <>
+            <div className="pet-highlight-tags">
+              <span>{pets[0].species}</span>
+              <span>{pets[0].breed}</span>
+              <span>{pets[0].size}</span>
+            </div>
+            <p>Peso: <strong>{pets[0]?.weight} kg</strong></p>
+            </>
+          )}
 
-          <p>
-            Peso: <strong>{pets[0]?.weight || "Nenhum pet cadastrado"} kg</strong>
-          </p>
+          
         </div>
       </div>
 
