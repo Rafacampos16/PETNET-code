@@ -107,7 +107,7 @@ function Pets() {
     }
 
     try {
-      const user_cpf = "58389179890";
+      const user_cpf = localStorage.getItem("userCpf");
 
       const speciesMap = {
         CACHORRO: "dog",
@@ -397,7 +397,7 @@ function Pets() {
                             <FiUploadCloud size={42} />
                             <span>CARREGUE UMA FOTO DO SEU PET AQUI</span>
                             <small>PNG, JPG ou JPEG</small>
-                          </div>
+                          </div>              
                         </label>
                       )}
                     </div>

@@ -11,6 +11,11 @@ const petService = {
     return res.data;
   },
 
+  listar_meus_pets: async () => {
+    const res = await api.get("pets/meus-pets")
+    return res.data;
+  },
+
   buscarPorId: async (id) => {
     const res = await api.get(`/pets/${id}`);
     return res.data;

@@ -11,6 +11,8 @@ import {
   FiUser,
 } from "react-icons/fi";
 import "../styles/clientes.css";
+import { userService } from "../services/userService";
+import petService from "../services/petService";
 
 const PetsExpand = ({ data }) => {
   if (!data.pets || data.pets.length === 0) {
@@ -59,86 +61,54 @@ const Clientes = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
 
   useEffect(() => {
-    const fakeClientes = [
-      {
-        id: 1,
-        nome: "Rafaela Campos",
-        email: "rafaela.campos@email.com",
-        cpf: "123.456.789-00",
-        telefone: "(12) 99123-4567",
-        endereco: "Rua das Flores",
-        numero: "120",
-        bairro: "Centro",
-        cidade: "Guaratinguetá",
-        estado: "SP",
-        cep: "12500-000",
-        pets: [
-          { nome: "Thor", tipo: "Cachorro", raca: "Golden Retriever" },
-          { nome: "Luna", tipo: "Gato", raca: "Siamês" },
-        ],
-      },
-      {
-        id: 2,
-        nome: "Carlos Silva",
-        email: "carlos.silva@email.com",
-        cpf: "987.654.321-00",
-        telefone: "(11) 98888-1111",
-        endereco: "Av Paulista",
-        numero: "1500",
-        bairro: "Bela Vista",
-        cidade: "São Paulo",
-        estado: "SP",
-        cep: "01310-200",
-        pets: [{ nome: "Rex", tipo: "Cachorro", raca: "Pastor Alemão" }],
-      },
-      {
-        id: 3,
-        nome: "Marina Souza",
-        email: "marina.souza@email.com",
-        cpf: "222.333.444-55",
-        telefone: "(11) 97777-8888",
-        endereco: "Rua Campinas",
-        numero: "340",
-        bairro: "Centro",
-        cidade: "Campinas",
-        estado: "SP",
-        cep: "13010-000",
-        pets: [{ nome: "Mimi", tipo: "Gato", raca: "Persa" }],
-      },
-      {
-        id: 4,
-        nome: "João Pereira",
-        email: "joao.pereira@email.com",
-        cpf: "111.222.333-44",
-        telefone: "(12) 99666-5555",
-        endereco: "Rua da Serra",
-        numero: "98",
-        bairro: "Independência",
-        cidade: "Taubaté",
-        estado: "SP",
-        cep: "12010-000",
-        pets: [{ nome: "Mel", tipo: "Cachorro", raca: "Shih-Tzu" }],
-      },
-      {
-        id: 5,
-        nome: "Fernanda Lima",
-        email: "fernanda.lima@email.com",
-        cpf: "555.666.777-88",
-        telefone: "(21) 98877-6655",
-        endereco: "Av Atlântica",
-        numero: "250",
-        bairro: "Copacabana",
-        cidade: "Rio de Janeiro",
-        estado: "RJ",
-        cep: "22070-000",
-        pets: [
-          { nome: "Nina", tipo: "Gato", raca: "Persa" },
-          { nome: "Bob", tipo: "Cachorro", raca: "Poodle" },
-        ],
-      },
-    ];
+    const carregar = async () => {
+      try {
+        const responseUsuarios = await userService.listUsers();
+        const responsePets = await petService.listar();
+        console.log("responseUsuarios:", responseUsuarios);
+        console.log("responsePets:", responsePets);
 
-    setClientes(fakeClientes);
+        const usuarios = responseUsuarios.data;
+        const pets = responsePets;
+
+        const dadosForm = usuarios.map((user) => {
+          const petsDoUsuario = pets.filter(
+            (pet) => pet.user_cpf === user.cpf
+          );
+
+          return {
+            id: user.cpf,
+            nome: user.name,
+            cpf: user.cpf,
+            email: user.email,
+            telefone: user.contacts?.[0]?.number || "--",
+            endereco: user.addresses?.[0]?.location.split(",")[0]?.trim(),
+            numero: user.addresses?.[0]?.complement,
+            bairro: user.addresses?.[0]?.location.split(",")[1]?.trim(),
+
+            cep: user.addresses?.[0]?.cep,
+            cidade: user.addresses?.[0]?.location.split(",")[2]?.trim() || "--",
+            estado: user.addresses?.[0]?.location.split(",")[3]?.trim() || "--",
+            pets: petsDoUsuario.map((pet) => ({
+              nome: pet.name,
+              tipo: pet.species,
+              raca: pet.breed,
+            })),
+          };
+        });
+
+        if (Array.isArray(usuarios) && usuarios.length > 0) {
+          setClientes(dadosForm);
+        } else {
+          setClientes([]);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar usuários:", err);
+        setClientes([]);
+      }
+    };
+
+    carregar();
   }, []);
 
   const abrirModal = (cliente) => {
@@ -159,23 +129,42 @@ const Clientes = () => {
     });
   };
 
-  const salvarEdicao = () => {
-    const novosClientes = clientes.map((c) => {
-      if (c.id === clienteEditando.id) {
-        return clienteEditando;
-      }
-      return c;
-    });
+  const salvarEdicao = async () => {
+    const body = {
+      name: clienteEditando.nome,
+      email: clienteEditando.email,
+      contact: {
+        name: clienteEditando.nome,
+        number: clienteEditando.telefone,
+      },
+      address: {
+        type: "Casa",
+        cep: clienteEditando.cep?.replace(/\D/g, ""),
+        location: `${clienteEditando.endereco}, ${clienteEditando.bairro}, ${clienteEditando.cidade}, ${clienteEditando.estado}`,
+        complement: clienteEditando.numero,
+      },
+    };
 
-    setClientes(novosClientes);
-    setClienteSelecionado(clienteEditando);
-    setModoEdicao(false);
+    try {
+      await userService.updateUser(clienteEditando.cpf, body);
+      setClientes(clientes.map(c => c.id === clienteEditando.id ? clienteEditando : c));
+      setClienteSelecionado(clienteEditando);
+      setModoEdicao(false);
+      alert("Cliente atualizado com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao atualizar cliente.");
+    }
   };
 
-  const excluirCliente = (id) => {
-    const novos = clientes.filter((c) => c.id !== id);
-    setClientes(novos);
-    fecharModal();
+  const excluirCliente = async (id) => {
+    try {
+      await userService.deleteUser(id);
+      setClientes(clientes.filter(c => c.id !== id));
+      fecharModal();
+      alert("Cliente excluído com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao excluir cliente.");
+    }
   };
 
   const cidadesUnicas = [...new Set(clientes.map((c) => c.cidade))].sort();

@@ -6,74 +6,6 @@ import PetImg from "../assets/images/cao.png";
 import PetImg2 from "../assets/images/gato.png";
 import petService from "../services/petService";
 
-const mockPets = [
-  {
-    id: 1,
-    name: "Thor",
-    species: "Cachorro",
-    breed: "Golden Retriever",
-    size: "Grande",
-    weight: "32 kg",
-    birth_date: "12/05/2020",
-    sex: "Macho",
-    observations: "Pet dócil e muito ativo. Gosta bastante de brincar.",
-    user_cpf: "123.456.789-00",
-    photo: "",
-  },
-  {
-    id: 2,
-    name: "Luna",
-    species: "Gato",
-    breed: "Siamês",
-    size: "Pequeno",
-    weight: "4 kg",
-    birth_date: "03/09/2021",
-    sex: "Fêmea",
-    observations: "Mais assustada no início, mas se adapta rápido.",
-    user_cpf: "123.456.789-00",
-    photo: "",
-  },
-  {
-    id: 3,
-    name: "Rex",
-    species: "Cachorro",
-    breed: "Pastor Alemão",
-    size: "Grande",
-    weight: "35 kg",
-    birth_date: "21/01/2019",
-    sex: "Macho",
-    observations: "Precisa de atenção com alimentação.",
-    user_cpf: "987.654.321-00",
-    photo: "",
-  },
-  {
-    id: 4,
-    name: "Mimi",
-    species: "Gato",
-    breed: "Persa",
-    size: "Pequeno",
-    weight: "5 kg",
-    birth_date: "14/11/2022",
-    sex: "Fêmea",
-    observations: "",
-    user_cpf: "222.333.444-55",
-    photo: "",
-  },
-  {
-    id: 5,
-    name: "Mel",
-    species: "Cachorro",
-    breed: "Shih-Tzu",
-    size: "Pequeno",
-    weight: "7 kg",
-    birth_date: "08/07/2021",
-    sex: "Fêmea",
-    observations: "Tem alergia a alguns produtos de banho.",
-    user_cpf: "111.222.333-44",
-    photo: "",
-  },
-];
-
 const ExpandedPetInfo = ({ data }) => {
   return (
     <div className="pet-expand">
@@ -102,6 +34,28 @@ const ExpandedPetInfo = ({ data }) => {
   );
 };
 
+export const traduzirPorte = (size) => {
+  switch (size) {
+    case "S": return "Pequeno";
+    case "M": return "Médio";
+    case "L": return "Grande";
+    default: return size;
+  }
+};
+
+const formatarData = (data) => {
+  if (!data) return "";
+  return new Date(data).toLocaleDateString("pt-BR");
+};
+
+const traduzirSexo = (sex) => {
+  return sex === "M" ? "Macho" : "Fêmea";
+};
+
+export const traduzirEspecie = (species) => {
+  return species === "dog" ? "Cachorro" : "Gato";
+};
+
 const Pets_cadastrados = () => {
   const [pets, setPets] = useState([]);
   const [search, setSearch] = useState("");
@@ -109,18 +63,40 @@ const Pets_cadastrados = () => {
   const [porteFiltro, setPorteFiltro] = useState("");
 
   useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
     const carregar = async () => {
       try {
-        const dados = await petService.listar();
+        let dados = [];
+        //Se for admin chama função para listar todos os pets cadastrados no sistema, caso contrário, somente os pets do cliente cadastrado
+        if(isAdmin) { 
+           dados = await petService.listar();
+        } else {
+           dados = await petService.listar_meus_pets();
+        }
 
         if (Array.isArray(dados) && dados.length > 0) {
-          setPets(dados);
+          const petsFormatados = dados.map((pet) => {
+            return {
+              id: pet.id,
+              name: pet.name,
+              species: traduzirEspecie(pet.species),
+              breed: pet.breed,
+              size: traduzirPorte(pet.size),
+              weight: `${pet.weight} kg`,
+              birth_date: formatarData(pet.birth_date),
+              sex: traduzirSexo(pet.sex),
+              observations: pet.observations,
+              user_cpf: pet.user_cpf,
+              photo: pet.picture_blob || "",
+            }
+          })
+          setPets(petsFormatados);
         } else {
-          setPets(mockPets);
+          setPets([]);
         }
       } catch (err) {
         console.error("Erro ao carregar pets:", err);
-        setPets(mockPets);
+        setPets([]);
       }
     };
 

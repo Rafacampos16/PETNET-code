@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/minha_conta.css";
 import SinoIcon from "../assets/icons/sininho.png";
 import SinoIconHover from "../assets/icons/sininho-h.png";
@@ -20,6 +20,10 @@ import {
   User,
   Heart,
 } from "lucide-react";
+
+import { traduzirPorte, traduzirEspecie } from "./Pets_cadastrados";
+import { userService } from "../services/userService";
+import petService from "../services/petService";
 
 export default function MinhaConta() {
   const [foto, setFoto] = useState(null);
@@ -45,27 +49,58 @@ export default function MinhaConta() {
   const [receberLembretes, setReceberLembretes] = useState(true);
   const [receberPromocoes, setReceberPromocoes] = useState(false);
 
-  const [dados, setDados] = useState({
-    nome: "Mariana Oliveira Silva",
-    email: "marina.oliveira@gmail.com",
-    telefone: "(12) 98876-4321",
-    endereco: "Rua das Orquídeas",
-    bairro: "Centro",
-    cep: "12500-000",
-    estado: "SP",
-    cidade: "Guaratinguetá",
-    numero: "245",
+  const [dados, setDados] = useState(null);
 
-    nomePet: "Luna",
-    especiePet: "Cachorro",
-    racaPet: "Poodle",
-    portePet: "Pequeno",
-    pesoPet: "6",
-    nascimentoPet: "2021-04-10",
-    sexoPet: "Fêmea",
-  });
+  const [pets, setPets] = useState([]);
+  useEffect(() => {
+    const cpf = localStorage.getItem("userCpf");
 
-  const [formEditar, setFormEditar] = useState(dados);
+    if (!cpf) return;
+
+    userService.showUser(cpf)
+      .then(res => {
+        const user = res.data;
+        setDados({
+          nome: user.name,
+          email: user.email,
+          telefone: user.contacts?.[0]?.number || "",
+          endereco: user.addresses?.[0]?.location.split(",")[0] || "",
+          bairro: user.addresses?.[0]?.location.split(",")[1],
+          cep: user.addresses?.[0]?.cep || "",
+          estado: user.addresses?.[0]?.location.split(",")[3],
+          cidade: user.addresses?.[0]?.location.split(",")[2],
+          numero: user.addresses?.[0]?.complement || "",
+          nomePet: "",
+          especiePet: "",
+          racaPet: "",
+          portePet: "",
+          pesoPet: "",
+          nascimentoPet: "",
+          sexoPet: "",
+        });
+      })
+      .catch(err => console.error("Erro ao buscar usuário:", err));
+
+
+    // busca os pets do usuário
+    petService.listar_meus_pets()
+      .then(res => {
+        const meusPets = res;
+        const PetsFormatados = meusPets.map((pet) => {
+          return {
+            ...pet,
+            size: traduzirPorte(pet.size), //conversão para melhor exibição 
+            species: traduzirEspecie(pet.species)
+          }
+
+        })
+        setPets(PetsFormatados);
+        console.log(PetsFormatados)
+      })
+      .catch(err => console.error("Erro ao buscar pets:", err));
+  }, []);
+
+  const [formEditar, setFormEditar] = useState({});
 
   const agendamentos = [
     {
@@ -136,11 +171,12 @@ export default function MinhaConta() {
   }
 
   function abrirModalEditar() {
-    setFormEditar(dados);
+    if (dados) {
+      setFormEditar(dados);
+    }
     setAbaEditar("pessoal");
     setModalEditar(true);
   }
-
   function atualizarCampo(e) {
     setFormEditar({
       ...formEditar,
@@ -148,10 +184,35 @@ export default function MinhaConta() {
     });
   }
 
-  function salvarAlteracoes(e) {
+  async function salvarAlteracoes(e) {
     e.preventDefault();
-    setDados(formEditar);
-    setModalEditar(false);
+
+    const cpf = localStorage.getItem("userCpf");
+
+    const body = {
+      name: formEditar.nome,
+      email: formEditar.email,
+      contact: {
+        name: formEditar.nome,
+        number: formEditar.telefone,
+      },
+      address: {
+        type: "Casa",
+        cep: formEditar.cep?.replace(/\D/g, ""),
+        location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
+        complement: formEditar.numero,
+      },
+    };
+
+    try {
+      await userService.updateUser(cpf, body);
+      setDados(formEditar);
+      setModalEditar(false);
+      alert("Dados atualizados com sucesso!");
+    } catch (err) {
+      console.error("Erro ao atualizar:", err);
+      alert(err.response?.data?.error || "Erro ao atualizar dados.");
+    }
   }
 
   function sair() {
@@ -159,6 +220,7 @@ export default function MinhaConta() {
     window.location.href = "/conta";
   }
 
+  if (!dados) return <p>Carregando...</p>;
   return (
     <div className="minha-conta-page">
       <div className="minha-conta-header">
@@ -222,17 +284,22 @@ export default function MinhaConta() {
             <span>Pet em destaque</span>
           </div>
 
-          <h3>{dados.nomePet}</h3>
 
-          <div className="pet-highlight-tags">
-            <span>{dados.especiePet}</span>
-            <span>{dados.racaPet}</span>
-            <span>{dados.portePet}</span>
-          </div>
 
-          <p>
-            Peso: <strong>{dados.pesoPet} kg</strong>
-          </p>
+          <h3>{pets[0]?.name || "Nenhum pet cadastrado"}</h3>
+
+          {pets.length > 0 && (
+            <>
+            <div className="pet-highlight-tags">
+              <span>{pets[0].species}</span>
+              <span>{pets[0].breed}</span>
+              <span>{pets[0].size}</span>
+            </div>
+            <p>Peso: <strong>{pets[0]?.weight} kg</strong></p>
+            </>
+          )}
+
+          
         </div>
       </div>
 
@@ -263,7 +330,7 @@ export default function MinhaConta() {
           </div>
           <div>
             <h4>Pets cadastrados</h4>
-            <p>1 pet registrado</p>
+            <p> {pets.length} pet(s) registrado(s)</p>
           </div>
         </div>
       </div>
@@ -376,13 +443,12 @@ export default function MinhaConta() {
                   </div>
 
                   <span
-                    className={`agendamento-badge ${
-                      item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
+                    className={`agendamento-badge ${item.status === "Concluído"
+                      ? "concluido"
+                      : item.status === "Aguardando"
                         ? "aguardando"
                         : "agendado"
-                    }`}
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -573,13 +639,12 @@ export default function MinhaConta() {
                     {item.data} às {item.horario}
                   </p>
                   <span
-                    className={`agend-status ${
-                      item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
+                    className={`agend-status ${item.status === "Concluído"
+                      ? "concluido"
+                      : item.status === "Aguardando"
                         ? "aguardando"
                         : "agendado"
-                    }`}
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -819,7 +884,6 @@ export default function MinhaConta() {
                 <button
                   type="submit"
                   className="btn-salvar"
-                  onClick={handleSaveUser}
                 >
                   Salvar
                 </button>

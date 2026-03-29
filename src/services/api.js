@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://entire-reeba-petnet-fd3e30b7.koyeb.app/api",
+  baseURL: "http://localhost:3000/api",
+  withCredentials: true
 });
 
 export default api;
