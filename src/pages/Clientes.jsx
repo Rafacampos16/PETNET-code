@@ -59,6 +59,8 @@ const Clientes = () => {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [clienteParaExcluir, setClienteParaExcluir] = useState(null);
 
   useEffect(() => {
     const carregar = async () => {
@@ -85,7 +87,6 @@ const Clientes = () => {
             endereco: user.addresses?.[0]?.location.split(",")[0]?.trim(),
             numero: user.addresses?.[0]?.complement,
             bairro: user.addresses?.[0]?.location.split(",")[1]?.trim(),
-
             cep: user.addresses?.[0]?.cep,
             cidade: user.addresses?.[0]?.location.split(",")[2]?.trim() || "--",
             estado: user.addresses?.[0]?.location.split(",")[3]?.trim() || "--",
@@ -122,6 +123,16 @@ const Clientes = () => {
     setModalOpen(false);
   };
 
+  const abrirConfirmacaoExclusao = (cliente) => {
+    setClienteParaExcluir(cliente);
+    setConfirmDeleteOpen(true);
+  };
+
+  const fecharConfirmacaoExclusao = () => {
+    setClienteParaExcluir(null);
+    setConfirmDeleteOpen(false);
+  };
+
   const alterarCampo = (campo, valor) => {
     setClienteEditando({
       ...clienteEditando,
@@ -147,7 +158,9 @@ const Clientes = () => {
 
     try {
       await userService.updateUser(clienteEditando.cpf, body);
-      setClientes(clientes.map(c => c.id === clienteEditando.id ? clienteEditando : c));
+      setClientes(
+        clientes.map((c) => (c.id === clienteEditando.id ? clienteEditando : c))
+      );
       setClienteSelecionado(clienteEditando);
       setModoEdicao(false);
       alert("Cliente atualizado com sucesso!");
@@ -156,10 +169,13 @@ const Clientes = () => {
     }
   };
 
-  const excluirCliente = async (id) => {
+  const confirmarExclusaoCliente = async () => {
+    if (!clienteParaExcluir) return;
+
     try {
-      await userService.deleteUser(id);
-      setClientes(clientes.filter(c => c.id !== id));
+      await userService.deleteUser(clienteParaExcluir.id);
+      setClientes(clientes.filter((c) => c.id !== clienteParaExcluir.id));
+      fecharConfirmacaoExclusao();
       fecharModal();
       alert("Cliente excluído com sucesso!");
     } catch (err) {
@@ -331,7 +347,7 @@ const Clientes = () => {
         ),
       },
     ],
-    [cidadeFiltro, estadoFiltro, cidadesUnicas, estadosUnicos],
+    []
   );
 
   return (
@@ -571,9 +587,49 @@ const Clientes = () => {
 
               <button
                 className="btn-excluir"
-                onClick={() => excluirCliente(clienteSelecionado.id)}
+                onClick={() => abrirConfirmacaoExclusao(clienteSelecionado)}
               >
                 Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDeleteOpen && clienteParaExcluir && (
+        <div className="modal-overlay">
+          <div className="modal-confirm-delete">
+            <button
+              className="modal-close"
+              onClick={fecharConfirmacaoExclusao}
+            >
+              ✕
+            </button>
+
+            <div className="confirm-delete-icon">🐾</div>
+
+            <h3>Confirmar exclusão</h3>
+            <p>
+              Tem certeza que deseja excluir o cliente{" "}
+              <strong>{clienteParaExcluir.nome}</strong>?
+            </p>
+            <span className="confirm-delete-warning">
+              Essa ação não poderá ser desfeita.
+            </span>
+
+            <div className="confirm-delete-buttons">
+              <button
+                className="btn-cancelar-exclusao"
+                onClick={fecharConfirmacaoExclusao}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="btn-confirmar-exclusao"
+                onClick={confirmarExclusaoCliente}
+              >
+                Sim, excluir
               </button>
             </div>
           </div>

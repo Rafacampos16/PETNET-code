@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/Pets.css";
 import Header from "../components/Header";
 import petService from "../services/petService";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FiLock,
   FiCheck,
@@ -15,7 +15,17 @@ import {
 
 function Pets() {
   const navigate = useNavigate();
-  const usuarioLogado = localStorage.getItem("isUser") === "true";
+  const location = useLocation();
+
+  const isUser = localStorage.getItem("isUser") === "true";
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const usuarioLogado = isUser || isAdmin;
+
+  const userCpf = localStorage.getItem("userCpf");
+  const params = new URLSearchParams(location.search);
+  const forcarNovoCadastro = params.get("novo") === "true";
+
+  const [loadingPets, setLoadingPets] = useState(true);
 
   const [form, setForm] = useState({
     name: "",
@@ -30,6 +40,44 @@ function Pets() {
   });
 
   const [erros, setErros] = useState({});
+
+  useEffect(() => {
+    async function verificarPets() {
+      if (!usuarioLogado || !userCpf) {
+        setLoadingPets(false);
+        return;
+      }
+
+      if (forcarNovoCadastro) {
+        setLoadingPets(false);
+        return;
+      }
+
+      try {
+        let pets = [];
+
+        if (isAdmin) {
+          const response = await petService.listar();
+          pets = Array.isArray(response) ? response : response?.data || [];
+          pets = pets.filter((pet) => pet.user_cpf === userCpf);
+        } else {
+          const response = await petService.listar_meus_pets();
+          pets = Array.isArray(response) ? response : response?.data || [];
+        }
+
+        if (pets.length > 0) {
+          navigate("/meus-pets");
+          return;
+        }
+      } catch (error) {
+        console.error("Erro ao verificar pets:", error);
+      } finally {
+        setLoadingPets(false);
+      }
+    }
+
+    verificarPets();
+  }, [usuarioLogado, userCpf, isAdmin, forcarNovoCadastro, navigate]);
 
   function resetForm() {
     setForm({
@@ -107,8 +155,6 @@ function Pets() {
     }
 
     try {
-      const user_cpf = localStorage.getItem("userCpf");
-
       const speciesMap = {
         CACHORRO: "dog",
         GATO: "cat",
@@ -134,21 +180,20 @@ function Pets() {
         weight: Number(form.weight),
         birth_date: new Date(form.birth_date).toISOString(),
         sex: sexMap[form.sex],
-        user_cpf: user_cpf,
+        user_cpf: userCpf,
         observations: form.observations,
       };
-
-      console.log("BODY FINAL MAPEADO ===>", data);
 
       const response = await petService.criar(data);
       console.log("SUCESSO:", response);
       alert("Pet cadastrado com sucesso!");
 
       resetForm();
+      navigate("/meus-pets");
     } catch (erro) {
       console.error("ERRO COMPLETO ===> ", erro);
       console.error("ERRO DATA ===> ", erro.response?.data);
-      alert("Erro ao cadastrar o pet.");
+      alert(erro.response?.data?.error || "Erro ao cadastrar o pet.");
     }
   };
 
@@ -217,6 +262,12 @@ function Pets() {
             </div>
           </div>
         </div>
+      ) : loadingPets ? (
+        <div className="pets-page">
+          <div className="pets-container">
+            <div className="pets-loading-card">Carregando os pets...</div>
+          </div>
+        </div>
       ) : (
         <div className="pets-page">
           <div className="pets-container">
@@ -233,7 +284,9 @@ function Pets() {
               <div className="pets-card-top">
                 <div>
                   <h2>Informações do pet</h2>
-                  <p>Todos os campos marcados como obrigatórios devem ser preenchidos.</p>
+                  <p>
+                    Todos os campos marcados como obrigatórios devem ser preenchidos.
+                  </p>
                 </div>
 
                 <div className="pets-top-tags">
@@ -271,8 +324,8 @@ function Pets() {
                       className={erros.species ? "input-erro" : ""}
                     >
                       <option value="">Escolha a espécie</option>
-                      <option value="CACHORRO">CACHORRO</option>
-                      <option value="GATO">GATO</option>
+                      <option value="CACHORRO">Cachorro</option>
+                      <option value="GATO">Gato</option>
                     </select>
 
                     <label>RAÇA</label>
@@ -299,9 +352,10 @@ function Pets() {
                           className={erros.size ? "input-erro" : ""}
                         >
                           <option value="">Escolha o porte</option>
-                          <option value="PEQUENO">PEQUENO</option>
-                          <option value="MEDIO">MEDIO</option>
-                          <option value="GRANDE">GRANDE</option>
+                          <option value="PEQUENO">Pequeno</option>
+                          <option value="MEDIO">Médio</option>
+                          <option value="GRANDE">Grande</option>
+                          <option value="GIGANTE">Gigante </option>
                         </select>
                       </div>
 
@@ -330,7 +384,11 @@ function Pets() {
                             name="birth_date"
                             onChange={handleChange}
                             value={form.birth_date}
-                            className={erros.birth_date ? "input-erro input-with-icon" : "input-with-icon"}
+                            className={
+                              erros.birth_date
+                                ? "input-erro input-with-icon"
+                                : "input-with-icon"
+                            }
                           />
                         </div>
                       </div>
@@ -344,8 +402,8 @@ function Pets() {
                           className={erros.sex ? "input-erro" : ""}
                         >
                           <option value="">Selecione</option>
-                          <option value="FEMEA">FÊMEA</option>
-                          <option value="MACHO">MACHO</option>
+                          <option value="FEMEA">Fêmea</option>
+                          <option value="MACHO">Macho</option>
                         </select>
                       </div>
                     </div>
@@ -397,7 +455,7 @@ function Pets() {
                             <FiUploadCloud size={42} />
                             <span>CARREGUE UMA FOTO DO SEU PET AQUI</span>
                             <small>PNG, JPG ou JPEG</small>
-                          </div>              
+                          </div>
                         </label>
                       )}
                     </div>
@@ -423,6 +481,7 @@ function Pets() {
         </div>
       )}
 
+      <Footer />
     </>
   );
 }
