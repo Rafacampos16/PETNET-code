@@ -198,7 +198,7 @@ export default function MinhaConta() {
       },
       address: {
         type: "Casa",
-        cep: formEditar.cep,
+        cep: formEditar.cep?.replace(/\D/g, ""),
         location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
         complement: formEditar.numero,
       },
