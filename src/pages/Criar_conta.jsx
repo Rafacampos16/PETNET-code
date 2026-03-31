@@ -71,7 +71,7 @@ export default function Cadastro() {
   const regraNumero = /\d/.test(senha);
 
   function validarSenha() {
-    if (!regraTamanho || !regraMaiuscula || !regraNumero || regraMinuscula) {
+    if (!regraTamanho || !regraMaiuscula || !regraNumero || !regraMinuscula) {
       setErroSenha("Senha inválida. Verifique os requisitos.");
       return false;
     }
