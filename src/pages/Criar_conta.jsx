@@ -67,10 +67,11 @@ export default function Cadastro() {
 
   const regraTamanho = senha.length >= 8;
   const regraMaiuscula = /[A-Z]/.test(senha);
+  const regraMinuscula = /[a-z]/.test(senha);
   const regraNumero = /\d/.test(senha);
 
   function validarSenha() {
-    if (!regraTamanho || !regraMaiuscula || !regraNumero) {
+    if (!regraTamanho || !regraMaiuscula || !regraNumero || regraMinuscula) {
       setErroSenha("Senha inválida. Verifique os requisitos.");
       return false;
     }
@@ -368,13 +369,17 @@ export default function Cadastro() {
                         <FiCheckCircle size={14} />
                         Mínimo 8 caracteres
                       </li>
+                      <li className={regraNumero ? "validado" : "invalido"}>
+                        <FiCheckCircle size={14} />
+                        Número
+                      </li>
                       <li className={regraMaiuscula ? "validado" : "invalido"}>
                         <FiCheckCircle size={14} />
                         Letra maiúscula
                       </li>
-                      <li className={regraNumero ? "validado" : "invalido"}>
+                       <li className={regraMinuscula ? "validado" : "invalido"}>
                         <FiCheckCircle size={14} />
-                        Número
+                        Letra minúscula
                       </li>
                     </ul>
                   </div>

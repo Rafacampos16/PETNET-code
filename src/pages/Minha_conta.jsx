@@ -21,7 +21,6 @@ import {
   Heart,
 } from "lucide-react";
 
-import { traduzirPorte, traduzirEspecie } from "./Pets_cadastrados";
 import { userService } from "../services/userService";
 import petService from "../services/petService";
 
@@ -50,57 +49,12 @@ export default function MinhaConta() {
   const [receberPromocoes, setReceberPromocoes] = useState(false);
 
   const [dados, setDados] = useState(null);
-
-  const [pets, setPets] = useState([]);
-  useEffect(() => {
-    const cpf = localStorage.getItem("userCpf");
-
-    if (!cpf) return;
-
-    userService.showUser(cpf)
-      .then(res => {
-        const user = res.data;
-        setDados({
-          nome: user.name,
-          email: user.email,
-          telefone: user.contacts?.[0]?.number || "",
-          endereco: user.addresses?.[0]?.location.split(",")[0] || "",
-          bairro: user.addresses?.[0]?.location.split(",")[1],
-          cep: user.addresses?.[0]?.cep || "",
-          estado: user.addresses?.[0]?.location.split(",")[3],
-          cidade: user.addresses?.[0]?.location.split(",")[2],
-          numero: user.addresses?.[0]?.complement || "",
-          nomePet: "",
-          especiePet: "",
-          racaPet: "",
-          portePet: "",
-          pesoPet: "",
-          nascimentoPet: "",
-          sexoPet: "",
-        });
-      })
-      .catch(err => console.error("Erro ao buscar usuário:", err));
-
-
-    // busca os pets do usuário
-    petService.listar_meus_pets()
-      .then(res => {
-        const meusPets = res;
-        const PetsFormatados = meusPets.map((pet) => {
-          return {
-            ...pet,
-            size: traduzirPorte(pet.size), //conversão para melhor exibição 
-            species: traduzirEspecie(pet.species)
-          }
-
-        })
-        setPets(PetsFormatados);
-        console.log(PetsFormatados)
-      })
-      .catch(err => console.error("Erro ao buscar pets:", err));
-  }, []);
-
   const [formEditar, setFormEditar] = useState({});
+  const [pets, setPets] = useState([]);
+  const [petSelecionadoId, setPetSelecionadoId] = useState("");
+  const [petEmEdicaoId, setPetEmEdicaoId] = useState("");
+
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   const agendamentos = [
     {
@@ -135,9 +89,318 @@ export default function MinhaConta() {
     },
   ];
 
-  const handleSaveUser = () => {
-    alert("Dados atualizados com sucesso!");
-  };
+  function traduzirEspecie(species) {
+    if (species === "dog") return "Cachorro";
+    if (species === "cat") return "Gato";
+    return "";
+  }
+
+  function traduzirPorte(size) {
+    if (size === "S") return "Pequeno";
+    if (size === "M") return "Médio";
+    if (size === "L") return "Grande";
+    if (size === "G") return "Gigante";
+    return "";
+  }
+
+  function traduzirSexo(sex) {
+    if (sex === "M") return "Macho";
+    if (sex === "F") return "Fêmea";
+    return "";
+  }
+
+  function normalizarEspecie(label) {
+    if (label === "Cachorro") return "dog";
+    if (label === "Gato") return "cat";
+    return label;
+  }
+
+  function normalizarPorte(label) {
+    if (label === "Pequeno") return "S";
+    if (label === "Médio" || label === "Medio") return "M";
+    if (label === "Grande") return "L";
+    if (label === "Gigante") return "G";
+    return label;
+  }
+
+  function normalizarSexo(label) {
+    if (label === "Macho") return "M";
+    if (label === "Fêmea" || label === "Femea") return "F";
+    return label;
+  }
+
+  function preencherDadosPetNaTela(pet) {
+    if (!pet) return;
+
+    setDados((prev) => ({
+      ...(prev || {}),
+      nomePet: pet.name || "",
+      especiePet: traduzirEspecie(pet.species),
+      racaPet: pet.breed || "",
+      portePet: traduzirPorte(pet.size),
+      pesoPet: pet.weight || "",
+      nascimentoPet: pet.birth_date
+        ? new Date(pet.birth_date).toLocaleDateString("pt-BR")
+        : "",
+      sexoPet: traduzirSexo(pet.sex),
+    }));
+  }
+
+  useEffect(() => {
+    const cpf = localStorage.getItem("userCpf");
+    if (!cpf) return;
+
+    async function carregarDados() {
+      try {
+        const resUser = await userService.showUser(cpf);
+        const user = resUser.data;
+
+        setDados({
+          nome: user.name,
+          email: user.email,
+          telefone: user.contacts?.[0]?.number || "",
+          endereco: user.addresses?.[0]?.location?.split(",")[0]?.trim() || "",
+          bairro: user.addresses?.[0]?.location?.split(",")[1]?.trim() || "",
+          cep: user.addresses?.[0]?.cep || "",
+          estado: user.addresses?.[0]?.location?.split(",")[3]?.trim() || "",
+          cidade: user.addresses?.[0]?.location?.split(",")[2]?.trim() || "",
+          numero: user.addresses?.[0]?.complement || "",
+          nomePet: "",
+          especiePet: "",
+          racaPet: "",
+          portePet: "",
+          pesoPet: "",
+          nascimentoPet: "",
+          sexoPet: "",
+        });
+
+        const resPets = await petService.listar_meus_pets();
+        const meusPets = Array.isArray(resPets) ? resPets : resPets?.data || [];
+
+        setPets(meusPets);
+
+        if (meusPets.length > 0) {
+          const primeiroPet = meusPets[0];
+          setPetSelecionadoId(primeiroPet.id);
+          setPetEmEdicaoId(primeiroPet.id);
+
+          setDados((prev) => ({
+            ...(prev || {}),
+            nome: user.name,
+            email: user.email,
+            telefone: user.contacts?.[0]?.number || "",
+            endereco:
+              user.addresses?.[0]?.location?.split(",")[0]?.trim() || "",
+            bairro:
+              user.addresses?.[0]?.location?.split(",")[1]?.trim() || "",
+            cep: user.addresses?.[0]?.cep || "",
+            estado:
+              user.addresses?.[0]?.location?.split(",")[3]?.trim() || "",
+            cidade:
+              user.addresses?.[0]?.location?.split(",")[2]?.trim() || "",
+            numero: user.addresses?.[0]?.complement || "",
+            nomePet: primeiroPet.name || "",
+            especiePet: traduzirEspecie(primeiroPet.species),
+            racaPet: primeiroPet.breed || "",
+            portePet: traduzirPorte(primeiroPet.size),
+            pesoPet: primeiroPet.weight || "",
+            nascimentoPet: primeiroPet.birth_date
+              ? new Date(primeiroPet.birth_date).toLocaleDateString("pt-BR")
+              : "",
+            sexoPet: traduzirSexo(primeiroPet.sex),
+          }));
+        }
+      } catch (err) {
+        console.error("Erro ao carregar dados:", err);
+      }
+    }
+
+    carregarDados();
+  }, []);
+
+  function handleFoto(e) {
+    const file = e.target.files[0];
+    if (file) setFoto(file);
+  }
+
+  function abrirModalEditar() {
+    if (dados) {
+      setFormEditar({ ...dados });
+    }
+    setAbaEditar("pessoal");
+    setModalEditar(true);
+  }
+
+  function abrirModalPet() {
+    if (pets.length > 0) {
+      const petAtual =
+        pets.find((pet) => String(pet.id) === String(petSelecionadoId)) ||
+        pets[0];
+
+      setPetEmEdicaoId(petAtual.id);
+
+      setFormEditar((prev) => ({
+        ...(prev || {}),
+        ...(dados || {}),
+        petId: petAtual.id,
+        nomePet: petAtual.name || "",
+        especiePet: traduzirEspecie(petAtual.species),
+        racaPet: petAtual.breed || "",
+        portePet: traduzirPorte(petAtual.size),
+        pesoPet: petAtual.weight || "",
+        nascimentoPet: petAtual.birth_date
+          ? new Date(petAtual.birth_date).toISOString().split("T")[0]
+          : "",
+        sexoPet: traduzirSexo(petAtual.sex),
+      }));
+    } else {
+      setFormEditar((prev) => ({
+        ...(prev || {}),
+        ...(dados || {}),
+        petId: "",
+        nomePet: "",
+        especiePet: "",
+        racaPet: "",
+        portePet: "",
+        pesoPet: "",
+        nascimentoPet: "",
+        sexoPet: "",
+      }));
+      setPetEmEdicaoId("");
+    }
+
+    setAbaEditar("pet");
+    setModalEditar(true);
+  }
+
+  function atualizarCampo(e) {
+    setFormEditar({
+      ...formEditar,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  function trocarPetSelecionado(e) {
+    const idSelecionado = e.target.value;
+    setPetEmEdicaoId(idSelecionado);
+
+    const petEscolhido = pets.find(
+      (pet) => String(pet.id) === String(idSelecionado)
+    );
+
+    if (!petEscolhido) return;
+
+    setFormEditar((prev) => ({
+      ...(prev || {}),
+      petId: petEscolhido.id,
+      nomePet: petEscolhido.name || "",
+      especiePet: traduzirEspecie(petEscolhido.species),
+      racaPet: petEscolhido.breed || "",
+      portePet: traduzirPorte(petEscolhido.size),
+      pesoPet: petEscolhido.weight || "",
+      nascimentoPet: petEscolhido.birth_date
+        ? new Date(petEscolhido.birth_date).toISOString().split("T")[0]
+        : "",
+      sexoPet: traduzirSexo(petEscolhido.sex),
+    }));
+  }
+
+  async function salvarAlteracoes(e) {
+    e.preventDefault();
+
+    const cpf = localStorage.getItem("userCpf");
+
+    try {
+      if (abaEditar === "pessoal" || abaEditar === "endereco") {
+        const body = {
+          name: formEditar.nome,
+          email: formEditar.email,
+          contact: {
+            name: formEditar.nome,
+            number: formEditar.telefone,
+          },
+          address: {
+            type: "Casa",
+            cep: formEditar.cep?.replace(/\D/g, ""),
+            location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
+            complement: formEditar.numero,
+          },
+        };
+
+        await userService.updateUser(cpf, body);
+
+        setDados((prev) => ({
+          ...prev,
+          nome: formEditar.nome,
+          email: formEditar.email,
+          telefone: formEditar.telefone,
+          endereco: formEditar.endereco,
+          bairro: formEditar.bairro,
+          cep: formEditar.cep,
+          estado: formEditar.estado,
+          cidade: formEditar.cidade,
+          numero: formEditar.numero,
+        }));
+
+        setModalEditar(false);
+        alert("Dados atualizados com sucesso!");
+        return;
+      }
+
+      if (abaEditar === "pet") {
+        if (!petEmEdicaoId) {
+          alert("Selecione um pet para editar.");
+          return;
+        }
+
+        const petAtual = pets.find(
+          (pet) => String(pet.id) === String(petEmEdicaoId)
+        );
+
+        const bodyPet = {
+          name: formEditar.nomePet,
+          species: normalizarEspecie(formEditar.especiePet),
+          breed: formEditar.racaPet,
+          size: normalizarPorte(formEditar.portePet),
+          weight: Number(formEditar.pesoPet),
+          birth_date: formEditar.nascimentoPet
+            ? new Date(formEditar.nascimentoPet).toISOString()
+            : null,
+          sex: normalizarSexo(formEditar.sexoPet),
+          observations: petAtual?.observations || "",
+          user_cpf: cpf,
+        };
+
+        await petService.atualizar(petEmEdicaoId, bodyPet);
+
+        const petsAtualizados = pets.map((pet) =>
+          String(pet.id) === String(petEmEdicaoId)
+            ? {
+                ...pet,
+                ...bodyPet,
+              }
+            : pet
+        );
+
+        setPets(petsAtualizados);
+
+        const petAtualizado = petsAtualizados.find(
+          (pet) => String(pet.id) === String(petEmEdicaoId)
+        );
+
+        if (petAtualizado) {
+          setPetSelecionadoId(petAtualizado.id);
+          preencherDadosPetNaTela(petAtualizado);
+        }
+
+        setModalEditar(false);
+        alert("Pet atualizado com sucesso!");
+      }
+    } catch (err) {
+      console.error("Erro ao atualizar:", err);
+      alert(err.response?.data?.error || "Erro ao atualizar dados.");
+    }
+  }
 
   const handleSavePassword = () => {
     alert("Senha alterada com sucesso!");
@@ -158,62 +421,11 @@ export default function MinhaConta() {
   };
 
   const { minChar, upper, number } = validatePassword(newPassword);
-
   const passwordValid = minChar && upper && number;
 
   const passwordStrength = passwordValid
     ? "Senha forte ✓"
     : "A senha deve conter: mínimo 8 caracteres, letra maiúscula e número";
-
-  function handleFoto(e) {
-    const file = e.target.files[0];
-    if (file) setFoto(file);
-  }
-
-  function abrirModalEditar() {
-    if (dados) {
-      setFormEditar(dados);
-    }
-    setAbaEditar("pessoal");
-    setModalEditar(true);
-  }
-  function atualizarCampo(e) {
-    setFormEditar({
-      ...formEditar,
-      [e.target.name]: e.target.value,
-    });
-  }
-
-  async function salvarAlteracoes(e) {
-    e.preventDefault();
-
-    const cpf = localStorage.getItem("userCpf");
-
-    const body = {
-      name: formEditar.nome,
-      email: formEditar.email,
-      contact: {
-        name: formEditar.nome,
-        number: formEditar.telefone,
-      },
-      address: {
-        type: "Casa",
-        cep: formEditar.cep?.replace(/\D/g, ""),
-        location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
-        complement: formEditar.numero,
-      },
-    };
-
-    try {
-      await userService.updateUser(cpf, body);
-      setDados(formEditar);
-      setModalEditar(false);
-      alert("Dados atualizados com sucesso!");
-    } catch (err) {
-      console.error("Erro ao atualizar:", err);
-      alert(err.response?.data?.error || "Erro ao atualizar dados.");
-    }
-  }
 
   function sair() {
     localStorage.clear();
@@ -221,15 +433,21 @@ export default function MinhaConta() {
   }
 
   if (!dados) return <p>Carregando...</p>;
+
   return (
     <div className="minha-conta-page">
       <div className="minha-conta-header">
         <div>
-          <span className="page-kicker">Área do cliente</span>
+          <span className="page-kicker">
+            {isAdmin ? "Área da gerência" : "Área do cliente"}
+          </span>
+
           <h1 className="titulo-conta">Minha conta</h1>
+
           <p className="subtitulo-conta">
-            Mantenha seu perfil atualizado e acompanhe tudo sobre você e seu pet
-            em um só lugar.
+            {isAdmin
+              ? "Mantenha seus dados de acesso e informações da gerência sempre atualizados."
+              : "Mantenha seu perfil atualizado e acompanhe tudo sobre você e seu pet em um só lugar."}
           </p>
         </div>
 
@@ -263,9 +481,15 @@ export default function MinhaConta() {
             </div>
 
             <div className="hero-info">
-              <span className="hero-badge">Tutor(a) Petnet</span>
+              <span className="hero-badge">
+                {isAdmin ? "Gerência Petnet" : "Tutor(a) Petnet"}
+              </span>
               <h2>{dados.nome}</h2>
-              <p>Conta ativa e pronta para acompanhar o cuidado do seu pet.</p>
+              <p>
+                {isAdmin
+                  ? "Conta ativa para gestão e acompanhamento administrativo da Petnet."
+                  : "Conta ativa e pronta para acompanhar o cuidado do seu pet."}
+              </p>
             </div>
           </div>
 
@@ -284,22 +508,20 @@ export default function MinhaConta() {
             <span>Pet em destaque</span>
           </div>
 
+          <h3>{dados.nomePet || "Nenhum pet cadastrado"}</h3>
 
-
-          <h3>{pets[0]?.name || "Nenhum pet cadastrado"}</h3>
-
-          {pets.length > 0 && (
+          {dados.nomePet && (
             <>
-            <div className="pet-highlight-tags">
-              <span>{pets[0].species}</span>
-              <span>{pets[0].breed}</span>
-              <span>{pets[0].size}</span>
-            </div>
-            <p>Peso: <strong>{pets[0]?.weight} kg</strong></p>
+              <div className="pet-highlight-tags">
+                <span>{dados.especiePet}</span>
+                <span>{dados.racaPet}</span>
+                <span>{dados.portePet}</span>
+              </div>
+              <p>
+                Peso: <strong>{dados.pesoPet} kg</strong>
+              </p>
             </>
           )}
-
-          
         </div>
       </div>
 
@@ -330,7 +552,7 @@ export default function MinhaConta() {
           </div>
           <div>
             <h4>Pets cadastrados</h4>
-            <p> {pets.length} pet(s) registrado(s)</p>
+            <p>{pets.length} pet(s) registrado(s)</p>
           </div>
         </div>
       </div>
@@ -377,13 +599,7 @@ export default function MinhaConta() {
           <section className="card-conta">
             <div className="card-header">
               <h3>Meu pet</h3>
-              <button
-                className="btn-link"
-                onClick={() => {
-                  setAbaEditar("pet");
-                  setModalEditar(true);
-                }}
-              >
+              <button className="btn-link" onClick={abrirModalPet}>
                 Atualizar
               </button>
             </div>
@@ -391,32 +607,32 @@ export default function MinhaConta() {
             <div className="pet-details-grid">
               <div className="pet-detail-box">
                 <label>Nome</label>
-                <span>{dados.nomePet}</span>
+                <span>{dados.nomePet || "--"}</span>
               </div>
 
               <div className="pet-detail-box">
                 <label>Espécie</label>
-                <span>{dados.especiePet}</span>
+                <span>{dados.especiePet || "--"}</span>
               </div>
 
               <div className="pet-detail-box">
                 <label>Raça</label>
-                <span>{dados.racaPet}</span>
+                <span>{dados.racaPet || "--"}</span>
               </div>
 
               <div className="pet-detail-box">
                 <label>Porte</label>
-                <span>{dados.portePet}</span>
+                <span>{dados.portePet || "--"}</span>
               </div>
 
               <div className="pet-detail-box">
                 <label>Peso</label>
-                <span>{dados.pesoPet} kg</span>
+                <span>{dados.pesoPet ? `${dados.pesoPet} kg` : "--"}</span>
               </div>
 
               <div className="pet-detail-box">
                 <label>Sexo</label>
-                <span>{dados.sexoPet}</span>
+                <span>{dados.sexoPet || "--"}</span>
               </div>
             </div>
           </section>
@@ -443,12 +659,13 @@ export default function MinhaConta() {
                   </div>
 
                   <span
-                    className={`agendamento-badge ${item.status === "Concluído"
-                      ? "concluido"
-                      : item.status === "Aguardando"
+                    className={`agendamento-badge ${
+                      item.status === "Concluído"
+                        ? "concluido"
+                        : item.status === "Aguardando"
                         ? "aguardando"
                         : "agendado"
-                      }`}
+                    }`}
                   >
                     {item.status}
                   </span>
@@ -582,10 +799,7 @@ export default function MinhaConta() {
 
               <button
                 className="acao-item"
-                onClick={() => {
-                  setAbaEditar("pet");
-                  setModalEditar(true);
-                }}
+                onClick={abrirModalPet}
                 onMouseEnter={() => setHoverEdit(true)}
                 onMouseLeave={() => setHoverEdit(false)}
               >
@@ -639,12 +853,13 @@ export default function MinhaConta() {
                     {item.data} às {item.horario}
                   </p>
                   <span
-                    className={`agend-status ${item.status === "Concluído"
-                      ? "concluido"
-                      : item.status === "Aguardando"
+                    className={`agend-status ${
+                      item.status === "Concluído"
+                        ? "concluido"
+                        : item.status === "Aguardando"
                         ? "aguardando"
                         : "agendado"
-                      }`}
+                    }`}
                   >
                     {item.status}
                   </span>
@@ -678,7 +893,7 @@ export default function MinhaConta() {
 
               <button
                 className={abaEditar === "pet" ? "tab ativa" : "tab"}
-                onClick={() => setAbaEditar("pet")}
+                onClick={abrirModalPet}
               >
                 Pet
               </button>
@@ -694,7 +909,7 @@ export default function MinhaConta() {
                     <input
                       name="nome"
                       type="text"
-                      value={formEditar.nome}
+                      value={formEditar.nome || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -704,7 +919,7 @@ export default function MinhaConta() {
                     <input
                       name="email"
                       type="email"
-                      value={formEditar.email}
+                      value={formEditar.email || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -714,7 +929,7 @@ export default function MinhaConta() {
                     <input
                       name="telefone"
                       type="text"
-                      value={formEditar.telefone}
+                      value={formEditar.telefone || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -728,7 +943,7 @@ export default function MinhaConta() {
                     <input
                       name="endereco"
                       type="text"
-                      value={formEditar.endereco}
+                      value={formEditar.endereco || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -738,7 +953,7 @@ export default function MinhaConta() {
                     <input
                       name="bairro"
                       type="text"
-                      value={formEditar.bairro}
+                      value={formEditar.bairro || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -748,7 +963,7 @@ export default function MinhaConta() {
                     <input
                       name="cep"
                       type="text"
-                      value={formEditar.cep}
+                      value={formEditar.cep || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -758,7 +973,7 @@ export default function MinhaConta() {
                     <input
                       name="estado"
                       type="text"
-                      value={formEditar.estado}
+                      value={formEditar.estado || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -768,7 +983,7 @@ export default function MinhaConta() {
                     <input
                       name="cidade"
                       type="text"
-                      value={formEditar.cidade}
+                      value={formEditar.cidade || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -778,7 +993,7 @@ export default function MinhaConta() {
                     <input
                       name="numero"
                       type="text"
-                      value={formEditar.numero}
+                      value={formEditar.numero || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -789,27 +1004,30 @@ export default function MinhaConta() {
                 <>
                   <label>
                     Nome do pet/apelido
-                    <input
-                      name="nomePet"
-                      type="text"
-                      value={formEditar.nomePet}
-                      onChange={atualizarCampo}
-                    />
+                    <select
+                      name="petId"
+                      value={petEmEdicaoId || ""}
+                      onChange={trocarPetSelecionado}
+                    >
+                      <option value="">Selecione um pet</option>
+                      {pets.map((pet) => (
+                        <option key={pet.id} value={pet.id}>
+                          {pet.name}
+                        </option>
+                      ))}
+                    </select>
                   </label>
 
                   <label>
                     Espécie
                     <select
                       name="especiePet"
-                      value={formEditar.especiePet}
+                      value={formEditar.especiePet || ""}
                       onChange={atualizarCampo}
                     >
                       <option value="">Escolha a espécie</option>
                       <option value="Cachorro">Cachorro</option>
                       <option value="Gato">Gato</option>
-                      <option value="Pássaro">Pássaro</option>
-                      <option value="Roedor">Roedor</option>
-                      <option value="Outro">Outro</option>
                     </select>
                   </label>
 
@@ -818,7 +1036,7 @@ export default function MinhaConta() {
                     <input
                       name="racaPet"
                       type="text"
-                      value={formEditar.racaPet}
+                      value={formEditar.racaPet || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -827,13 +1045,14 @@ export default function MinhaConta() {
                     Porte
                     <select
                       name="portePet"
-                      value={formEditar.portePet}
+                      value={formEditar.portePet || ""}
                       onChange={atualizarCampo}
                     >
                       <option value="">Escolha o porte</option>
                       <option value="Pequeno">Pequeno</option>
                       <option value="Médio">Médio</option>
                       <option value="Grande">Grande</option>
+                      <option value="Gigante">Gigante</option>
                     </select>
                   </label>
 
@@ -842,7 +1061,7 @@ export default function MinhaConta() {
                     <input
                       name="pesoPet"
                       type="number"
-                      value={formEditar.pesoPet}
+                      value={formEditar.pesoPet || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -852,7 +1071,7 @@ export default function MinhaConta() {
                     <input
                       name="nascimentoPet"
                       type="date"
-                      value={formEditar.nascimentoPet}
+                      value={formEditar.nascimentoPet || ""}
                       onChange={atualizarCampo}
                     />
                   </label>
@@ -861,7 +1080,7 @@ export default function MinhaConta() {
                     Sexo
                     <select
                       name="sexoPet"
-                      value={formEditar.sexoPet}
+                      value={formEditar.sexoPet || ""}
                       onChange={atualizarCampo}
                     >
                       <option value="">Selecione</option>
@@ -881,10 +1100,7 @@ export default function MinhaConta() {
                   Cancelar
                 </button>
 
-                <button
-                  type="submit"
-                  className="btn-salvar"
-                >
+                <button type="submit" className="btn-salvar">
                   Salvar
                 </button>
               </div>

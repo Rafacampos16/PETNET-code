@@ -31,20 +31,21 @@ const Header = () => {
   const isAdminPage = location.pathname.startsWith("/admin");
   const isColaboradorPage = location.pathname.startsWith("/colaborador");
 
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const isUser = localStorage.getItem("isUser") === "true";
+  const isColaborador = localStorage.getItem("isColaborador") === "true";
 
   const [petsHover, setPetsHover] = useState(false);
   const [pataHover, setPataHover] = useState(false);
   const [contaHover, setContaHover] = useState(false);
   const [homeHover, setHomeHover] = useState(false);
 
-  // Hovers da admin
   const [admPetsHover, setAdmPetsHover] = useState(false);
   const [admClientsHover, setAdmClientsHover] = useState(false);
   const [admAgendHover, setAdmAgendHover] = useState(false);
   const [admStatusHover, setAdmStatusHover] = useState(false);
   const [adminHover, setAdminHover] = useState(false);
 
-  //Hover colaborador
   const [colabAgendaHover, setColabAgendaHover] = useState(false);
   const [colabPetsHover, setColabPetsHover] = useState(false);
   const [colabStatusHover, setColabStatusHover] = useState(false);
@@ -56,28 +57,33 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="header-content">
-
-          {/* LOGO CENTRAL */}
           <div
             className="logo-center"
-            onClick={() => navigate(isAdminPage ? "/admin" : isColaboradorPage ? "/colaborador" : "/")}
+            onClick={() =>
+              navigate(
+                isAdminPage
+                  ? "/admin"
+                  : isColaboradorPage
+                    ? "/colaborador"
+                    : "/"
+              )
+            }
             style={{ cursor: "pointer" }}
           >
-            {isAdminPage ? "ADMINISTRAÇÃO" : isColaboradorPage ? "COLABORADOR" : "PETNET"}
+            {isAdminPage
+              ? "ADMINISTRAÇÃO"
+              : isColaboradorPage
+                ? "COLABORADOR"
+                : "PETNET"}
           </div>
 
-          {/* Menu Hamburger */}
           <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
             <div className={`bar ${menuOpen ? "open" : ""}`}></div>
             <div className={`bar ${menuOpen ? "open" : ""}`}></div>
             <div className={`bar ${menuOpen ? "open" : ""}`}></div>
           </div>
 
-          {/* ------- DESKTOP NAV ------- */}
           <div className={`header-right ${isAdminPage ? "admin-nav" : ""}`}>
-
-
-            {/* NAVBAR ADMIN */}
             {isAdminPage && (
               <>
                 <div
@@ -91,7 +97,9 @@ const Header = () => {
                     alt="Home"
                     className="icon-link"
                   />
-                  <span style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Home
                   </span>
                 </div>
@@ -107,7 +115,9 @@ const Header = () => {
                     alt="Administração"
                     className="icon-link"
                   />
-                  <span style={{ color: adminHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: adminHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Gerência
                   </span>
                 </div>
@@ -120,10 +130,12 @@ const Header = () => {
                 >
                   <img
                     src={admAgendHover ? AgendamentoIconHover : AgendamentoIcon}
-                    alt="Home"
+                    alt="Agendamentos"
                     className="icon-link"
                   />
-                  <span style={{ color: admAgendHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: admAgendHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Agendar
                   </span>
                 </div>
@@ -136,10 +148,12 @@ const Header = () => {
                 >
                   <img
                     src={admClientsHover ? ClienteIconHover : ClienteIcon}
-                    alt="Home"
+                    alt="Clientes"
                     className="icon-link"
                   />
-                  <span style={{ color: admClientsHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: admClientsHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Clientes
                   </span>
                 </div>
@@ -152,10 +166,12 @@ const Header = () => {
                 >
                   <img
                     src={admPetsHover ? PetsAdmIconHover : PetsAdmIcon}
-                    alt="Home"
+                    alt="Pets"
                     className="icon-link"
                   />
-                  <span style={{ color: admPetsHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: admPetsHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Pets
                   </span>
                 </div>
@@ -168,10 +184,12 @@ const Header = () => {
                 >
                   <img
                     src={admStatusHover ? StatusIconHover : StatusIcon}
-                    alt="Home"
+                    alt="Status"
                     className="icon-link"
                   />
-                  <span style={{ color: admStatusHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: admStatusHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Status
                   </span>
                 </div>
@@ -191,7 +209,9 @@ const Header = () => {
                     alt="Home"
                     className="icon-link"
                   />
-                  <span style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Home
                   </span>
                 </div>
@@ -203,11 +223,17 @@ const Header = () => {
                   onClick={() => navigate("/colaborador")}
                 >
                   <img
-                    src={colabAgendaHover ? ColaboradorIconHover : ColaboradorIcon}
+                    src={
+                      colabAgendaHover ? ColaboradorIconHover : ColaboradorIcon
+                    }
                     alt="Minha Agenda"
                     className="icon-link"
                   />
-                  <span style={{ color: colabAgendaHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{
+                      color: colabAgendaHover ? "var(--petnet-yellow)" : "white",
+                    }}
+                  >
                     Agenda
                   </span>
                 </div>
@@ -223,7 +249,11 @@ const Header = () => {
                     alt="Clientes"
                     className="icon-link"
                   />
-                  <span style={{ color: colabClientsHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{
+                      color: colabClientsHover ? "var(--petnet-yellow)" : "white",
+                    }}
+                  >
                     Clientes
                   </span>
                 </div>
@@ -239,7 +269,11 @@ const Header = () => {
                     alt="Pets"
                     className="icon-link"
                   />
-                  <span style={{ color: colabPetsHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{
+                      color: colabPetsHover ? "var(--petnet-yellow)" : "white",
+                    }}
+                  >
                     Pets
                   </span>
                 </div>
@@ -255,14 +289,17 @@ const Header = () => {
                     alt="Status"
                     className="icon-link"
                   />
-                  <span style={{ color: colabStatusHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{
+                      color: colabStatusHover ? "var(--petnet-yellow)" : "white",
+                    }}
+                  >
                     Status
                   </span>
                 </div>
               </>
             )}
 
-            {/* NAV NORMAL */}
             {!isAdminPage && !isColaboradorPage && (
               <>
                 <div
@@ -276,7 +313,9 @@ const Header = () => {
                     alt="Home"
                     className="icon-link"
                   />
-                  <span style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Home
                   </span>
                 </div>
@@ -292,7 +331,9 @@ const Header = () => {
                     alt="Serviços"
                     className="icon-link"
                   />
-                  <span style={{ color: petsHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: petsHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Serviços
                   </span>
                 </div>
@@ -304,39 +345,63 @@ const Header = () => {
                   onClick={() => navigate("/pets")}
                 >
                   <img
-                    src={pataHover ? PataIconHover : PataIcon}
+                    src={pataHover ? PetsAdmIconHover : PetsAdmIcon}
                     alt="Pets"
                     className="icon-link"
                   />
-                  <span style={{ color: pataHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: pataHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Pets
                   </span>
                 </div>
+
+                {isAdmin && (
+                  <div
+                    className="menu-item"
+                    onMouseEnter={() => setAdminHover(true)}
+                    onMouseLeave={() => setAdminHover(false)}
+                    onClick={() => navigate("/admin")}
+                  >
+                    <img
+                      src={adminHover ? AdminIconHover : AdminIcon}
+                      alt="Gerência"
+                      className="icon-link"
+                    />
+                    <span
+                      style={{
+                        color: adminHover ? "var(--petnet-yellow)" : "white",
+                      }}
+                    >
+                      Gerência
+                    </span>
+                  </div>
+                )}
 
                 <div
                   className="menu-item"
                   onMouseEnter={() => setContaHover(true)}
                   onMouseLeave={() => setContaHover(false)}
                   onClick={() => {
-                    const isUser = localStorage.getItem("isUser");
-                    const isAdmin = localStorage.getItem("isAdmin");
-
                     if (isAdmin) {
-                      navigate("/admin");
+                      navigate("/minhaconta");
+                    } else if (isColaborador) {
+                      navigate("/colaborador");
                     } else if (isUser) {
                       navigate("/minhaconta");
                     } else {
                       navigate("/conta");
                     }
                   }}
-
                 >
                   <img
                     src={contaHover ? ContaIconHover : ContaIcon}
                     alt="Conta"
                     className="icon-link"
                   />
-                  <span style={{ color: contaHover ? "var(--petnet-yellow)" : "white" }}>
+                  <span
+                    style={{ color: contaHover ? "var(--petnet-yellow)" : "white" }}
+                  >
                     Conta
                   </span>
                 </div>
@@ -367,14 +432,17 @@ const Header = () => {
                 <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
                 <span onClick={() => { navigate("/servicos"); setMenuOpen(false); }}>Serviços</span>
                 <span onClick={() => { navigate("/pets"); setMenuOpen(false); }}>Pets</span>
+
+                {isAdmin && (
+                  <span onClick={() => { navigate("/admin"); setMenuOpen(false); }}>
+                    Gerência
+                  </span>
+                )}
+
                 <span
                   onClick={() => {
-                    const isUser = localStorage.getItem("isUser");
-                    const isAdmin = localStorage.getItem("isAdmin");
-                    const isColaborador = localStorage.getItem("isColaborador");
-
                     if (isAdmin) {
-                      navigate("/admin");
+                      navigate("/minhaconta");
                     } else if (isColaborador) {
                       navigate("/colaborador");
                     } else if (isUser) {
@@ -390,7 +458,6 @@ const Header = () => {
               </>
             )}
           </div>
-
         </div>
       </div>
     </header>

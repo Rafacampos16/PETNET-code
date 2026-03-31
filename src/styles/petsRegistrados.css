@@ -346,3 +346,45 @@
     min-width: 140px;
   }
 }
+
+.pets-toolbar-right {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-add-pet-table {
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(249, 238, 124, 0.8);
+  color: #5f4d00;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(249, 238, 124, 0.25);
+  transition: 0.2s ease;
+}
+
+.btn-add-pet-table:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(249, 238, 124, 0.32);
+}
+
+@media (max-width: 768px) {
+  .pets-toolbar-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-add-pet-table {
+    width: 100%;
+    justify-content: center;
+  }
+}

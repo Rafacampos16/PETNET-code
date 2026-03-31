@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
-import { FiSearch, FiCalendar, FiUser, FiTag } from "react-icons/fi";
+import { FiSearch, FiCalendar, FiTag, FiPlus } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import "../styles/petsRegistrados.css";
 import PetImg from "../assets/images/cao.png";
 import PetImg2 from "../assets/images/gato.png";
@@ -36,10 +37,16 @@ const ExpandedPetInfo = ({ data }) => {
 
 export const traduzirPorte = (size) => {
   switch (size) {
-    case "S": return "Pequeno";
-    case "M": return "Médio";
-    case "L": return "Grande";
-    default: return size;
+    case "S":
+      return "Pequeno";
+    case "M":
+      return "Médio";
+    case "L":
+      return "Grande";
+    case "G":
+      return "Gigante"
+    default:
+      return size;
   }
 };
 
@@ -57,6 +64,7 @@ export const traduzirEspecie = (species) => {
 };
 
 const Pets_cadastrados = () => {
+  const navigate = useNavigate();
   const [pets, setPets] = useState([]);
   const [search, setSearch] = useState("");
   const [especieFiltro, setEspecieFiltro] = useState("");
@@ -64,14 +72,15 @@ const Pets_cadastrados = () => {
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("isAdmin") === "true";
+
     const carregar = async () => {
       try {
         let dados = [];
         //Se for admin chama função para listar todos os pets cadastrados no sistema, caso contrário, somente os pets do cliente cadastrado
-        if(isAdmin) { 
-           dados = await petService.listar();
+        if (isAdmin) {
+          dados = await petService.listar();
         } else {
-           dados = await petService.listar_meus_pets();
+          dados = await petService.listar_meus_pets();
         }
 
         if (Array.isArray(dados) && dados.length > 0) {
@@ -88,8 +97,9 @@ const Pets_cadastrados = () => {
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               photo: pet.picture_blob || "",
-            }
-          })
+            };
+          });
+
           setPets(petsFormatados);
         } else {
           setPets([]);
@@ -267,7 +277,10 @@ const Pets_cadastrados = () => {
         center: true,
         width: "120px",
         cell: (row) => (
-          <span className={`badge-sex ${row.sex?.toLowerCase() === "fêmea" ? "female" : "male"}`}>
+          <span
+            className={`badge-sex ${row.sex?.toLowerCase() === "fêmea" ? "female" : "male"
+              }`}
+          >
             {row.sex}
           </span>
         ),
@@ -303,36 +316,47 @@ const Pets_cadastrados = () => {
           />
         </div>
 
-        <div className="pets-filters">
-          <div className="pets-filter-group">
-            <label>Espécie</label>
-            <select
-              value={especieFiltro}
-              onChange={(e) => setEspecieFiltro(e.target.value)}
-            >
-              <option value="">Todas</option>
-              {especiesUnicas.map((especie) => (
-                <option key={especie} value={especie}>
-                  {especie}
-                </option>
-              ))}
-            </select>
+        <div className="pets-toolbar-right">
+          <div className="pets-filters">
+            <div className="pets-filter-group">
+              <label>Espécie</label>
+              <select
+                value={especieFiltro}
+                onChange={(e) => setEspecieFiltro(e.target.value)}
+              >
+                <option value="">Todas</option>
+                {especiesUnicas.map((especie) => (
+                  <option key={especie} value={especie}>
+                    {especie}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="pets-filter-group pets-filter-small">
+              <label>Porte</label>
+              <select
+                value={porteFiltro}
+                onChange={(e) => setPorteFiltro(e.target.value)}
+              >
+                <option value="">Todos</option>
+                {portesUnicos.map((porte) => (
+                  <option key={porte} value={porte}>
+                    {porte}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="pets-filter-group pets-filter-small">
-            <label>Porte</label>
-            <select
-              value={porteFiltro}
-              onChange={(e) => setPorteFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {portesUnicos.map((porte) => (
-                <option key={porte} value={porte}>
-                  {porte}
-                </option>
-              ))}
-            </select>
-          </div>
+          <button
+            type="button"
+            className="btn-add-pet-table"
+            onClick={() => navigate("/pets?novo=true")}
+          >
+            <FiPlus size={18} />
+            Cadastrar novo pet
+          </button>
         </div>
       </div>
 
