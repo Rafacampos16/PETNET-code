@@ -306,13 +306,13 @@ const Pets_cadastrados = () => {
   );
 
   if (loading) {
-    return (
-      <LoadingScreen
-        title="Carregando pets"
-        subtitle="Estamos organizando a lista de pets cadastrados."
-      />
-    );
-  }
+  return (
+    <LoadingScreen
+      title="Carregando pets"
+      subtitle="Estamos organizando a lista de pets cadastrados."
+    />
+  );
+}
 
   return (
     <div className="petsReg-container">
