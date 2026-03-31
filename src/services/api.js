@@ -1,19 +1,20 @@
-// import axios from "axios";
+ import axios from "axios";
 
-// const api = axios.create({
-//   baseURL: "http://localhost:3000/api",
-//   withCredentials: true
-// });
+ const api = axios.create({
+   baseURL: "https://petnet-backend-production.up.railway.app/api",
+   withCredentials: true
+ });
 
-// export default api;
+export default api;
 
+/*
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api", 
+  baseURL: "/api",
   withCredentials: true
 });
 
 export default api;
-
+*/
 //alterar quando for para produção, para o endereço do backend, e retirar o proxy do package.json

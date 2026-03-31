@@ -43,6 +43,8 @@ export const traduzirPorte = (size) => {
       return "Médio";
     case "L":
       return "Grande";
+    case "G":
+      return "Gigante"
     default:
       return size;
   }
