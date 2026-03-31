@@ -6,6 +6,8 @@ import "../styles/petsRegistrados.css";
 import PetImg from "../assets/images/cao.png";
 import PetImg2 from "../assets/images/gato.png";
 import petService from "../services/petService";
+import LoadingScreen from "../components/LoadingScreen";
+
 
 const ExpandedPetInfo = ({ data }) => {
   return (
@@ -69,6 +71,7 @@ const Pets_cadastrados = () => {
   const [search, setSearch] = useState("");
   const [especieFiltro, setEspecieFiltro] = useState("");
   const [porteFiltro, setPorteFiltro] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("isAdmin") === "true";
@@ -107,6 +110,8 @@ const Pets_cadastrados = () => {
       } catch (err) {
         console.error("Erro ao carregar pets:", err);
         setPets([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -299,6 +304,15 @@ const Pets_cadastrados = () => {
     ],
     []
   );
+
+  if (loading) {
+    return (
+      <LoadingScreen
+        title="Carregando pets"
+        subtitle="Estamos organizando a lista de pets cadastrados."
+      />
+    );
+  }
 
   return (
     <div className="petsReg-container">

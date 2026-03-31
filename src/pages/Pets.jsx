@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import petService from "../services/petService";
 import Footer from "../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen";
+
 import {
   FiLock,
   FiCheck,
@@ -149,7 +151,7 @@ function Pets() {
     if (faltando.length > 0) {
       alert(
         "Preencha os seguintes campos obrigatórios:\n\n- " +
-          faltando.join("\n- ")
+        faltando.join("\n- ")
       );
       return;
     }
@@ -265,7 +267,10 @@ function Pets() {
       ) : loadingPets ? (
         <div className="pets-page">
           <div className="pets-container">
-            <div className="pets-loading-card">Carregando os pets...</div>
+            <LoadingScreen
+              title="Carregando pets"
+              subtitle="Estamos buscando os dados cadastrados do seu pet."
+            />
           </div>
         </div>
       ) : (
@@ -481,7 +486,7 @@ function Pets() {
         </div>
       )}
 
-      
+
     </>
   );
 }

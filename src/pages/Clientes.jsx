@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import DataTable from "react-data-table-component";
 import pawCatIcon from "../assets/icons/paw-cat.png";
 import petClienteIcon from "../assets/icons/pet-cliente.png";
+import LoadingScreen from "../components/LoadingScreen";
+
 import {
   FiSearch,
   FiEye,
@@ -61,6 +63,8 @@ const Clientes = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [clienteParaExcluir, setClienteParaExcluir] = useState(null);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const carregar = async () => {
@@ -106,6 +110,8 @@ const Clientes = () => {
       } catch (err) {
         console.error("Erro ao carregar usuários:", err);
         setClientes([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -349,6 +355,15 @@ const Clientes = () => {
     ],
     []
   );
+
+  if (loading) {
+    return (
+      <LoadingScreen
+        title="Carregando clientes"
+        subtitle="Estamos organizando a lista de clientes cadastrados."
+      />
+    );
+  }
 
   return (
     <div className="clientes-container">

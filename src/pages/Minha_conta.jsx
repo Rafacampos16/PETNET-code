@@ -8,6 +8,8 @@ import IconEdit from "../assets/icons/edit.png";
 import IconEditHover from "../assets/icons/edit-h.png";
 import IconLogout from "../assets/icons/logout.png";
 import IconLogoutHover from "../assets/icons/logout-h.png";
+import LoadingScreen from "../components/LoadingScreen";
+
 import {
   Eye,
   EyeOff,
@@ -376,9 +378,9 @@ export default function MinhaConta() {
         const petsAtualizados = pets.map((pet) =>
           String(pet.id) === String(petEmEdicaoId)
             ? {
-                ...pet,
-                ...bodyPet,
-              }
+              ...pet,
+              ...bodyPet,
+            }
             : pet
         );
 
@@ -432,7 +434,14 @@ export default function MinhaConta() {
     window.location.href = "/conta";
   }
 
-  if (!dados) return <p>Carregando...</p>;
+  if (!dados) {
+    return (
+      <LoadingScreen
+        title="Carregando sua conta"
+        subtitle="Estamos buscando seus dados e informações dos seus pets."
+      />
+    );
+  }
 
   return (
     <div className="minha-conta-page">
@@ -659,13 +668,12 @@ export default function MinhaConta() {
                   </div>
 
                   <span
-                    className={`agendamento-badge ${
-                      item.status === "Concluído"
+                    className={`agendamento-badge ${item.status === "Concluído"
                         ? "concluido"
                         : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                    }`}
+                          ? "aguardando"
+                          : "agendado"
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -853,13 +861,12 @@ export default function MinhaConta() {
                     {item.data} às {item.horario}
                   </p>
                   <span
-                    className={`agend-status ${
-                      item.status === "Concluído"
+                    className={`agend-status ${item.status === "Concluído"
                         ? "concluido"
                         : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                    }`}
+                          ? "aguardando"
+                          : "agendado"
+                      }`}
                   >
                     {item.status}
                   </span>
