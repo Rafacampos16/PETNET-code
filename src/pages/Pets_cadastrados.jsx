@@ -57,14 +57,6 @@ const formatarData = (data) => {
   return new Date(data).toLocaleDateString("pt-BR");
 };
 
-const traduzirSexo = (sex) => {
-  return sex === "M" ? "Macho" : "Fêmea";
-};
-
-export const traduzirEspecie = (species) => {
-  return species === "dog" ? "Cachorro" : "Gato";
-};
-
 const Pets_cadastrados = () => {
   const navigate = useNavigate();
   const [pets, setPets] = useState([]);
@@ -91,12 +83,12 @@ const Pets_cadastrados = () => {
             return {
               id: pet.id,
               name: pet.name,
-              species: traduzirEspecie(pet.species),
+              species: pet.species,
               breed: pet.breed,
               size: traduzirPorte(pet.size),
               weight: `${pet.weight} kg`,
               birth_date: formatarData(pet.birth_date),
-              sex: traduzirSexo(pet.sex),
+              sex: pet.sex,
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               photo: pet.picture_blob || "",

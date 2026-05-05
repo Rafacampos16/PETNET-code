@@ -137,14 +137,14 @@ export default function MinhaConta() {
     setDados((prev) => ({
       ...(prev || {}),
       nomePet: pet.name || "",
-      especiePet: traduzirEspecie(pet.species),
+      especiePet: pet.species,
       racaPet: pet.breed || "",
-      portePet: traduzirPorte(pet.size),
+      portePet: pet.size,
       pesoPet: pet.weight || "",
       nascimentoPet: pet.birth_date
         ? new Date(pet.birth_date).toLocaleDateString("pt-BR")
         : "",
-      sexoPet: traduzirSexo(pet.sex),
+      sexoPet: pet.sex,
     }));
   }
 
@@ -202,14 +202,14 @@ export default function MinhaConta() {
               user.addresses?.[0]?.location?.split(",")[2]?.trim() || "",
             numero: user.addresses?.[0]?.complement || "",
             nomePet: primeiroPet.name || "",
-            especiePet: traduzirEspecie(primeiroPet.species),
+            especiePet: primeiroPet.species,
             racaPet: primeiroPet.breed || "",
-            portePet: traduzirPorte(primeiroPet.size),
+            portePet: primeiroPet.size,
             pesoPet: primeiroPet.weight || "",
             nascimentoPet: primeiroPet.birth_date
               ? new Date(primeiroPet.birth_date).toLocaleDateString("pt-BR")
               : "",
-            sexoPet: traduzirSexo(primeiroPet.sex),
+            sexoPet: primeiroPet.sex,
           }));
         }
       } catch (err) {
@@ -246,14 +246,14 @@ export default function MinhaConta() {
         ...(dados || {}),
         petId: petAtual.id,
         nomePet: petAtual.name || "",
-        especiePet: traduzirEspecie(petAtual.species),
+        especiePet: petAtual.species,
         racaPet: petAtual.breed || "",
-        portePet: traduzirPorte(petAtual.size),
+        portePet: petAtual.size,
         pesoPet: petAtual.weight || "",
         nascimentoPet: petAtual.birth_date
           ? new Date(petAtual.birth_date).toISOString().split("T")[0]
           : "",
-        sexoPet: traduzirSexo(petAtual.sex),
+        sexoPet: petAtual.sex,
       }));
     } else {
       setFormEditar((prev) => ({
@@ -296,14 +296,14 @@ export default function MinhaConta() {
       ...(prev || {}),
       petId: petEscolhido.id,
       nomePet: petEscolhido.name || "",
-      especiePet: traduzirEspecie(petEscolhido.species),
+      especiePet: petEscolhido.species,
       racaPet: petEscolhido.breed || "",
-      portePet: traduzirPorte(petEscolhido.size),
+      portePet: petEscolhido.size,
       pesoPet: petEscolhido.weight || "",
       nascimentoPet: petEscolhido.birth_date
         ? new Date(petEscolhido.birth_date).toISOString().split("T")[0]
         : "",
-      sexoPet: traduzirSexo(petEscolhido.sex),
+      sexoPet: petEscolhido.sex,
     }));
   }
 
