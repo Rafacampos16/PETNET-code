@@ -1,9 +1,9 @@
- import axios from "axios";
+import axios from "axios";
 
- const api = axios.create({
-   baseURL: "https://petnet-backend-production.up.railway.app/api",
-   withCredentials: true
- });
+const api = axios.create({
+  baseURL: "https://api.netcao.com.br/api",
+  withCredentials: true
+});
 
 export default api;
 
