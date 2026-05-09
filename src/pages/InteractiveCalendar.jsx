@@ -1,23 +1,46 @@
 import React from "react";
 import { DayPicker } from "react-day-picker";
-import { isBefore, startOfDay } from "date-fns";
+import {
+  addMonths,
+  endOfMonth,
+  isAfter,
+  isBefore,
+  startOfDay,
+  startOfMonth
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "react-day-picker/style.css";
 
 const InteractiveCalendar = ({
   selectedDate,
   onSelectDate,
-  horariosPorData
+  disponibilidadePorData
 }) => {
   const today = startOfDay(new Date());
+  const inicioMesAtual = startOfMonth(today);
+  const fimProximoMes = endOfMonth(addMonths(today, 1));
 
-  const datasSemHorario = Object.entries(horariosPorData)
-    .filter(([, horarios]) => horarios.length === 0)
+  const datasBloqueadas = Object.entries(disponibilidadePorData)
+    .filter(([, status]) => status === "bloqueada")
     .map(([data]) => new Date(`${data}T12:00:00`));
 
-  const datasComHorario = Object.entries(horariosPorData)
-    .filter(([, horarios]) => horarios.length > 0)
+  const datasSemHorarios = Object.entries(disponibilidadePorData)
+    .filter(([, status]) => status === "semHorarios")
     .map(([data]) => new Date(`${data}T12:00:00`));
+
+  const datasDisponiveis = Object.entries(disponibilidadePorData)
+    .filter(([, status]) => status === "disponivel")
+    .map(([data]) => new Date(`${data}T12:00:00`));
+
+  const isDataIndisponivel = (date) => {
+    const dia = startOfDay(date);
+
+    return (
+      isBefore(dia, today) ||
+      isBefore(dia, inicioMesAtual) ||
+      isAfter(dia, fimProximoMes)
+    );
+  };
 
   return (
     <div className="interactive-calendar">
@@ -28,12 +51,14 @@ const InteractiveCalendar = ({
         locale={ptBR}
         showOutsideDays
         fixedWeeks
-        disabled={(date) => isBefore(startOfDay(date), today)}
+        disabled={(date) => isDataIndisponivel(date)}
         modifiers={{
-          full: datasSemHorario,
-          available: datasComHorario
+          blocked: datasBloqueadas,
+          full: datasSemHorarios,
+          available: datasDisponiveis
         }}
         modifiersClassNames={{
+          blocked: "day-invalid",
           full: "day-full",
           available: "day-available",
           selected: "day-selected-custom"

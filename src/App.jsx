@@ -79,9 +79,7 @@ const App = () => (
         <Route
           path="/colaborador"
           element={
-            <ProtectedRoute>
               <Colaborador />
-            </ProtectedRoute>
           }
         />
       </Routes>

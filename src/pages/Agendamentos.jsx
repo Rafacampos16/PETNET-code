@@ -7,16 +7,16 @@ import Pata from "../assets/icons/pata-h.png";
 
 const SERVICOS = [
   "Banho",
-  "Banho terapeutico",
-  "Tosa Higienica",
-  "Tosa (maq. ou tesoura)",
-  "Tosa da raca",
+  "Banho terapêutico",
+  "Tosa Higiênica",
+  "Tosa (máq. ou tesoura)",
+  "Tosa da raça",
   "Corte de unhas",
   "Higiene dos ouvidos",
-  "Escovacao dental",
+  "Escovação dental",
   "Cronograma Capilar",
-  "Hidratacao Pelagem",
-  "Hidratacao Pele",
+  "Hidratação Pelagem",
+  "Hidratação Pele",
   "Teste de porosidade"
 ];
 
@@ -26,22 +26,39 @@ const PETS_POR_CLIENTE = {
   "111.222.333-44": ["Luna", "Bob"]
 };
 
-const HORARIOS_POR_DATA = {
-  "2026-03-31": ["09:00", "10:00", "11:00", "14:00", "15:00"],
-  "2026-04-09": ["08:30", "09:30", "13:00", "16:00"],
-  "2026-04-15": ["08:30", "09:30", "13:00", "16:00"],
-  "2026-04-06": ["08:30", "09:30", "13:00", "16:00"],
-  "2026-04-07": ["08:30", "09:30", "13:00", "16:00"],
-  "2026-04-08": ["08:30", "09:30", "13:00", "16:00"],
-  "2026-04-10": ["10:00", "11:30", "15:30"],
-  "2026-04-20": [],
-  "2026-04-03": [],
-  "2026-04-30": [],
-  "2026-04-01": [],
-  "2026-04-02": [],
-  "2026-04-14": [],
-  "2026-04-16": [],
-  "2026-04-22": ["09:00", "12:00", "13:30", "17:00"]
+/*
+  Status usados no calendário:
+  bloqueada = Data indisponível
+  semHorarios = Dia sem horários
+  disponivel = Horários disponíveis
+
+  Exemplo usando maio e junho de 2026,
+  que seriam o mês atual e o mês seguinte.
+*/
+
+const DISPONIBILIDADE_POR_DATA = {
+  "2026-05-09": "disponivel",
+  "2026-05-10": "bloqueada",
+  "2026-05-11": "disponivel",
+  "2026-05-12": "semHorarios",
+  "2026-05-13": "disponivel",
+  "2026-05-14": "bloqueada",
+  "2026-05-15": "disponivel",
+  "2026-05-18": "semHorarios",
+  "2026-05-20": "disponivel",
+  "2026-05-22": "disponivel",
+  "2026-05-25": "bloqueada",
+  "2026-05-28": "disponivel",
+
+  "2026-06-02": "disponivel",
+  "2026-06-04": "semHorarios",
+  "2026-06-06": "disponivel",
+  "2026-06-10": "bloqueada",
+  "2026-06-12": "disponivel",
+  "2026-06-16": "disponivel",
+  "2026-06-18": "semHorarios",
+  "2026-06-23": "disponivel",
+  "2026-06-27": "bloqueada"
 };
 
 const Agendamentos = () => {
@@ -50,7 +67,7 @@ const Agendamentos = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
   const [horaInicio, setHoraInicio] = useState("");
-  const [horaFim, setHoraFim] = useState("");
+  const [duracao, setDuracao] = useState("");
   const [observacao, setObservacao] = useState("");
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
@@ -62,13 +79,28 @@ const Agendamentos = () => {
   }, [cpf]);
 
   const selectedDateKey = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
-  const horariosDisponiveis = selectedDateKey
-    ? HORARIOS_POR_DATA[selectedDateKey] || []
-    : [];
 
-  const horariosFimDisponiveis = horaInicio
-    ? horariosDisponiveis.filter((hora) => hora > horaInicio)
-    : horariosDisponiveis;
+  const statusDia = selectedDateKey
+    ? DISPONIBILIDADE_POR_DATA[selectedDateKey] || "disponivel"
+    : "";
+
+  const dataPodeAgendar = statusDia === "disponivel";
+
+  const getStatusDiaTexto = () => {
+    if (!selectedDate) {
+      return "Selecione uma data no calendário para ver a disponibilidade.";
+    }
+
+    if (statusDia === "bloqueada") {
+      return "Esta data está bloqueada para agendamento.";
+    }
+
+    if (statusDia === "semHorarios") {
+      return "Sem vagas disponíveis no momento.";
+    }
+
+    return "Dia liberado para novos agendamentos.";
+  };
 
   const handleCpfChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -82,6 +114,20 @@ const Agendamentos = () => {
     setCpf(value);
     setPet("");
     setErrors((prev) => ({ ...prev, cliente: false, pet: false }));
+    setSuccessMsg("");
+  };
+
+  const handleHoraInicioChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+
+    if (value.length > 4) value = value.slice(0, 4);
+
+    if (value.length >= 3) {
+      value = `${value.slice(0, 2)}:${value.slice(2)}`;
+    }
+
+    setHoraInicio(value);
+    setErrors((prev) => ({ ...prev, inicio: false }));
     setSuccessMsg("");
   };
 
@@ -99,9 +145,19 @@ const Agendamentos = () => {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setHoraInicio("");
-    setHoraFim("");
-    setErrors((prev) => ({ ...prev, data: false, inicio: false, fim: false }));
+    setDuracao("");
+    setErrors((prev) => ({
+      ...prev,
+      data: false,
+      inicio: false,
+      duracao: false
+    }));
     setSuccessMsg("");
+  };
+
+  const validarHoraInicio = (hora) => {
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    return regex.test(hora);
   };
 
   const handleSubmit = () => {
@@ -110,13 +166,17 @@ const Agendamentos = () => {
     if (!cpf || cpf.length < 14) newErrors.cliente = true;
     if (!pet) newErrors.pet = true;
     if (!selectedDate) newErrors.data = true;
-    if (!horaInicio) newErrors.inicio = true;
-    if (!horaFim) newErrors.fim = true;
-    if (selectedServices.length === 0) newErrors.servicos = true;
+    if (selectedDate && !dataPodeAgendar) newErrors.data = true;
 
-    if (horaInicio && horaFim && horaFim <= horaInicio) {
-      newErrors.fim = true;
+    if (!horaInicio || !validarHoraInicio(horaInicio)) {
+      newErrors.inicio = true;
     }
+
+    if (!duracao || Number(duracao) <= 0) {
+      newErrors.duracao = true;
+    }
+
+    if (selectedServices.length === 0) newErrors.servicos = true;
 
     setErrors(newErrors);
 
@@ -133,7 +193,7 @@ const Agendamentos = () => {
         locale: ptBR
       }),
       horaInicio,
-      horaFim,
+      duracao,
       servicos: selectedServices,
       observacao
     };
@@ -150,7 +210,7 @@ const Agendamentos = () => {
     setPet("");
     setSelectedDate(null);
     setHoraInicio("");
-    setHoraFim("");
+    setDuracao("");
     setSelectedServices([]);
     setObservacao("");
     setErrors({});
@@ -163,15 +223,17 @@ const Agendamentos = () => {
       <div className="agendamento-header">
         <div>
           <span className="agendamento-badge">Painel de Agendamentos</span>
+
           <h1 className="topo2">
             <span className="icon">
               <img src={Pata} alt="pata" />
             </span>
             AGENDAMENTO
           </h1>
+
           <p className="agendamento-subtitle">
-            Organize atendimentos com uma agenda visual, horarios disponiveis e
-            formulario mais inteligente.
+            Organize atendimentos com uma agenda visual, datas disponíveis e
+            formulário mais inteligente.
           </p>
         </div>
       </div>
@@ -180,7 +242,7 @@ const Agendamentos = () => {
         <div className="form-card">
           <div className="card-head">
             <h2>Novo agendamento</h2>
-            <p>Preencha os dados para reservar um horario.</p>
+            <p>Preencha os dados para reservar um atendimento.</p>
           </div>
 
           <label>Selecione o cliente</label>
@@ -216,14 +278,19 @@ const Agendamentos = () => {
             </p>
           )}
 
-          <label>Escolha o(s) servicos</label>
-          <div className={`services-grid ${errors.servicos ? "services-error" : ""}`}>
+          <label>Escolha o(s) serviços</label>
+          <div
+            className={`services-grid ${
+              errors.servicos ? "services-error" : ""
+            }`}
+          >
             {SERVICOS.map((service) => (
               <button
                 key={service}
                 type="button"
-                className={`service-btn ${selectedServices.includes(service) ? "active" : ""
-                  }`}
+                className={`service-btn ${
+                  selectedServices.includes(service) ? "active" : ""
+                }`}
                 onClick={() => toggleService(service)}
               >
                 {service}
@@ -232,53 +299,47 @@ const Agendamentos = () => {
           </div>
 
           {errors.servicos && (
-            <p className="erro-service">Selecione pelo menos um servico.</p>
+            <p className="erro-service">Selecione pelo menos um serviço.</p>
           )}
 
           <div className="linhas-dupla">
             <div>
-              <label>Horario de inicio</label>
-              <select
+              <label>Horário de início </label>
+              <input
+                type="text"
+                placeholder="Horário de início"
                 value={horaInicio}
-                onChange={(e) => {
-                  setHoraInicio(e.target.value);
-                  setHoraFim("");
-                  setErrors((prev) => ({ ...prev, inicio: false }));
-                }}
+                onChange={handleHoraInicioChange}
+                maxLength="5"
                 className={errors.inicio ? "input-error" : ""}
-                disabled={!selectedDate || horariosDisponiveis.length === 0}
-              >
-                <option value="">Selecione</option>
-                {horariosDisponiveis.map((hora) => (
-                  <option key={hora} value={hora}>
-                    {hora}
-                  </option>
-                ))}
-              </select>
+                disabled={!selectedDate || !dataPodeAgendar}
+              />
             </div>
 
             <div>
-              <label>Horario de termino</label>
-              <select
-                value={horaFim}
+              <label>Duração (minutos) </label>
+              <input
+                type="number"
+                placeholder="Digite a duração"
+                value={duracao}
                 onChange={(e) => {
-                  setHoraFim(e.target.value);
-                  setErrors((prev) => ({ ...prev, fim: false }));
+                  setDuracao(e.target.value);
+                  setErrors((prev) => ({ ...prev, duracao: false }));
                 }}
-                className={errors.fim ? "input-error" : ""}
-                disabled={!horaInicio}
-              >
-                <option value="">Selecione</option>
-                {horariosFimDisponiveis.map((hora) => (
-                  <option key={hora} value={hora}>
-                    {hora}
-                  </option>
-                ))}
-              </select>
+                className={errors.duracao ? "input-error" : ""}
+                min="1"
+                disabled={!selectedDate || !dataPodeAgendar}
+              />
             </div>
           </div>
 
-          <label>Observacoes</label>
+          {selectedDate && !dataPodeAgendar && (
+            <p className="erro-service">
+              Esta data não está disponível para agendamento.
+            </p>
+          )}
+
+          <label>Observações</label>
           <textarea
             rows="4"
             placeholder="Escreva detalhes importantes do atendimento..."
@@ -304,7 +365,7 @@ const Agendamentos = () => {
               <InteractiveCalendar
                 selectedDate={selectedDate}
                 onSelectDate={handleDateSelect}
-                horariosPorData={HORARIOS_POR_DATA}
+                disponibilidadePorData={DISPONIBILIDADE_POR_DATA}
               />
             </div>
 
@@ -322,25 +383,21 @@ const Agendamentos = () => {
                     </p>
 
                     <div className="horarios-box">
-                      <strong>Horarios disponiveis</strong>
+                      <strong>Disponibilidade</strong>
 
-                      <div className="horarios-chips">
-                        {horariosDisponiveis.length > 0 ? (
-                          horariosDisponiveis.map((hora) => (
-                            <span key={hora} className="horario-chip">
-                              {hora}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="sem-horarios">
-                            Nenhum horario disponivel
-                          </span>
-                        )}
-                      </div>
+                      <p
+                        className={
+                          dataPodeAgendar ? "dia-disponivel" : "sem-horarios"
+                        }
+                      >
+                        {getStatusDiaTexto()}
+                      </p>
                     </div>
                   </>
                 ) : (
-                  <p>Selecione uma data no calendario para ver os horarios.</p>
+                  <p>
+                    Selecione uma data no calendário para ver a disponibilidade.
+                  </p>
                 )}
               </div>
 
@@ -348,7 +405,7 @@ const Agendamentos = () => {
                 <div className="legend-card">
                   <span className="leg invalid"></span>
                   <div>
-                    <strong>Data indisponivel</strong>
+                    <strong>Data indisponível</strong>
                     <p>Datas bloqueadas para agendamento</p>
                   </div>
                 </div>
@@ -356,16 +413,19 @@ const Agendamentos = () => {
                 <div className="legend-card">
                   <span className="leg full"></span>
                   <div>
-                    <strong>Dia sem horarios</strong>
-                    <p>Sem vagas disponiveis no momento</p>
+                    <strong>Dia sem horários</strong>
+                    <p>Sem vagas disponíveis no momento</p>
                   </div>
                 </div>
 
                 <div className="legend-card">
                   <span className="leg available"></span>
                   <div>
-                    <strong>Horarios disponiveis</strong>
-                    <p>Dia liberado para novos agendamentos</p>
+                    <strong>Horários disponíveis</strong>
+                    <p>
+                      Dia liberado para novos agendamentos para esse mês e mês
+                      seguinte
+                    </p>
                   </div>
                 </div>
 
@@ -373,7 +433,7 @@ const Agendamentos = () => {
                   <span className="leg selected"></span>
                   <div>
                     <strong>Data selecionada</strong>
-                    <p>Dia que esta sendo visualizado</p>
+                    <p>Dia que está sendo visualizado</p>
                   </div>
                 </div>
               </div>
@@ -407,14 +467,17 @@ const Agendamentos = () => {
               </div>
 
               <div className="summary-item">
-                <span>Horario</span>
-                <strong>
-                  {agendamentoResumo.horaInicio} ate {agendamentoResumo.horaFim}
-                </strong>
+                <span>Horário de início</span>
+                <strong>{agendamentoResumo.horaInicio}</strong>
+              </div>
+
+              <div className="summary-item">
+                <span>Duração</span>
+                <strong>{agendamentoResumo.duracao} minutos</strong>
               </div>
 
               <div className="summary-item summary-full">
-                <span>Servicos</span>
+                <span>Serviços</span>
                 <div className="summary-tags">
                   {agendamentoResumo.servicos.map((servico) => (
                     <span key={servico} className="summary-tag">
@@ -425,11 +488,11 @@ const Agendamentos = () => {
               </div>
 
               <div className="summary-item summary-full">
-                <span>Observacoes</span>
+                <span>Observações</span>
                 <strong>
                   {agendamentoResumo.observacao?.trim()
                     ? agendamentoResumo.observacao
-                    : "Nenhuma observacao informada"}
+                    : "Nenhuma observação informada"}
                 </strong>
               </div>
             </div>

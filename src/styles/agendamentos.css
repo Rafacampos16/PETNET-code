@@ -304,7 +304,7 @@
   width: 100%;
 }
 
-interactive-calendar .rdp-table {
+.interactive-calendar .rdp-table {
   width: 100%;
   max-width: 100%;
 }
@@ -680,4 +680,15 @@ interactive-calendar .rdp-table {
   .btn-confirm {
     width: 100%;
   }
+}
+
+.interactive-calendar .day-invalid .rdp-day_button {
+  background: rgba(245, 217, 141, 0.26);
+  color: #b78312;
+  border: 1px solid rgba(183, 131, 18, 0.18);
+}
+
+.dia-disponivel {
+  color: #239047 !important;
+  font-weight: 800;
 }
