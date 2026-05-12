@@ -88,12 +88,10 @@ const Clientes = () => {
             cpf: user.cpf,
             email: user.email,
             telefone: user.contacts?.[0]?.number || "--",
-            endereco: user.addresses?.[0]?.location.split(",")[0]?.trim(),
-            numero: user.addresses?.[0]?.complement,
-            bairro: user.addresses?.[0]?.location.split(",")[1]?.trim(),
+            endereco: user.addresses?.[0]?.address,
+            numero: user.addresses?.[0]?.number,
+            bairro: user.addresses?.[0]?.neighborhood,
             cep: user.addresses?.[0]?.cep,
-            cidade: user.addresses?.[0]?.location.split(",")[2]?.trim() || "--",
-            estado: user.addresses?.[0]?.location.split(",")[3]?.trim() || "--",
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
               tipo: pet.species,
@@ -157,11 +155,13 @@ const Clientes = () => {
       address: {
         type: "Casa",
         cep: clienteEditando.cep?.replace(/\D/g, ""),
-        location: `${clienteEditando.endereco}, ${clienteEditando.bairro}, ${clienteEditando.cidade}, ${clienteEditando.estado}`,
-        complement: clienteEditando.numero,
+        locaticion: clienteEditando.localizacao || "", // se existir
+        neighborhood: clienteEditando.bairro || "",
+        address: clienteEditando.endereco || "",
+        number: clienteEditando.numero || "",
+        complement: clienteEditando.complemento || "",
       },
     };
-
     try {
       await userService.updateUser(clienteEditando.cpf, body);
       setClientes(
@@ -313,21 +313,21 @@ const Clientes = () => {
           </div>
         ),
       },
-      {
-        name: "Cidade",
-        sortable: true,
-        cell: (row) => (
-          <span className="badge-local">
-            <FiMapPin size={13} /> {row.cidade}
-          </span>
-        ),
-      },
-      {
-        name: "UF",
-        center: true,
-        width: "120px",
-        cell: (row) => <span className="badge-estado">{row.estado}</span>,
-      },
+      // {
+      //   name: "Bairro",
+      //   sortable: true,
+      //   cell: (row) => (
+      //     <span className="badge-local">
+      //       <FiMapPin size={13} /> {row.bairro}
+      //     </span>
+      //   ),
+      // },
+      // {
+      //   name: "UF",
+      //   center: true,
+      //   width: "120px",
+      //   cell: (row) => <span className="badge-estado">{row.estado}</span>,
+      // },
       {
         name: "Pets",
         center: true,
@@ -381,7 +381,7 @@ const Clientes = () => {
           />
         </div>
 
-        <div className="filters-bar">
+        {/* <div className="filters-bar">
           <div className="filter-group">
             <label>Cidade</label>
             <select
@@ -411,7 +411,7 @@ const Clientes = () => {
               ))}
             </select>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="table-card">
@@ -531,7 +531,7 @@ const Clientes = () => {
                 )}
               </div>
 
-              <div className="info-box">
+              {/* <div className="info-box">
                 <label>Cidade</label>
                 {modoEdicao ? (
                   <input
@@ -553,7 +553,7 @@ const Clientes = () => {
                 ) : (
                   <span>{clienteSelecionado.estado}</span>
                 )}
-              </div>
+              </div> */}
 
               <div className="info-box">
                 <label>CEP</label>

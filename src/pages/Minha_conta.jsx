@@ -166,7 +166,7 @@ export default function MinhaConta() {
           cep: user.addresses?.[0]?.cep || "",
           complemento: user.addresses?.[0]?.complement || "",
           localizacao: user.addresses?.[0]?.locaticion || "",
-          tipo: user.addresses?.[0].type || "",
+          tipo: user.addresses?.[0]?.type || "",
           numero: user.addresses?.[0]?.number || "",
           nomePet: "",
           especiePet: "",
@@ -193,9 +193,12 @@ export default function MinhaConta() {
             email: user.email,
             telefone: user.contacts?.[0]?.number || "",
             endereco: user.addresses?.[0]?.address || "",
-            bairro: user.addresses?.[0]?.neighborhood  || "",
+            bairro: user.addresses?.[0]?.neighborhood || "",
             cep: user.addresses?.[0]?.cep || "",
-            numero: user.addresses?.[0]?.complement || "",
+            complemento: user.addresses?.[0]?.complement || "",
+            localizacao: user.addresses?.[0]?.locaticion || "",
+            tipo: user.addresses?.[0]?.type || "",
+            numero: user.addresses?.[0]?.number || "",
             nomePet: primeiroPet.name || "",
             especiePet: primeiroPet.species || "",
             racaPet: primeiroPet.breed || "",
@@ -205,6 +208,20 @@ export default function MinhaConta() {
               ? new Date(primeiroPet.birth_date).toLocaleDateString("pt-BR")
               : "",
             sexoPet: primeiroPet.sex || "",
+          }));
+        } else {
+          setDados((prev) => ({
+            ...(prev || {}),
+            nome: user.name,
+            email: user.email,
+            telefone: user.contacts?.[0]?.number || "",
+            endereco: user.addresses?.[0]?.address || "",
+            bairro: user.addresses?.[0]?.neighborhood || "",
+            cep: user.addresses?.[0]?.cep || "",
+            complemento: user.addresses?.[0]?.complement || "",
+            localizacao: user.addresses?.[0]?.locaticion || "",
+            tipo: user.addresses?.[0]?.type || "",
+            numero: user.addresses?.[0]?.number || "",
           }));
         }
       } catch (err) {
