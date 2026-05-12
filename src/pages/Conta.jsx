@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import "../styles/conta.css";
 import { useNavigate } from "react-router-dom";
-import ModalCodigo from "../components/ModalCodigo";
 import authService from "../services/authService";
 
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
-  const [openModalCodigo, setOpenModalCodigo] = useState(false);
+  const [openModalResetSenha, setOpenModalResetSenha] = useState(false);
   const [erroEmail, setErroEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailEnviado, setEmailEnviado] = useState(false);
 
   const navigate = useNavigate();
 
@@ -65,17 +65,71 @@ export default function App() {
       }
     } catch (error) {
       setMensagem(
-        error.response?.data?.error || "E-mail ou senha incorretos. Tente novamente."
+        error.response?.data?.error ||
+        "E-mail ou senha incorretos. Tente novamente."
       );
     } finally {
       setLoading(false);
     }
   }
 
+  async function handleEsqueciSenha() {
+    if (!login.email) {
+      setErroEmail("Digite um e-mail para redefinir a senha.");
+      return;
+    }
+
+    setErroEmail("");
+    setEmailEnviado(false);
+    setOpenModalResetSenha(true);
+
+    try {
+      /*
+        Quando a API estiver pronta, voce pode chamar aqui:
+
+        await authService.forgotPassword(login.email);
+
+        Essa API deve enviar o token/link para o e-mail do usuario.
+      */
+
+      console.log("Token enviado para:", login.email);
+
+      setOpenModalResetSenha(true);
+    } catch (error) {
+      setErroEmail(
+        error.response?.data?.error ||
+        "Nao foi possivel enviar o token. Tente novamente."
+      );
+    }
+  }
+
+
+  async function handleEnviarRecuperacao() {
+    try {
+      /*
+        Quando a API estiver pronta, voce pode chamar aqui:
+  
+        await authService.forgotPassword(login.email);
+  
+        Essa API deve enviar o link de recuperacao para o e-mail do usuario.
+      */
+
+      console.log("Link de recuperacao enviado para:", login.email);
+
+      setEmailEnviado(true);
+    } catch (error) {
+      setErroEmail(
+        error.response?.data?.error ||
+        "Nao foi possivel enviar o e-mail de recuperacao. Tente novamente."
+      );
+
+      setOpenModalResetSenha(false);
+    }
+  }
+
   return (
     <div className="container">
       <div className="content">
-
         {/* LADO ESQUERDO */}
         <div className="left">
           <h1 className="titulo">ACESSE SUA CONTA</h1>
@@ -112,22 +166,6 @@ export default function App() {
 
             <div className="senha-top">
               <label className="label">Senha</label>
-
-              <button
-                className="link link-btn"
-                type="button"
-                onClick={() => {
-                  if (!login.email) {
-                    setErroEmail("Digite um e-mail para redefinir a senha.");
-                    return;
-                  }
-                  setErroEmail("");
-                  console.log("Código enviado para:", login.email);
-                  setOpenModalCodigo(true);
-                }}
-              >
-                Esqueci a senha
-              </button>
             </div>
 
             <div className="input-senha-container">
@@ -150,7 +188,8 @@ export default function App() {
                     alt="Ocultar senha"
                     width="22"
                     style={{
-                      filter: "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
+                      filter:
+                        "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
                     }}
                   />
                 ) : (
@@ -159,12 +198,21 @@ export default function App() {
                     alt="Mostrar senha"
                     width="22"
                     style={{
-                      filter: "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
+                      filter:
+                        "invert(30%) sepia(100%) saturate(500%) hue-rotate(190deg)",
                     }}
                   />
                 )}
               </span>
             </div>
+
+            <button
+              className="forgot-password-btn"
+              type="button"
+              onClick={handleEsqueciSenha}
+            >
+              Esqueci minha senha
+            </button>
 
             <button className="btn" type="submit" disabled={loading}>
               {loading ? "ENTRANDO..." : "ENTRAR"}
@@ -190,24 +238,67 @@ export default function App() {
             especialmente para seu pet. Crie sua conta agora!
           </p>
 
-          <button
-            className="btn-outline"
-            onClick={() => navigate("/criarconta")}
-          >
+          <button className="btn-outline" onClick={() => navigate("/criarconta")}>
             Criar Conta
           </button>
         </div>
       </div>
 
-      {openModalCodigo && (
-        <ModalCodigo
-          email={login.email}
-          onClose={() => setOpenModalCodigo(false)}
-          onSuccess={() => {
-            setOpenModalCodigo(false);
-            window.location.href = "/minhaconta";
-          }}
-        />
+      {openModalResetSenha && (
+        <div className="modal-bg">
+          <div className="modal-container reset-modal-container">
+            <button
+              className="close"
+              type="button"
+              onClick={() => setOpenModalResetSenha(false)}
+              aria-label="Fechar modal"
+            >
+              ×
+            </button>
+
+            <div className="reset-modal-icon">🐾</div>
+
+            {!emailEnviado ? (
+              <>
+                <h2 className="reset-modal-title">Recuperar senha</h2>
+
+                <p className="reset-modal-text">
+                  Vamos enviar um link seguro para o seu e-mail. Por ele, voce podera
+                  criar uma nova senha e acessar sua conta novamente.
+                </p>
+
+                <p className="reset-modal-email">{login.email}</p>
+
+                <button
+                  className="reset-modal-btn"
+                  type="button"
+                  onClick={handleEnviarRecuperacao}
+                >
+                  Enviar link para meu e-mail
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="reset-modal-title">E-mail enviado</h2>
+
+                <p className="reset-modal-text">
+                  Prontinho! Enviamos as instrucoes para o seu e-mail. Acesse o link
+                  recebido para criar uma nova senha.
+                </p>
+
+                <p className="reset-modal-email">{login.email}</p>
+
+                <button
+                  className="reset-modal-btn"
+                  type="button"
+                  onClick={() => setOpenModalResetSenha(false)}
+                >
+                  Entendi
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -17,6 +17,7 @@ import PetsCadastrados from "./pages/Pets_cadastrados";
 import Status from "./pages/Status";
 import Colaborador from "./pages/Colaborador";
 import AdminServicos from "./pages/AdminServicos";
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => (
   <Router>
@@ -32,6 +33,7 @@ const App = () => (
         <Route path="/criarconta" element={<Criarconta />} />
         <Route path="/minhaconta" element={<Minhaconta />} />
         <Route path="/meus-pets" element={<PetsCadastrados />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route
           path="/admin"
