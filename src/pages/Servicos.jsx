@@ -1,4 +1,6 @@
-import React from "react";
+// adiciona import do service e do useState/useEffect
+import React, { useState, useEffect } from "react";
+import serviceService from "../services/serviceService";
 import Header from "../components/Header";
 import "../styles/servicos.css";
 import banhoIcon from "../assets/icons/banho.png";
@@ -14,6 +16,12 @@ import hidratacaoIcon from "../assets/icons/hidratacao.png";
 import peleIcon from "../assets/icons/pele.png";
 import porosidadeIcon from "../assets/icons/porosidade.png";
 
+
+
+
+// ucone padrão para serviços sem ícone mapeado
+import defaultIcon from "../assets/icons/banho.png"; // ícone genérico
+
 const Servicos = () => {
 
   const handleAgendar = (servico) => {
@@ -24,21 +32,36 @@ const Servicos = () => {
     window.open(url, "_blank");
   };
 
+  
+  const iconeMap = {
+    "Banho": banhoIcon,
+    "Banho Terapêutico": terapeuticoIcon,
+    "Banho Medicamentoso": terapeuticoIcon,
+    "Tosa Higiênica": tosahigIcon,
+    "Banho e Tosa Higiênica": tosahigIcon,
+    "Tosa (Máq. ou Tesoura)": tosamaqIcon,
+    "Banho e Tosa na Máquina": tosamaqIcon,
+    "Banho e Tosa na Tesoura": tosaracaIcon,
+    "Tosa da raça": tosaracaIcon,
+    "Corte de unhas": unhaIcon,
+    "Corte de Unha": unhaIcon,
+    "Higiene dos Ouvidos": ouvidoIcon,
+    "Escovação Dental": dentalIcon,
+    "Cronograma Capilar": cronogramaIcon,
+    "Hidratação": hidratacaoIcon,
+    "Hidratação de Pelagem": hidratacaoIcon,
+    "Hidratação de Pele": peleIcon,
+    "Teste de Porosidade": porosidadeIcon,
+    "Ozonioterapia": terapeuticoIcon,
+  };
 
-  const services = [
-    { title: "Banho", desc: "Limpeza completa com produtos de qualidade para deixar o seu pet cheiroso e feliz.", icon: banhoIcon },
-    { title: "Banho Terapêutico", desc: "Banho medicinal para problemas de pele, alívio e cuidado com produtos suaves e especiais.", icon: terapeuticoIcon },
-    { title: "Tosa Higiênica", desc: "Cuidados essenciais para garantir conforto, corte nas áreas íntimas para higiene diária.", icon: tosahigIcon },
-    { title: "Tosa (Máq. ou Tesoura)", desc: "Tosa completa com máquina ou tesoura, corte personalizado conforme a preferência do tutor.", icon: tosamaqIcon },
-    { title: "Tosa da raça", desc: "Tosa específica seguindo o padrão da raça, valorizando as características de cada pet.", icon: tosaracaIcon },
-    { title: "Corte de unhas", desc: "Corte seguro e preciso para manter as patinhas do seu pet sempre bem cuidadas.", icon: unhaIcon },
-    { title: "Higiene dos Ouvidos", desc: "Limpeza delicada e completa dos ouvidos, evitando desconfortos e infecções.", icon: ouvidoIcon },
-    { title: "Escovação Dental", desc: "Limpeza completa dos dentes, garantindo saúde bucal, prevenção de tártaro e hálito sempre fresco.", icon: dentalIcon },
-    { title: "Cronograma Capilar", desc: "Tratamento completo para os pelos, fortalecendo e revitalizando a pelagem.", icon: cronogramaIcon },
-    { title: "Hidratação de Pelagem", desc: "Tratamento nutritivo que hidrata profundamente os pelos, devolvendo brilho, maciez e proteção.", icon: hidratacaoIcon },
-    { title: "Hidratação de Pele", desc: "Cuidado especial para peles sensíveis, ajudando a mantê-las saudáveis e protegidas.", icon: peleIcon },
-    { title: "Teste de Porosidade", desc: "Análise da saúde dos pelos para definir o tratamento ideal para o seu pet.", icon: porosidadeIcon },
-  ];
+  const [services, setServices] = useState([]);
+  
+  useEffect(() => {
+    serviceService.listar()
+      .then((data) => setServices(data))
+      .catch((err) => console.error("Erro ao carregar serviços:", err));
+  }, []);
 
   return (
     <>
@@ -56,17 +79,20 @@ const Servicos = () => {
           </p>
 
           <div className="servicos-grid">
-            {services.map((service, index) => (
-              <div key={index} className="servico-card">
+            {services.map((service) => (
+              <div key={service.id} className="servico-card">
                 <div className="servico-icon-circle">
-                  <img src={service.icon} alt={service.title} className="servico-icon" />
+                  <img
+                    src={iconeMap[service.name] || defaultIcon}
+                    alt={service.name}
+                    className="servico-icon"
+                  />
                 </div>
-
-                <h3>{service.title}</h3>
-                <p>{service.desc}</p>
+                <h3>{service.name}</h3>
+                <p>{service.description}</p>
                 <button
                   className="btn-agendar"
-                  onClick={() => handleAgendar(service.title)}
+                  onClick={() => handleAgendar(service.name)}
                 >
                   AGENDAR
                 </button>
@@ -80,5 +106,4 @@ const Servicos = () => {
     </>
   );
 };
-
 export default Servicos;

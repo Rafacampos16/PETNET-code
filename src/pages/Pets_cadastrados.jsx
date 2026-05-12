@@ -90,7 +90,7 @@ const Pets_cadastrados = () => {
               size: traduzirPorte(pet.size),
               weight: `${pet.weight} kg`,
               birth_date: formatarData(pet.birth_date),
-              sex: <pet className="sex_code"></pet>,
+              sex: pet.sex || "",
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               photo: pet.picture_blob || "",
