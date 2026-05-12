@@ -40,30 +40,33 @@ export default function App() {
     try {
       const { user } = await authService.login(email, senha);
 
-      // Salva as infos do usuário logado no localStorage
       localStorage.setItem("userCpf", user.cpf);
       localStorage.setItem("userName", user.name);
       localStorage.setItem("userType", user.type);
 
-      // Limpa os outros flags
-      localStorage.removeItem("isAdmin");
-      localStorage.removeItem("isColaborador");
-      localStorage.removeItem("isUser");
-
-      // Redireciona conforme o tipo
       if (user.type === "Gerente") {
         localStorage.setItem("isAdmin", "true");
+        localStorage.setItem("isColaborador", "false");
+        localStorage.setItem("isUser", "false");
+
         window.location.href = "/admin";
       } else if (user.type === "Colaborador") {
+        localStorage.setItem("isAdmin", "false");
         localStorage.setItem("isColaborador", "true");
-        window.location.href = "/colaborador";
+        localStorage.setItem("isUser", "false");
+
+        window.location.href = "/colaborador/agenda";
       } else {
+        localStorage.setItem("isAdmin", "false");
+        localStorage.setItem("isColaborador", "false");
         localStorage.setItem("isUser", "true");
+
         window.location.href = "/minhaconta";
       }
-
     } catch (error) {
-      setMensagem(error.response?.data?.error || "E-mail ou senha incorretos. Tente novamente.");
+      setMensagem(
+        error.response?.data?.error || "E-mail ou senha incorretos. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }

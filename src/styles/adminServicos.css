@@ -1,0 +1,406 @@
+.admin-servicos-section {
+  min-height: 100vh;
+  background: #f4f8ff;
+  padding: 90px 20px 50px;
+}
+
+.admin-servicos-container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.admin-servicos-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.admin-servicos-tag {
+  display: inline-block;
+  background: #f9ee7c;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.admin-servicos-header h2 {
+  color: #3370eb;
+  font-size: 34px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.admin-servicos-header p {
+  color: #344054;
+  max-width: 610px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.admin-servicos-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 18px;
+  gap: 12px;
+  box-shadow: 0 12px 30px rgba(51, 112, 235, 0.1);
+  border: 1px solid rgba(51, 112, 235, 0.08);
+}
+
+.admin-servicos-resumo div {
+  min-width: 88px;
+  text-align: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8fbff;
+}
+
+.admin-servicos-resumo strong {
+  display: block;
+  color: #3370eb;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.admin-servicos-resumo span {
+  display: block;
+  color: #475467;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-servicos-content {
+  display: grid;
+  grid-template-columns: 370px 1fr;
+  gap: 26px;
+  align-items: start;
+}
+
+.admin-servicos-form,
+.admin-servicos-lista {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 14px 35px rgba(51, 112, 235, 0.1);
+  border: 1px solid rgba(51, 112, 235, 0.08);
+}
+
+.admin-servicos-form {
+  padding: 26px;
+  position: sticky;
+  top: 90px;
+}
+
+.admin-servicos-form h3,
+.admin-servicos-lista h3 {
+  color: #3370eb;
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 20px;
+}
+
+.admin-servicos-form label {
+  display: block;
+  color: #1d2939;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.admin-servicos-form input,
+.admin-servicos-form textarea,
+.admin-servicos-form select {
+  width: 100%;
+  border: 1px solid #d9e4ff;
+  background: #f8fbff;
+  color: #1d2939;
+  border-radius: 14px;
+  padding: 13px 14px;
+  outline: none;
+  font-size: 14px;
+  margin-top: 8px;
+  transition: 0.2s ease;
+}
+
+.admin-servicos-form textarea {
+  min-height: 115px;
+  resize: vertical;
+}
+
+.admin-servicos-form input:focus,
+.admin-servicos-form textarea:focus,
+.admin-servicos-form select:focus {
+  border-color: #3370eb;
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.12);
+}
+
+.admin-servicos-preview {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #f8fbff;
+  border: 1px dashed #b7ccff;
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.admin-servicos-icon-circle {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 18px;
+  background: #3370eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(51, 112, 235, 0.25);
+}
+
+.admin-servicos-icon-circle.small {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 16px;
+}
+
+.admin-servicos-icon-circle img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.admin-servicos-preview strong {
+  display: block;
+  color: #3370eb;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.admin-servicos-preview p {
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.admin-servicos-form-actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.btn-salvar-servico,
+.btn-cancelar-edicao,
+.btn-editar,
+.btn-desativar,
+.btn-ativar,
+.btn-excluir {
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  border-radius: 14px;
+  transition: 0.2s ease;
+}
+
+.btn-salvar-servico {
+  background: #f9ee7c;
+  color: #000000;
+  padding: 14px;
+}
+
+.btn-salvar-servico:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.98);
+}
+
+.btn-cancelar-edicao {
+  background: #edf3ff;
+  color: #3370eb;
+  padding: 13px;
+}
+
+.admin-servicos-lista {
+  padding: 26px;
+}
+
+.admin-servicos-lista-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.admin-servicos-lista-topo h3 {
+  margin: 0;
+}
+
+.admin-servicos-lista-topo span {
+  background: #edf3ff;
+  color: #3370eb;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.admin-servicos-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-servico-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: center;
+  border: 1px solid #e6eeff;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px;
+  transition: 0.2s ease;
+}
+
+.admin-servico-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(51, 112, 235, 0.08);
+}
+
+.admin-servico-card.inativo {
+  opacity: 0.68;
+  background: #fafafa;
+}
+
+.admin-servico-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.admin-servico-title-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.admin-servico-title-line h4 {
+  margin: 0;
+  color: #3370eb;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.status.ativo {
+  color: #067647;
+  background: #dcfae6;
+}
+
+.status.inativo {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.admin-servico-info p {
+  margin: 0;
+  color: #475467;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-servico-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-servico-actions button {
+  padding: 10px 13px;
+  font-size: 12px;
+}
+
+.btn-editar {
+  background: #edf3ff;
+  color: #3370eb;
+}
+
+.btn-desativar {
+  background: #fff3cd;
+  color: #8a6100;
+}
+
+.btn-ativar {
+  background: #dcfae6;
+  color: #067647;
+}
+
+.btn-excluir {
+  background: #fee4e2;
+  color: #b42318;
+}
+
+.admin-servico-actions button:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1000px) {
+  .admin-servicos-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-servicos-resumo {
+    width: 100%;
+  }
+
+  .admin-servicos-content {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-servicos-form {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-servicos-section {
+    padding: 80px 14px 35px;
+  }
+
+  .admin-servicos-header h2 {
+    font-size: 27px;
+  }
+
+  .admin-servicos-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-servico-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-servico-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-servico-info {
+    align-items: flex-start;
+  }
+}

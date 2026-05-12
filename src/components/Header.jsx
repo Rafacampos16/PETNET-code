@@ -10,24 +10,34 @@ import HomeIconHover from "../assets/icons/home-h.png";
 import PetsIconHover from "../assets/icons/pets-h.png";
 import PataIconHover from "../assets/icons/pata-h.png";
 import ContaIconHover from "../assets/icons/conta-h.png";
+
 import AgendamentoIcon from "../assets/icons/agendamento.png";
 import AgendamentoIconHover from "../assets/icons/agendamento-h.png";
+
 import ClienteIcon from "../assets/icons/clientes.png";
 import ClienteIconHover from "../assets/icons/clientes-h.png";
+
 import PetsAdmIcon from "../assets/icons/petsadm.png";
 import PetsAdmIconHover from "../assets/icons/petsadm-h.png";
-import StatusIcon from "../assets/icons/status.png";
-import StatusIconHover from "../assets/icons/status-h.png";
+
 import AdminIcon from "../assets/icons/admin.png";
 import AdminIconHover from "../assets/icons/admin-hover.png";
-import ColaboradorIcon from "../assets/icons/colaborador.png";
-import ColaboradorIconHover from "../assets/icons/colaborador-hover.png";
+
+import ColaboradorIcon from "../assets/icons/status.png";
+import ColaboradorIconHover from "../assets/icons/status-h.png";
+
+import CriarServicoIcon from "../assets/icons/criarServico.png";
+import CriarServicoIconHover from "../assets/icons/criarServico-hover.png";
+
+import AgendaColaboradorIcon from "../assets/icons/agendaColaborador.png";
+import AgendaColaboradorIconHover from "../assets/icons/agendaColaborador-hover.png";
 
 import "../styles/header.css";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const isAdminPage = location.pathname.startsWith("/admin");
   const isColaboradorPage = location.pathname.startsWith("/colaborador");
 
@@ -43,15 +53,37 @@ const Header = () => {
   const [admPetsHover, setAdmPetsHover] = useState(false);
   const [admClientsHover, setAdmClientsHover] = useState(false);
   const [admAgendHover, setAdmAgendHover] = useState(false);
-  const [admStatusHover, setAdmStatusHover] = useState(false);
   const [adminHover, setAdminHover] = useState(false);
+  const [admServicosHover, setAdmServicosHover] = useState(false);
+  const [admColaboradorHover, setAdmColaboradorHover] = useState(false);
 
   const [colabAgendaHover, setColabAgendaHover] = useState(false);
-  const [colabPetsHover, setColabPetsHover] = useState(false);
-  const [colabStatusHover, setColabStatusHover] = useState(false);
-  const [colabClientsHover, setColabClientsHover] = useState(false);
+  const [colabHomeHover, setColabHomeHover] = useState(false);
+  const [colabContaHover, setColabContaHover] = useState(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogoClick = () => {
+    if (isAdminPage) {
+      navigate("/admin");
+      return;
+    }
+
+    if (isColaboradorPage) {
+      navigate("/colaborador");
+      return;
+    }
+
+    navigate("/");
+  };
+
+  const handleContaClick = () => {
+    if (isAdmin || isColaborador || isUser) {
+      navigate("/minhaconta");
+    } else {
+      navigate("/conta");
+    }
+  };
 
   return (
     <header className="header">
@@ -59,15 +91,7 @@ const Header = () => {
         <div className="header-content">
           <div
             className="logo-center"
-            onClick={() =>
-              navigate(
-                isAdminPage
-                  ? "/admin"
-                  : isColaboradorPage
-                    ? "/colaborador"
-                    : "/"
-              )
-            }
+            onClick={handleLogoClick}
             style={{ cursor: "pointer" }}
           >
             {isAdminPage
@@ -83,7 +107,10 @@ const Header = () => {
             <div className={`bar ${menuOpen ? "open" : ""}`}></div>
           </div>
 
-          <div className={`header-right ${isAdminPage ? "admin-nav" : ""}`}>
+          <div
+            className={`header-right ${isAdminPage || isColaboradorPage ? "admin-nav" : ""
+              }`}
+          >
             {isAdminPage && (
               <>
                 <div
@@ -98,7 +125,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: homeHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Home
                   </span>
@@ -116,7 +145,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: adminHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: adminHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Gerência
                   </span>
@@ -134,9 +165,37 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: admAgendHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: admAgendHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Agendar
+                  </span>
+                </div>
+
+                <div
+                  className="menu-item"
+                  onMouseEnter={() => setAdmServicosHover(true)}
+                  onMouseLeave={() => setAdmServicosHover(false)}
+                  onClick={() => navigate("/admin/servicos")}
+                >
+                  <img
+                    src={
+                      admServicosHover
+                        ? CriarServicoIconHover
+                        : CriarServicoIcon
+                    }
+                    alt="Serviços"
+                    className="icon-link"
+                  />
+                  <span
+                    style={{
+                      color: admServicosHover
+                        ? "var(--petnet-yellow)"
+                        : "white",
+                    }}
+                  >
+                    Serviços
                   </span>
                 </div>
 
@@ -152,7 +211,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: admClientsHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: admClientsHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Clientes
                   </span>
@@ -170,7 +231,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: admPetsHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: admPetsHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Pets
                   </span>
@@ -178,17 +241,25 @@ const Header = () => {
 
                 <div
                   className="menu-item"
-                  onMouseEnter={() => setAdmStatusHover(true)}
-                  onMouseLeave={() => setAdmStatusHover(false)}
-                  onClick={() => navigate("/admin/status")}
+                  onMouseEnter={() => setAdmColaboradorHover(true)}
+                  onMouseLeave={() => setAdmColaboradorHover(false)}
+                  onClick={() => navigate("/admin/colaborador")}
                 >
                   <img
-                    src={admStatusHover ? StatusIconHover : StatusIcon}
-                    alt="Status"
+                    src={
+                      admColaboradorHover
+                        ? ColaboradorIconHover
+                        : ColaboradorIcon
+                    }
+                    alt="Colaborador"
                     className="icon-link"
                   />
                   <span
-                    style={{ color: admStatusHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: admColaboradorHover
+                        ? "var(--petnet-yellow)"
+                        : "white",
+                    }}
                   >
                     Status
                   </span>
@@ -200,17 +271,21 @@ const Header = () => {
               <>
                 <div
                   className="menu-item"
-                  onMouseEnter={() => setHomeHover(true)}
-                  onMouseLeave={() => setHomeHover(false)}
+                  onMouseEnter={() => setColabHomeHover(true)}
+                  onMouseLeave={() => setColabHomeHover(false)}
                   onClick={() => navigate("/")}
                 >
                   <img
-                    src={homeHover ? HomeIconHover : HomeIcon}
+                    src={colabHomeHover ? HomeIconHover : HomeIcon}
                     alt="Home"
                     className="icon-link"
                   />
                   <span
-                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: colabHomeHover
+                        ? "var(--petnet-yellow)"
+                        : "white",
+                    }}
                   >
                     Home
                   </span>
@@ -220,18 +295,22 @@ const Header = () => {
                   className="menu-item"
                   onMouseEnter={() => setColabAgendaHover(true)}
                   onMouseLeave={() => setColabAgendaHover(false)}
-                  onClick={() => navigate("/colaborador")}
+                  onClick={() => navigate("/colaborador/agenda")}
                 >
                   <img
                     src={
-                      colabAgendaHover ? ColaboradorIconHover : ColaboradorIcon
+                      colabAgendaHover
+                        ? AgendaColaboradorIconHover
+                        : AgendaColaboradorIcon
                     }
-                    alt="Minha Agenda"
+                    alt="Agenda"
                     className="icon-link"
                   />
                   <span
                     style={{
-                      color: colabAgendaHover ? "var(--petnet-yellow)" : "white",
+                      color: colabAgendaHover
+                        ? "var(--petnet-yellow)"
+                        : "white",
                     }}
                   >
                     Agenda
@@ -240,61 +319,23 @@ const Header = () => {
 
                 <div
                   className="menu-item"
-                  onMouseEnter={() => setColabClientsHover(true)}
-                  onMouseLeave={() => setColabClientsHover(false)}
-                  onClick={() => navigate("/admin/clientes")}
+                  onMouseEnter={() => setColabContaHover(true)}
+                  onMouseLeave={() => setColabContaHover(false)}
+                  onClick={() => navigate("/minhaconta")}
                 >
                   <img
-                    src={colabClientsHover ? ClienteIconHover : ClienteIcon}
-                    alt="Clientes"
+                    src={colabContaHover ? ContaIconHover : ContaIcon}
+                    alt="Conta"
                     className="icon-link"
                   />
                   <span
                     style={{
-                      color: colabClientsHover ? "var(--petnet-yellow)" : "white",
+                      color: colabContaHover
+                        ? "var(--petnet-yellow)"
+                        : "white",
                     }}
                   >
-                    Clientes
-                  </span>
-                </div>
-
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setColabPetsHover(true)}
-                  onMouseLeave={() => setColabPetsHover(false)}
-                  onClick={() => navigate("/admin/pets")}
-                >
-                  <img
-                    src={colabPetsHover ? PetsAdmIconHover : PetsAdmIcon}
-                    alt="Pets"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: colabPetsHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Pets
-                  </span>
-                </div>
-
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setColabStatusHover(true)}
-                  onMouseLeave={() => setColabStatusHover(false)}
-                  onClick={() => navigate("/admin/status")}
-                >
-                  <img
-                    src={colabStatusHover ? StatusIconHover : StatusIcon}
-                    alt="Status"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: colabStatusHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Status
+                    Conta
                   </span>
                 </div>
               </>
@@ -314,7 +355,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: homeHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: homeHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Home
                   </span>
@@ -332,7 +375,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: petsHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: petsHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Serviços
                   </span>
@@ -345,12 +390,14 @@ const Header = () => {
                   onClick={() => navigate("/pets")}
                 >
                   <img
-                    src={pataHover ? PetsAdmIconHover : PetsAdmIcon}
+                    src={pataHover ? PataIconHover : PataIcon}
                     alt="Pets"
                     className="icon-link"
                   />
                   <span
-                    style={{ color: pataHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: pataHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Pets
                   </span>
@@ -378,21 +425,39 @@ const Header = () => {
                   </div>
                 )}
 
+                {isColaborador && (
+                  <div
+                    className="menu-item"
+                    onMouseEnter={() => setColabAgendaHover(true)}
+                    onMouseLeave={() => setColabAgendaHover(false)}
+                    onClick={() => navigate("/colaborador/agenda")}
+                  >
+                    <img
+                      src={
+                        colabAgendaHover
+                          ? AgendaColaboradorIconHover
+                          : AgendaColaboradorIcon
+                      }
+                      alt="Agenda"
+                      className="icon-link"
+                    />
+                    <span
+                      style={{
+                        color: colabAgendaHover
+                          ? "var(--petnet-yellow)"
+                          : "white",
+                      }}
+                    >
+                      Agenda
+                    </span>
+                  </div>
+                )}
+
                 <div
                   className="menu-item"
                   onMouseEnter={() => setContaHover(true)}
                   onMouseLeave={() => setContaHover(false)}
-                  onClick={() => {
-                    if (isAdmin) {
-                      navigate("/minhaconta");
-                    } else if (isColaborador) {
-                      navigate("/colaborador");
-                    } else if (isUser) {
-                      navigate("/minhaconta");
-                    } else {
-                      navigate("/conta");
-                    }
-                  }}
+                  onClick={handleContaClick}
                 >
                   <img
                     src={contaHover ? ContaIconHover : ContaIcon}
@@ -400,7 +465,9 @@ const Header = () => {
                     className="icon-link"
                   />
                   <span
-                    style={{ color: contaHover ? "var(--petnet-yellow)" : "white" }}
+                    style={{
+                      color: contaHover ? "var(--petnet-yellow)" : "white",
+                    }}
                   >
                     Conta
                   </span>
@@ -412,44 +479,152 @@ const Header = () => {
           <div className={`mobile-menu ${menuOpen ? "show" : ""}`}>
             {isAdminPage ? (
               <>
-                <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
-                <span onClick={() => { navigate("/admin"); setMenuOpen(false); }}>Administração</span>
-                <span onClick={() => { navigate("/admin/agendamentos"); setMenuOpen(false); }}>Agendamentos</span>
-                <span onClick={() => { navigate("/admin/clientes"); setMenuOpen(false); }}>Clientes</span>
-                <span onClick={() => { navigate("/admin/pets"); setMenuOpen(false); }}>Pets</span>
-                <span onClick={() => { navigate("/admin/status"); setMenuOpen(false); }}>Status</span>
+                <span
+                  onClick={() => {
+                    navigate("/");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Home
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Administração
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin/agendamentos");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Agendamentos
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin/servicos");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Serviços
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin/clientes");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Clientes
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin/pets");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Pets
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/admin/colaborador");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Status
+                </span>
               </>
             ) : isColaboradorPage ? (
               <>
-                <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
-                <span onClick={() => { navigate("/colaborador"); setMenuOpen(false); }}>Agenda</span>
-                <span onClick={() => { navigate("/admin/clientes"); setMenuOpen(false); }}>Clientes</span>
-                <span onClick={() => { navigate("/admin/pets"); setMenuOpen(false); }}>Pets</span>
-                <span onClick={() => { navigate("/admin/status"); setMenuOpen(false); }}>Status</span>
+                <span
+                  onClick={() => {
+                    navigate("/");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Home
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/colaborador/agenda");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Agenda
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/minhaconta");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Conta
+                </span>
               </>
             ) : (
               <>
-                <span onClick={() => { navigate("/"); setMenuOpen(false); }}>Home</span>
-                <span onClick={() => { navigate("/servicos"); setMenuOpen(false); }}>Serviços</span>
-                <span onClick={() => { navigate("/pets"); setMenuOpen(false); }}>Pets</span>
+                <span
+                  onClick={() => {
+                    navigate("/");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Home
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/servicos");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Serviços
+                </span>
+
+                <span
+                  onClick={() => {
+                    navigate("/pets");
+                    setMenuOpen(false);
+                  }}
+                >
+                  Pets
+                </span>
 
                 {isAdmin && (
-                  <span onClick={() => { navigate("/admin"); setMenuOpen(false); }}>
+                  <span
+                    onClick={() => {
+                      navigate("/admin");
+                      setMenuOpen(false);
+                    }}
+                  >
                     Gerência
+                  </span>
+                )}
+
+                {isColaborador && (
+                  <span
+                    onClick={() => {
+                      navigate("/colaborador/agenda");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Agenda
                   </span>
                 )}
 
                 <span
                   onClick={() => {
-                    if (isAdmin) {
-                      navigate("/minhaconta");
-                    } else if (isColaborador) {
-                      navigate("/colaborador");
-                    } else if (isUser) {
-                      navigate("/minhaconta");
-                    } else {
-                      navigate("/conta");
-                    }
+                    handleContaClick();
                     setMenuOpen(false);
                   }}
                 >
