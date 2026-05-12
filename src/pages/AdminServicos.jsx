@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import "../styles/adminServicos.css";
-
+import serviceService from "../services/serviceService";
 import banhoIcon from "../assets/icons/banho.png";
 import terapeuticoIcon from "../assets/icons/terapeutico.png";
 import tosahigIcon from "../assets/icons/tosahig.png";
@@ -15,143 +15,51 @@ import hidratacaoIcon from "../assets/icons/hidratacao.png";
 import peleIcon from "../assets/icons/pele.png";
 import porosidadeIcon from "../assets/icons/porosidade.png";
 
-const iconesDisponiveis = [
-  { nome: "Banho", valor: "banho", icon: banhoIcon },
-  { nome: "Terapêutico", valor: "terapeutico", icon: terapeuticoIcon },
-  { nome: "Tosa Higiênica", valor: "tosahig", icon: tosahigIcon },
-  { nome: "Tosa Máquina", valor: "tosamaq", icon: tosamaqIcon },
-  { nome: "Tosa da Raça", valor: "tosaraca", icon: tosaracaIcon },
-  { nome: "Unha", valor: "unha", icon: unhaIcon },
-  { nome: "Ouvidos", valor: "ouvido", icon: ouvidoIcon },
-  { nome: "Dental", valor: "dental", icon: dentalIcon },
-  { nome: "Cronograma", valor: "cronograma", icon: cronogramaIcon },
-  { nome: "Hidratação", valor: "hidratacao", icon: hidratacaoIcon },
-  { nome: "Pele", valor: "pele", icon: peleIcon },
-  { nome: "Porosidade", valor: "porosidade", icon: porosidadeIcon },
-];
-
-const servicosPadrao = [
-  {
-    id: 1,
-    title: "Banho",
-    desc: "Limpeza completa com produtos de qualidade para deixar o seu pet cheiroso e feliz.",
-    iconKey: "banho",
-    ativo: true,
-  },
-  {
-    id: 2,
-    title: "Banho Terapêutico",
-    desc: "Banho medicinal para problemas de pele, alívio e cuidado com produtos suaves e especiais.",
-    iconKey: "terapeutico",
-    ativo: true,
-  },
-  {
-    id: 3,
-    title: "Tosa Higiênica",
-    desc: "Cuidados essenciais para garantir conforto, corte nas áreas íntimas para higiene diária.",
-    iconKey: "tosahig",
-    ativo: true,
-  },
-  {
-    id: 4,
-    title: "Tosa (Máq. ou Tesoura)",
-    desc: "Tosa completa com máquina ou tesoura, corte personalizado conforme a preferência do tutor.",
-    iconKey: "tosamaq",
-    ativo: true,
-  },
-  {
-    id: 5,
-    title: "Tosa da raça",
-    desc: "Tosa específica seguindo o padrão da raça, valorizando as características de cada pet.",
-    iconKey: "tosaraca",
-    ativo: true,
-  },
-  {
-    id: 6,
-    title: "Corte de unhas",
-    desc: "Corte seguro e preciso para manter as patinhas do seu pet sempre bem cuidadas.",
-    iconKey: "unha",
-    ativo: true,
-  },
-  {
-    id: 7,
-    title: "Higiene dos Ouvidos",
-    desc: "Limpeza delicada e completa dos ouvidos, evitando desconfortos e infecções.",
-    iconKey: "ouvido",
-    ativo: true,
-  },
-  {
-    id: 8,
-    title: "Escovação Dental",
-    desc: "Limpeza completa dos dentes, garantindo saúde bucal, prevenção de tártaro e hálito sempre fresco.",
-    iconKey: "dental",
-    ativo: true,
-  },
-  {
-    id: 9,
-    title: "Cronograma Capilar",
-    desc: "Tratamento completo para os pelos, fortalecendo e revitalizando a pelagem.",
-    iconKey: "cronograma",
-    ativo: true,
-  },
-  {
-    id: 10,
-    title: "Hidratação de Pelagem",
-    desc: "Tratamento nutritivo que hidrata profundamente os pelos, devolvendo brilho, maciez e proteção.",
-    iconKey: "hidratacao",
-    ativo: true,
-  },
-  {
-    id: 11,
-    title: "Hidratação de Pele",
-    desc: "Cuidado especial para peles sensíveis, ajudando a mantê-las saudáveis e protegidas.",
-    iconKey: "pele",
-    ativo: true,
-  },
-  {
-    id: 12,
-    title: "Teste de Porosidade",
-    desc: "Análise da saúde dos pelos para definir o tratamento ideal para o seu pet.",
-    iconKey: "porosidade",
-    ativo: true,
-  },
-];
 
 const AdminServicos = () => {
   const [servicos, setServicos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
 
+  const limparFormulario = () => {
+    setForm({ name: "", description: "", servicePicture: null });
+    setEditandoId(null);
+  };
+
   const [form, setForm] = useState({
-    title: "",
-    desc: "",
-    iconKey: "banho",
+    name: "",
+    description: "",
+    servicePicture: null, // base64
   });
 
   useEffect(() => {
-    const servicosSalvos = JSON.parse(localStorage.getItem("petnetServicos"));
-
-    if (servicosSalvos && servicosSalvos.length > 0) {
-      setServicos(servicosSalvos);
-    } else {
-      setServicos(servicosPadrao);
-      localStorage.setItem("petnetServicos", JSON.stringify(servicosPadrao));
-    }
+    serviceService.listar()
+      .then((data) => setServicos(Array.isArray(data) ? data : []))
+      .catch((err) => console.error("Erro ao carregar serviços:", err));
   }, []);
 
-  useEffect(() => {
-    if (servicos.length > 0) {
-      localStorage.setItem("petnetServicos", JSON.stringify(servicos));
-    }
-  }, [servicos]);
-
-  const limparFormulario = () => {
-    setForm({
-      title: "",
-      desc: "",
-      iconKey: "banho",
-    });
-    setEditandoId(null);
+  const iconeMap = {
+    "Banho": banhoIcon,
+    "Banho Terapêutico": terapeuticoIcon,
+    "Banho Medicamentoso": terapeuticoIcon,
+    "Tosa Higiênica": tosahigIcon,
+    "Banho e Tosa Higiênica": tosahigIcon,
+    "Tosa (Máq. ou Tesoura)": tosamaqIcon,
+    "Banho e Tosa na Máquina": tosamaqIcon,
+    "Banho e Tosa na Tesoura": tosaracaIcon,
+    "Tosa da raça": tosaracaIcon,
+    "Corte de unhas": unhaIcon,
+    "Corte de Unha": unhaIcon,
+    "Higiene dos Ouvidos": ouvidoIcon,
+    "Escovação Dental": dentalIcon,
+    "Cronograma Capilar": cronogramaIcon,
+    "Hidratação": hidratacaoIcon,
+    "Hidratação de Pelagem": hidratacaoIcon,
+    "Hidratação de Pele": peleIcon,
+    "Teste de Porosidade": porosidadeIcon,
+    "Ozonioterapia": terapeuticoIcon,
   };
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -162,49 +70,35 @@ const AdminServicos = () => {
     }));
   };
 
-  const handleSalvarServico = (e) => {
+  const handleSalvarServico = async (e) => {
     e.preventDefault();
-
-    if (!form.title.trim() || !form.desc.trim()) {
-      alert("Preencha o nome e a descrição do serviço.");
+    if (!form.name.trim() || !form.description.trim()) {
+      alert("Preencha o nome e a descrição.");
       return;
     }
 
-    if (editandoId) {
-      const servicosAtualizados = servicos.map((servico) =>
-        servico.id === editandoId
-          ? {
-              ...servico,
-              title: form.title,
-              desc: form.desc,
-              iconKey: form.iconKey,
-            }
-          : servico
-      );
-
-      setServicos(servicosAtualizados);
+    try {
+      if (editandoId) {
+        const atualizado = await serviceService.atualizar(editandoId, form);
+        setServicos((prev) =>
+          prev.map((s) => (s.id === editandoId ? atualizado : s))
+        );
+      } else {
+        const novo = await serviceService.criar(form);
+        setServicos((prev) => [novo, ...prev]);
+      }
       limparFormulario();
-      return;
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao salvar serviço.");
     }
-
-    const novoServico = {
-      id: Date.now(),
-      title: form.title,
-      desc: form.desc,
-      iconKey: form.iconKey,
-      ativo: true,
-    };
-
-    setServicos([novoServico, ...servicos]);
-    limparFormulario();
   };
 
   const handleEditar = (servico) => {
     setEditandoId(servico.id);
     setForm({
-      title: servico.title,
-      desc: servico.desc,
-      iconKey: servico.iconKey,
+      name: servico.name,
+      description: servico.description,
+      servicePicture: servico.picture_blob || null,
     });
 
     window.scrollTo({
@@ -213,34 +107,43 @@ const AdminServicos = () => {
     });
   };
 
-  const handleAlternarStatus = (id) => {
-    const servicosAtualizados = servicos.map((servico) =>
-      servico.id === id
-        ? {
-            ...servico,
-            ativo: !servico.ativo,
-          }
-        : servico
-    );
-
-    setServicos(servicosAtualizados);
-  };
-
-  const handleExcluir = (id) => {
-    const confirmar = window.confirm("Deseja excluir este serviço definitivamente?");
-
-    if (confirmar) {
-      const servicosAtualizados = servicos.filter((servico) => servico.id !== id);
-      setServicos(servicosAtualizados);
+  const handleAlternarStatus = async (servico) => {
+    try {
+      if (servico.excluded_at) {
+        await serviceService.reativar(servico.id);
+        setServicos((prev) =>
+          prev.map((s) =>
+            s.id === servico.id ? { ...s, excluded_at: null } : s
+          )
+        );
+      } else {
+        await serviceService.deletar(servico.id);
+        setServicos((prev) =>
+          prev.map((s) =>
+            s.id === servico.id ? { ...s, excluded_at: new Date().toISOString() } : s
+          )
+        );
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao alterar status.");
     }
   };
 
-  const buscarIcone = (iconKey) => {
-    return iconesDisponiveis.find((icone) => icone.valor === iconKey)?.icon || banhoIcon;
-  };
+  // const handleExcluir = async (id) => {
+  //   const confirmar = window.confirm("Deseja excluir este serviço definitivamente?");
+  //   if (!confirmar) return;
 
-  const totalAtivos = servicos.filter((servico) => servico.ativo).length;
-  const totalInativos = servicos.filter((servico) => !servico.ativo).length;
+  //   try {
+  //     await serviceService.deletar(id);
+  //     setServicos((prev) => prev.filter((s) => s.id !== id));
+  //   } catch (err) {
+  //     alert(err.response?.data?.error || "Erro ao excluir serviço.");
+  //   }
+  // };
+
+
+  const totalAtivos = servicos.filter((servico) => !servico.excluded_at).length;
+  const totalInativos = servicos.filter((servico) => servico.excluded_at).length;
 
   return (
     <>
@@ -281,8 +184,8 @@ const AdminServicos = () => {
                 Nome do serviço
                 <input
                   type="text"
-                  name="title"
-                  value={form.title}
+                  name="name"
+                  value={form.name}
                   onChange={handleChange}
                   placeholder="Ex: Banho Premium"
                 />
@@ -291,32 +194,38 @@ const AdminServicos = () => {
               <label>
                 Descrição
                 <textarea
-                  name="desc"
-                  value={form.desc}
+                  name="description"
+                  value={form.description}
                   onChange={handleChange}
                   placeholder="Descreva brevemente o serviço oferecido..."
                 />
               </label>
-
+              {/* Feature ainda não implementada, ((não remover)).
               <label>
-                Ícone do serviço
-                <select name="iconKey" value={form.iconKey} onChange={handleChange}>
-                  {iconesDisponiveis.map((icone) => (
-                    <option key={icone.valor} value={icone.valor}>
-                      {icone.nome}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                Imagem do serviço
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                      setForm((prev) => ({ ...prev, servicePicture: reader.result }));
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </label> */}
 
               <div className="admin-servicos-preview">
-                <div className="admin-servicos-icon-circle">
-                  <img src={buscarIcone(form.iconKey)} alt="Prévia do ícone" />
-                </div>
-
+                {form.servicePicture && (
+                  <div className="admin-servicos-icon-circle">
+                    <img src={form.servicePicture || iconeMap[form.name] || banhoIcon} alt="Prévia" style={{ width: 80, height: 80, objectFit: "cover" }} />
+                  </div>
+                )}
                 <div>
-                  <strong>{form.title || "Nome do serviço"}</strong>
-                  <p>{form.desc || "A descrição aparecerá aqui como prévia."}</p>
+                  <strong>{form.name || "Nome do serviço"}</strong>
+                  <p>{form.description || "A descrição aparecerá aqui como prévia."}</p>
                 </div>
               </div>
 
@@ -347,22 +256,22 @@ const AdminServicos = () => {
                 {servicos.map((servico) => (
                   <div
                     key={servico.id}
-                    className={`admin-servico-card ${!servico.ativo ? "inativo" : ""}`}
+                    className={`admin-servico-card ${servico.excluded_at ? "inativo" : ""}`}
                   >
                     <div className="admin-servico-info">
                       <div className="admin-servicos-icon-circle small">
-                        <img src={buscarIcone(servico.iconKey)} alt={servico.title} />
+                        <img src={servico.picture_blob || iconeMap[servico.name] || banhoIcon} alt={servico.name} />
                       </div>
 
                       <div>
                         <div className="admin-servico-title-line">
-                          <h4>{servico.title}</h4>
-                          <span className={servico.ativo ? "status ativo" : "status inativo"}>
-                            {servico.ativo ? "Ativo" : "Inativo"}
+                          <h4>{servico.name}</h4>
+                          <span className={!servico.excluded_at ? "status ativo" : "status inativo"}>
+                            {!servico.excluded_at ? "Ativo" : "Inativo"}
                           </span>
                         </div>
 
-                        <p>{servico.desc}</p>
+                        <p>{servico.description}</p>
                       </div>
                     </div>
 
@@ -377,19 +286,19 @@ const AdminServicos = () => {
 
                       <button
                         type="button"
-                        className={servico.ativo ? "btn-desativar" : "btn-ativar"}
-                        onClick={() => handleAlternarStatus(servico.id)}
+                        className={!servico.excluded_at ? "btn-desativar" : "btn-ativar"}
+                        onClick={() => handleAlternarStatus(servico)}
                       >
-                        {servico.ativo ? "Desativar" : "Ativar"}
+                        {!servico.excluded_at ? "Desativar" : "Ativar"}
                       </button>
 
-                      <button
+                      {/* <button
                         type="button"
                         className="btn-excluir"
                         onClick={() => handleExcluir(servico.id)}
                       >
                         Excluir
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}

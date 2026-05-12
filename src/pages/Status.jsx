@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "../styles/status.css";
+import scheduleService from "../services/scheduleService";
 
 const ScheduleStatus = {
   SCHEDULED: "SCHEDULED",
@@ -31,99 +32,73 @@ const statusMap = {
   },
 };
 
-const agendamentosIniciais = [
-  {
-    id: "1",
-    pet: "Thor",
-    tutor: "Mariana Costa",
-    especie: "Cachorro",
-    servico: "Banho",
-    porte: "Médio",
-    colaborador: "Rafaela Campos",
-    collaborator_cpf: "98765432100",
-    date_time: "2026-05-08T09:00:00",
-    duration: "ONE_HOUR",
-    status: ScheduleStatus.SCHEDULED,
-    observation: "Cuidado extra com as patas",
-  },
-  {
-    id: "2",
-    pet: "Luna",
-    tutor: "Carlos Souza",
-    especie: "Gato",
-    servico: "Tosa",
-    porte: "Pequeno",
-    colaborador: "Rafaela Campos",
-    collaborator_cpf: "98765432100",
-    date_time: "2026-05-08T10:00:00",
-    duration: "ONE_HOUR",
-    status: ScheduleStatus.CONFIRMED,
-    observation: "Pet sensível a barulhos altos",
-  },
-  {
-    id: "3",
-    pet: "Mel",
-    tutor: "Fernanda Lima",
-    especie: "Cachorro",
-    servico: "Banho e Tosa",
-    porte: "Grande",
-    colaborador: "Rafaela Campos",
-    collaborator_cpf: "98765432100",
-    date_time: "2026-05-08T11:00:00",
-    duration: "ONE_HOUR",
-    status: ScheduleStatus.SCHEDULED,
-    observation: "Usar shampoo hipoalergênico",
-  },
-  {
-    id: "4",
-    pet: "Nina",
-    tutor: "Patrícia Alves",
-    especie: "Gato",
-    servico: "Hidratação",
-    porte: "Pequeno",
-    colaborador: "Rafaela Campos",
-    collaborator_cpf: "98765432100",
-    date_time: "2026-05-08T13:00:00",
-    duration: "ONE_HOUR",
-    status: ScheduleStatus.CANCELED,
-    observation: "Tutor solicitou remarcação",
-  },
-  {
-    id: "5",
-    pet: "Bob",
-    tutor: "Rafael Martins",
-    especie: "Cachorro",
-    servico: "Tosa higiênica",
-    porte: "Médio",
-    colaborador: "Rafaela Campos",
-    collaborator_cpf: "98765432100",
-    date_time: "2026-05-08T14:00:00",
-    duration: "ONE_HOUR",
-    status: ScheduleStatus.FINISHED,
-    observation: "Atendimento finalizado sem observações adicionais",
-  },
-];
+const speciesMap = {
+  dog: "Cachorro",
+  cat: "Gato",
+};
+
+const sizeMap = {
+ S: 'Pequeno',
+  M: 'Médio',
+  L: 'Grande',
+  XL: 'Gigante'
+};
+
+// Transforma o objeto da API no formato que o componente usa
+function normalizar(item) {
+  return {
+    ...item,
+    pet: item.pet?.name || "—",
+    tutor: item.pet?.tutor?.name || "—",
+    especie: speciesMap[item.pet?.species] || "—",
+    porte: sizeMap[item.pet?.size] || "—",
+    servico: item.services?.map((s) => s.name).join(", ") || "—",
+    colaborador: item.collaborator?.name || "—",
+    status: item.status_code || item.status,
+    duration: item.duration_code || item.duration,
+  };
+}
 
 const StatusPage = () => {
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [search, setSearch] = useState("");
+  const hoje = new Date();
+  const hojeFormatado = hoje.toISOString().split("T")[0];
+  const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
 
+  // Carrega agendamentos do dia atual
+  useEffect(() => {
+    if (!diaSelecionado) return;
+    setCarregando(true);
+
+    const [ano, mes, dia] = diaSelecionado.split("-").map(Number);
+    const inicioDia = new Date(ano, mes - 1, dia).toISOString();
+    const fimDia = new Date(ano, mes - 1, dia, 23, 59, 59).toISOString();
+
+    scheduleService.listar(inicioDia, fimDia)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        setAgendamentos(data.map(normalizar));
+      })
+      .catch((err) => console.error("Erro ao carregar agendamentos:", err))
+      .finally(() => setCarregando(false));
+  }, [diaSelecionado]);
+
+
+
+  // Aplica filtro de colaborador + busca por texto
   const agendamentosFiltrados = useMemo(() => {
-    return agendamentosIniciais.filter((item) => {
+    return agendamentos.filter((item) => {
       const texto = `
-        ${item.pet}
-        ${item.tutor}
-        ${item.especie}
-        ${item.servico}
-        ${item.porte}
-        ${item.colaborador}
-        ${item.observation}
-        ${statusMap[item.status]?.label}
-      `.toLowerCase();
-
+      ${item.pet} ${item.tutor} ${item.especie}
+      ${item.servico} ${item.porte} ${item.colaborador}
+      ${item.observation} ${statusMap[item.status]?.label}
+    `.toLowerCase();
       return texto.includes(search.toLowerCase());
     });
-  }, [search]);
+  }, [agendamentos, search]);
 
   function formatarHorario(dateTime) {
     return new Date(dateTime).toLocaleTimeString("pt-BR", {
@@ -143,11 +118,14 @@ const StatusPage = () => {
 
   function formatarDuracao(duration) {
     const duracoes = {
-      THIRTY_MINUTES: "30 minutos",
+      THIRTY_MIN: "30 minutos",
+      FORTY_FIVE_MIN: "45 minutos",
       ONE_HOUR: "1 hora",
+      ONE_HALF_HOUR: "1h30",
       TWO_HOURS: "2 horas",
+      TWO_HALF_HOURS: "2h30",
+      THREE_HOURS: "3 horas",
     };
-
     return duracoes[duration] || duration;
   }
 
@@ -169,81 +147,84 @@ const StatusPage = () => {
         </div>
 
         <div className="status-search-box">
-          <label>Buscar atendimento</label>
+          <label>Selecionar dia</label>
           <input
-            type="text"
-            placeholder="Buscar por pet, tutor, serviço ou colaborador"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            type="date"
+            value={diaSelecionado}
+            onChange={(e) => setDiaSelecionado(e.target.value)}
           />
         </div>
       </section>
 
-      <section className="status-summary">
-        {Object.keys(statusMap).map((statusKey) => (
-          <div key={statusKey} className={`summary-card ${statusMap[statusKey].className}`}>
-            <small>{statusMap[statusKey].label}</small>
-            <strong>{getAgendamentosPorStatus(statusKey).length}</strong>
-          </div>
-        ))}
-      </section>
-
-      <section className="status-columns">
-        {Object.keys(statusMap).map((statusKey) => {
-          const agendamentos = getAgendamentosPorStatus(statusKey);
-          const statusInfo = statusMap[statusKey];
-
-          return (
-            <article key={statusKey} className={`status-column ${statusInfo.className}`}>
-              <div className="column-header">
-                <div>
-                  <h2>{statusInfo.label}</h2>
-                  <p>{statusInfo.subtitle}</p>
-                </div>
-
-                <span>{agendamentos.length}</span>
+      {carregando ? (
+        <p style={{ textAlign: "center", padding: "2rem" }}>Carregando agendamentos...</p>
+      ) : (
+        <>
+          <section className="status-summary">
+            {Object.keys(statusMap).map((statusKey) => (
+              <div key={statusKey} className={`summary-card ${statusMap[statusKey].className}`}>
+                <small>{statusMap[statusKey].label}</small>
+                <strong>{getAgendamentosPorStatus(statusKey).length}</strong>
               </div>
+            ))}
+          </section>
 
-              <div className="status-card-list">
-                {agendamentos.length > 0 ? (
-                  agendamentos.map((item) => (
-                    <div key={item.id} className="pet-card pet-card-mini">
-                      <div className="pet-mini-top">
-                        <div className="pet-time-mini">
-                          <strong>{formatarHorario(item.date_time)}</strong>
-                        </div>
+          <section className="status-columns">
+            {Object.keys(statusMap).map((statusKey) => {
+              const agendamentos = getAgendamentosPorStatus(statusKey);
+              const statusInfo = statusMap[statusKey];
 
-                        <div className="pet-mini-info">
-                          <h3>{item.pet}</h3>
-                          <p>{item.servico}</p>
-                        </div>
-                      </div>
-
-                      <div className="pet-mini-collaborator">
-                        <span>Colaborador</span>
-                        <strong>{item.colaborador}</strong>
-                      </div>
-
-                      <button
-                        className="detalhes-btn detalhes-btn-mini"
-                        type="button"
-                        onClick={() => setSelectedAppointment(item)}
-                      >
-                        Ver detalhes
-                      </button>
+              return (
+                <article key={statusKey} className={`status-column ${statusInfo.className}`}>
+                  <div className="column-header">
+                    <div>
+                      <h2>{statusInfo.label}</h2>
+                      <p>{statusInfo.subtitle}</p>
                     </div>
-                  ))
-                ) : (
-                  <div className="empty-column">
-                    <strong>Nenhum atendimento</strong>
-                    <p>Não há agendamentos neste status.</p>
+                    <span>{agendamentos.length}</span>
                   </div>
-                )}
-              </div>
-            </article>
-          );
-        })}
-      </section>
+
+                  <div className="status-card-list">
+                    {agendamentos.length > 0 ? (
+                      agendamentos.map((item) => (
+                        <div key={item.id} className="pet-card pet-card-mini">
+                          <div className="pet-mini-top">
+                            <div className="pet-time-mini">
+                              <strong>{formatarHorario(item.date_time)}</strong>
+                            </div>
+                            <div className="pet-mini-info">
+                              <h3>{item.pet}</h3>
+                              <p>{item.servico}</p>
+                            </div>
+                          </div>
+
+                          <div className="pet-mini-collaborator">
+                            <span>Colaborador</span>
+                            <strong>{item.colaborador}</strong>
+                          </div>
+
+                          <button
+                            className="detalhes-btn detalhes-btn-mini"
+                            type="button"
+                            onClick={() => setSelectedAppointment(item)}
+                          >
+                            Ver detalhes
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty-column">
+                        <strong>Nenhum atendimento</strong>
+                        <p>Não há agendamentos neste status.</p>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        </>
+      )}
 
       {selectedAppointment && (
         <div className="modal-overlay" onClick={() => setSelectedAppointment(null)}>
@@ -256,7 +237,6 @@ const StatusPage = () => {
                 <h2>{selectedAppointment.pet}</h2>
                 <p>{selectedAppointment.servico}</p>
               </div>
-
               <button
                 className="modal-x"
                 type="button"
@@ -276,27 +256,22 @@ const StatusPage = () => {
                 <span>Tutor</span>
                 <strong>{selectedAppointment.tutor}</strong>
               </div>
-
               <div>
                 <span>Espécie</span>
                 <strong>{selectedAppointment.especie}</strong>
               </div>
-
               <div>
                 <span>Porte</span>
                 <strong>{selectedAppointment.porte}</strong>
               </div>
-
               <div>
                 <span>Horário</span>
                 <strong>{formatarHorario(selectedAppointment.date_time)}</strong>
               </div>
-
               <div>
                 <span>Data</span>
                 <strong>{formatarData(selectedAppointment.date_time)}</strong>
               </div>
-
               <div>
                 <span>Duração</span>
                 <strong>{formatarDuracao(selectedAppointment.duration)}</strong>

@@ -166,7 +166,7 @@ function Pets() {
         PEQUENO: "S",
         MEDIO: "M",
         GRANDE: "L",
-        GIGANTE: "G",
+        GIGANTE: "XL",
       };
 
       const sexMap = {

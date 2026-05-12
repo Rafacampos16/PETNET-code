@@ -45,7 +45,7 @@ export const traduzirPorte = (size) => {
       return "Médio";
     case "L":
       return "Grande";
-    case "G":
+    case "XL":
       return "Gigante"
     default:
       return size;
@@ -54,7 +54,9 @@ export const traduzirPorte = (size) => {
 
 const formatarData = (data) => {
   if (!data) return "";
-  return new Date(data).toLocaleDateString("pt-BR");
+  return new Date(data).toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
+  });
 };
 
 const Pets_cadastrados = () => {
@@ -88,7 +90,7 @@ const Pets_cadastrados = () => {
               size: traduzirPorte(pet.size),
               weight: `${pet.weight} kg`,
               birth_date: formatarData(pet.birth_date),
-              sex: pet.sex,
+              sex: pet.sex || "",
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               photo: pet.picture_blob || "",
@@ -298,13 +300,13 @@ const Pets_cadastrados = () => {
   );
 
   if (loading) {
-  return (
-    <LoadingScreen
-      title="Carregando pets"
-      subtitle="Estamos organizando a lista de pets cadastrados."
-    />
-  );
-}
+    return (
+      <LoadingScreen
+        title="Carregando pets"
+        subtitle="Estamos organizando a lista de pets cadastrados."
+      />
+    );
+  }
 
   return (
     <div className="petsReg-container">
