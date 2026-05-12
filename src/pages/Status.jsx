@@ -1,303 +1,323 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "../styles/status.css";
 
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-} from "@hello-pangea/dnd";
+const ScheduleStatus = {
+  SCHEDULED: "SCHEDULED",
+  CONFIRMED: "CONFIRMED",
+  CANCELED: "CANCELED",
+  FINISHED: "FINISHED",
+};
+
+const statusMap = {
+  [ScheduleStatus.SCHEDULED]: {
+    label: "AGENDADOS",
+    subtitle: "Atendimentos criados e aguardando confirmação",
+    className: "scheduled",
+  },
+  [ScheduleStatus.CONFIRMED]: {
+    label: "CONFIRMADOS",
+    subtitle: "Atendimentos confirmados para execução",
+    className: "confirmed",
+  },
+  [ScheduleStatus.FINISHED]: {
+    label: "FINALIZADOS",
+    subtitle: "Atendimentos já concluídos",
+    className: "finished",
+  },
+  [ScheduleStatus.CANCELED]: {
+    label: "CANCELADOS",
+    subtitle: "Atendimentos cancelados",
+    className: "canceled",
+  },
+};
+
+const agendamentosIniciais = [
+  {
+    id: "1",
+    pet: "Thor",
+    tutor: "Mariana Costa",
+    especie: "Cachorro",
+    servico: "Banho",
+    porte: "Médio",
+    colaborador: "Rafaela Campos",
+    collaborator_cpf: "98765432100",
+    date_time: "2026-05-08T09:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.SCHEDULED,
+    observation: "Cuidado extra com as patas",
+  },
+  {
+    id: "2",
+    pet: "Luna",
+    tutor: "Carlos Souza",
+    especie: "Gato",
+    servico: "Tosa",
+    porte: "Pequeno",
+    colaborador: "Rafaela Campos",
+    collaborator_cpf: "98765432100",
+    date_time: "2026-05-08T10:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.CONFIRMED,
+    observation: "Pet sensível a barulhos altos",
+  },
+  {
+    id: "3",
+    pet: "Mel",
+    tutor: "Fernanda Lima",
+    especie: "Cachorro",
+    servico: "Banho e Tosa",
+    porte: "Grande",
+    colaborador: "Rafaela Campos",
+    collaborator_cpf: "98765432100",
+    date_time: "2026-05-08T11:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.SCHEDULED,
+    observation: "Usar shampoo hipoalergênico",
+  },
+  {
+    id: "4",
+    pet: "Nina",
+    tutor: "Patrícia Alves",
+    especie: "Gato",
+    servico: "Hidratação",
+    porte: "Pequeno",
+    colaborador: "Rafaela Campos",
+    collaborator_cpf: "98765432100",
+    date_time: "2026-05-08T13:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.CANCELED,
+    observation: "Tutor solicitou remarcação",
+  },
+  {
+    id: "5",
+    pet: "Bob",
+    tutor: "Rafael Martins",
+    especie: "Cachorro",
+    servico: "Tosa higiênica",
+    porte: "Médio",
+    colaborador: "Rafaela Campos",
+    collaborator_cpf: "98765432100",
+    date_time: "2026-05-08T14:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.FINISHED,
+    observation: "Atendimento finalizado sem observações adicionais",
+  },
+];
 
 const StatusPage = () => {
-  const [pets, setPets] = useState([
-    {
-      id: "1",
-      name: "Pitufa",
-      dono: "Mariana Guerra",
-      especie: "Gato",
-      servico: "Veterinário",
-      peso: "1.5 kg",
-      raca: "RND",
-      porte: "PP",
-      observacao: "Não gosta da cor vermelha.",
-      status: "nao-finalizados",
-    },
-    {
-      id: "2",
-      name: "Thor",
-      dono: "Eduardo Santos",
-      especie: "Cachorro",
-      servico: "Banho e Tosa",
-      peso: "22 kg",
-      raca: "Vira-lata",
-      porte: "Médio",
-      observacao: "Tem alergia a shampoo perfumado.",
-      status: "nao-finalizados",
-    },
-    {
-      id: "3",
-      name: "Luna",
-      dono: "Camila Freitas",
-      especie: "Gato",
-      servico: "Consulta de Rotina",
-      peso: "3.2 kg",
-      raca: "Siamês",
-      porte: "P",
-      observacao: "Muito dócil.",
-      status: "em-andamento",
-    },
-    {
-      id: "4",
-      name: "Rex",
-      dono: "Matheus Silva",
-      especie: "Cachorro",
-      servico: "Veterinário",
-      peso: "35 kg",
-      raca: "Pastor Alemão",
-      porte: "G",
-      observacao: "Ansioso com pessoas desconhecidas.",
-      status: "em-andamento",
-    },
-    {
-      id: "5",
-      name: "Kiara",
-      dono: "Juliana Souza",
-      especie: "Cachorro",
-      servico: "Banho",
-      peso: "7 kg",
-      raca: "Shih-tzu",
-      porte: "P",
-      observacao: "Precisa cortar as unhas.",
-      status: "finalizados",
-    },
-    {
-      id: "6",
-      name: "Mingau",
-      dono: "Gabriel Rocha",
-      especie: "Gato",
-      servico: "Banho Medicamentoso",
-      peso: "4 kg",
-      raca: "Persa",
-      porte: "P",
-      observacao: "Tratamento de pele.",
-      status: "nao-finalizados",
-    },
-    {
-      id: "7",
-      name: "Pandora",
-      dono: "Larissa Reis",
-      especie: "Cachorro",
-      servico: "Tosa Higiênica",
-      peso: "9 kg",
-      raca: "Poodle",
-      porte: "P",
-      observacao: "Late bastante.",
-      status: "em-andamento",
-    },
-    {
-      id: "8",
-      name: "Bob",
-      dono: "Pedro Henrique",
-      especie: "Cachorro",
-      servico: "Consulta Veterinária",
-      peso: "15 kg",
-      raca: "Beagle",
-      porte: "M",
-      observacao: "Come demais.",
-      status: "finalizados",
-    },
-    {
-      id: "9",
-      name: "Nina",
-      dono: "Ana Júlia",
-      especie: "Cachorro",
-      servico: "Banho e Tosa",
-      peso: "5.5 kg",
-      raca: "Pug",
-      porte: "P",
-      observacao: "Dificuldade respiratória leve.",
-      status: "nao-finalizados",
-    },
-    {
-      id: "10",
-      name: "Zeca",
-      dono: "Rodrigo Mendes",
-      especie: "Gato",
-      servico: "Consulta",
-      peso: "4.8 kg",
-      raca: "Maine Coon",
-      porte: "M",
-      observacao: "Muito carinhoso e sociável.",
-      status: "finalizados",
-    },
-  ]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [search, setSearch] = useState("");
 
-  const [selectedPet, setSelectedPet] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditingStatus, setIsEditingStatus] = useState(false);
-  const [newStatus, setNewStatus] = useState("");
+  const agendamentosFiltrados = useMemo(() => {
+    return agendamentosIniciais.filter((item) => {
+      const texto = `
+        ${item.pet}
+        ${item.tutor}
+        ${item.especie}
+        ${item.servico}
+        ${item.porte}
+        ${item.colaborador}
+        ${item.observation}
+        ${statusMap[item.status]?.label}
+      `.toLowerCase();
 
+      return texto.includes(search.toLowerCase());
+    });
+  }, [search]);
 
-  const openModal = (pet) => {
-    setSelectedPet(pet);
-    setIsModalOpen(true);
-  };
+  function formatarHorario(dateTime) {
+    return new Date(dateTime).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
-  const closeModal = () => {
-    setSelectedPet(null);
-    setIsModalOpen(false);
-  };
+  function formatarData(dateTime) {
+    return new Date(dateTime).toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  }
 
+  function formatarDuracao(duration) {
+    const duracoes = {
+      THIRTY_MINUTES: "30 minutos",
+      ONE_HOUR: "1 hora",
+      TWO_HOURS: "2 horas",
+    };
 
-  // Agora tudo usando o MESMO padrão
-  const statusMap = {
-    "nao-finalizados": "NÃO FINALIZADOS",
-    "em-andamento": "EM ANDAMENTO",
-    "finalizados": "FINALIZADOS",
-  };
+    return duracoes[duration] || duration;
+  }
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const petId = result.draggableId;
-    const newStatus = result.destination.droppableId;
-
-    setPets((prev) =>
-      prev.map((p) =>
-        p.id === petId ? { ...p, status: newStatus } : p
-      )
-    );
-  };
+  function getAgendamentosPorStatus(status) {
+    return agendamentosFiltrados
+      .filter((item) => item.status === status)
+      .sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
+  }
 
   return (
     <div className="status-container">
-      <h1 className="status-title">STATUS DO AGENDAMENTO</h1>
-      <p className="status-subtitle">
-        Arraste os cards entre as colunas para alterar o status do atendimento
-        ou clique em <strong>“Ver detalhes”</strong> para editar manualmente.
-      </p>
-
-
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="status-columns">
-          {Object.keys(statusMap).map((statusKey) => (
-            <Droppable droppableId={statusKey} key={statusKey}>
-              {(provided, snapshot) => (
-                <div
-                  className={`status-column ${
-                    snapshot.isDraggingOver ? "drag-over" : ""
-                  }`}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  <div className="column-header">
-                    {statusMap[statusKey]}
-                  </div>
-
-                  {pets
-                    .filter((p) => p.status === statusKey)
-                    .map((pet, index) => (
-                      <Draggable
-                        key={pet.id}
-                        draggableId={pet.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            className="pet-card"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <div className="pet-card-header">
-                              PET: {pet.name}
-                            </div>
-
-                           <div className="pet-details">
-                              <p><strong>Serviço:</strong> {pet.servico}</p>
-                              <p><strong>Observações:</strong> {pet.observacao}</p>
-
-                              <button
-                                className="detalhes-btn"
-                                onClick={() => openModal(pet)}
-                              >
-                                Ver detalhes
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
+      <section className="status-hero">
+        <div>
+          <span className="status-badge">Agenda do colaborador</span>
+          <h1 className="status-title">Status dos agendamentos</h1>
+          <p className="status-subtitle">
+            Visualize os atendimentos vinculados ao colaborador e acompanhe o status de cada agendamento.
+          </p>
         </div>
-      </DragDropContext>
 
-            {isModalOpen && selectedPet && (
-        <div className="modal-overlay" onClick={closeModal}>
+        <div className="status-search-box">
+          <label>Buscar atendimento</label>
+          <input
+            type="text"
+            placeholder="Buscar por pet, tutor, serviço ou colaborador"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </section>
+
+      <section className="status-summary">
+        {Object.keys(statusMap).map((statusKey) => (
+          <div key={statusKey} className={`summary-card ${statusMap[statusKey].className}`}>
+            <small>{statusMap[statusKey].label}</small>
+            <strong>{getAgendamentosPorStatus(statusKey).length}</strong>
+          </div>
+        ))}
+      </section>
+
+      <section className="status-columns">
+        {Object.keys(statusMap).map((statusKey) => {
+          const agendamentos = getAgendamentosPorStatus(statusKey);
+          const statusInfo = statusMap[statusKey];
+
+          return (
+            <article key={statusKey} className={`status-column ${statusInfo.className}`}>
+              <div className="column-header">
+                <div>
+                  <h2>{statusInfo.label}</h2>
+                  <p>{statusInfo.subtitle}</p>
+                </div>
+
+                <span>{agendamentos.length}</span>
+              </div>
+
+              <div className="status-card-list">
+                {agendamentos.length > 0 ? (
+                  agendamentos.map((item) => (
+                    <div key={item.id} className="pet-card pet-card-mini">
+                      <div className="pet-mini-top">
+                        <div className="pet-time-mini">
+                          <strong>{formatarHorario(item.date_time)}</strong>
+                        </div>
+
+                        <div className="pet-mini-info">
+                          <h3>{item.pet}</h3>
+                          <p>{item.servico}</p>
+                        </div>
+                      </div>
+
+                      <div className="pet-mini-collaborator">
+                        <span>Colaborador</span>
+                        <strong>{item.colaborador}</strong>
+                      </div>
+
+                      <button
+                        className="detalhes-btn detalhes-btn-mini"
+                        type="button"
+                        onClick={() => setSelectedAppointment(item)}
+                      >
+                        Ver detalhes
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-column">
+                    <strong>Nenhum atendimento</strong>
+                    <p>Não há agendamentos neste status.</p>
+                  </div>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      {selectedAppointment && (
+        <div className="modal-overlay" onClick={() => setSelectedAppointment(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Detalhes do Pet</h2>
-
-            <p><strong>Nome:</strong> {selectedPet.name}</p>
-            <p><strong>Dono:</strong> {selectedPet.dono}</p>
-            <p><strong>Espécie:</strong> {selectedPet.especie}</p>
-            <p><strong>Serviço:</strong> {selectedPet.servico}</p>
-            <p><strong>Peso:</strong> {selectedPet.peso}</p>
-            <p><strong>Raça:</strong> {selectedPet.raca}</p>
-            <p><strong>Porte:</strong> {selectedPet.porte}</p>
-            <p><strong>Observação:</strong> {selectedPet.observacao}</p>
+            <div className="modal-header">
+              <div>
+                <span className={`modal-status ${statusMap[selectedAppointment.status].className}`}>
+                  {statusMap[selectedAppointment.status].label}
+                </span>
+                <h2>{selectedAppointment.pet}</h2>
+                <p>{selectedAppointment.servico}</p>
+              </div>
 
               <button
-                className="edit-status-btn"
-                onClick={() => {
-                  setNewStatus(selectedPet.status); 
-                  setIsEditingStatus(true);
-                }}
+                className="modal-x"
+                type="button"
+                onClick={() => setSelectedAppointment(null)}
               >
-                Editar status
-              </button>
-
-              {isEditingStatus && (
-          <div className="edit-status-box">
-            <label>Selecione o novo status:</label>
-
-            <select
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
-              >
-                <option value="naoFinalizados">Não finalizados</option>
-                <option value="emAndamento">Em andamento</option>
-                <option value="finalizados">Finalizados</option>
-              </select>
-
-              <button
-                className="save-status-btn"
-                onClick={() => {
-                  setPets((prev) =>
-                    prev.map((p) =>
-                      p.id === selectedPet.id ? { ...p, status: newStatus } : p
-                    )
-                  );
-                  setIsEditingStatus(false);
-                  setIsModalOpen(false);
-                }}
-              >
-                Salvar
+                ×
               </button>
             </div>
-          )}
 
+            <div className="modal-collaborator">
+              <span>Colaborador responsável</span>
+              <strong>{selectedAppointment.colaborador}</strong>
+            </div>
 
-            <button className="close-modal-btn" onClick={closeModal}>
+            <div className="modal-info-grid">
+              <div>
+                <span>Tutor</span>
+                <strong>{selectedAppointment.tutor}</strong>
+              </div>
+
+              <div>
+                <span>Espécie</span>
+                <strong>{selectedAppointment.especie}</strong>
+              </div>
+
+              <div>
+                <span>Porte</span>
+                <strong>{selectedAppointment.porte}</strong>
+              </div>
+
+              <div>
+                <span>Horário</span>
+                <strong>{formatarHorario(selectedAppointment.date_time)}</strong>
+              </div>
+
+              <div>
+                <span>Data</span>
+                <strong>{formatarData(selectedAppointment.date_time)}</strong>
+              </div>
+
+              <div>
+                <span>Duração</span>
+                <strong>{formatarDuracao(selectedAppointment.duration)}</strong>
+              </div>
+            </div>
+
+            <div className="modal-observation">
+              <span>Observação</span>
+              <p>{selectedAppointment.observation || "Sem observações."}</p>
+            </div>
+
+            <button
+              className="close-modal-btn"
+              type="button"
+              onClick={() => setSelectedAppointment(null)}
+            >
               Fechar
             </button>
           </div>
         </div>
       )}
-
     </div>
   );
 };
