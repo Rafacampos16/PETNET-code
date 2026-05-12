@@ -28,9 +28,9 @@ export default function Cadastro() {
     endereco: "",
     bairro: "",
     cep: "",
-    estado: "",
-    cidade: "",
-    complement: "",
+    complemento: "",
+    numero: "",
+    localizacao: "",
     email: "",
   });
 
@@ -96,9 +96,9 @@ export default function Cadastro() {
     if (!form.endereco.trim()) erros.endereco = true;
     if (!form.bairro.trim()) erros.bairro = true;
     if (!form.cep.trim()) erros.cep = true;
-    if (!form.estado.trim()) erros.estado = true;
-    if (!form.cidade.trim()) erros.cidade = true;
-    if (!form.complement.trim()) erros.complement = true;
+    if (!form.localizacao.trim()) erros.localizacao = true;
+    if (!form.complemento.trim()) erros.complemento = true;
+    if (!form.numero.trim()) erros.numero = true;
     if (!form.email.trim()) erros.email = true;
 
     if (!senha.trim()) erros.senha = true;
@@ -115,22 +115,25 @@ export default function Cadastro() {
       alert("As senhas não correspondem ou não seguem as regras.");
       return;
     }
-
     try {
       const body = {
         name: form.nome,
-        cpf: form.cpf,
         email: form.email,
-        password: senha, 
-        address: {     
-          type: "Casa", 
+        cpf: form.cpf,
+        password: senha,
+        type: "Cliente",
+        address: {
+          type: "Residencial",
           cep: form.cep,
-          location: `${form.endereco}, ${form.bairro}, ${form.cidade}, ${form.estado}`,
-          complement: `${form.complement}`,
+          locaticion: form.localizacao,
+          neighborhood: form.bairro,
+          address: form.endereco,
+          number: form.numero,
+          complement: form.complemento,
         },
         contact: {
-          name: form.nome,
           number: form.telefone,
+          name: form.nome
         },
       };
 
@@ -271,39 +274,38 @@ export default function Cadastro() {
 
                 <div className="linhas">
                   <div className="campo">
-                    <label>ESTADO (UF)</label>
+                    <label>Localização</label>
                     <input
-                      name="estado"
-                      type="text"
-                      placeholder="Ex: SP"
-                      value={form.estado}
-                      onChange={handleChange}
-                      maxLength="2"
-                      className={erroCampo.estado ? "input-erro" : ""}
-                    />
+  name="localizacao"
+  type="text"
+  placeholder="Ex: Próximo ao metrô, portão azul, etc."
+  value={form.localizacao}
+  onChange={handleChange}
+  className={erroCampo.localizacao ? "input-erro" : ""}
+/>
                   </div>
 
                   <div className="campo">
-                    <label>CIDADE</label>
-                    <input
-                      name="cidade"
-                      type="text"
-                      placeholder="Digite sua cidade"
-                      value={form.cidade}
-                      onChange={handleChange}
-                      className={erroCampo.cidade ? "input-erro" : ""}
-                    />
+                    <label>Complemento</label>
+                   <input
+  name="complemento"
+  type="text"
+  placeholder="Casa, apartamento, bloco..."
+  value={form.complemento}
+  onChange={handleChange}
+  className={erroCampo.complemento ? "input-erro" : ""}
+/>
                   </div>
 
                   <div className="campo">
                     <label>NÚMERO</label>
                     <input
-                      name="complement"
+                      name="numero"
                       type="number"
                       placeholder="Número"
-                      value={form.complement}
+                      value={form.numero}
                       onChange={handleChange}
-                      className={erroCampo.complement ? "input-erro" : ""}
+                      className={erroCampo.numero ? "input-erro" : ""}
                     />
                   </div>
                 </div>
@@ -377,7 +379,7 @@ export default function Cadastro() {
                         <FiCheckCircle size={14} />
                         Letra maiúscula
                       </li>
-                       <li className={regraMinuscula ? "validado" : "invalido"}>
+                      <li className={regraMinuscula ? "validado" : "invalido"}>
                         <FiCheckCircle size={14} />
                         Letra minúscula
                       </li>
