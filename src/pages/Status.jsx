@@ -32,14 +32,26 @@ const statusMap = {
   },
 };
 
+const speciesMap = {
+  dog: "Cachorro",
+  cat: "Gato",
+};
+
+const sizeMap = {
+ S: 'Pequeno',
+  M: 'Médio',
+  L: 'Grande',
+  XL: 'Gigante'
+};
+
 // Transforma o objeto da API no formato que o componente usa
 function normalizar(item) {
   return {
     ...item,
     pet: item.pet?.name || "—",
     tutor: item.pet?.tutor?.name || "—",
-    especie: item.pet?.species || "—",
-    porte: item.pet?.size || "—",
+    especie: speciesMap[item.pet?.species] || "—",
+    porte: sizeMap[item.pet?.size] || "—",
     servico: item.services?.map((s) => s.name).join(", ") || "—",
     colaborador: item.collaborator?.name || "—",
     status: item.status_code || item.status,
@@ -52,41 +64,41 @@ const StatusPage = () => {
   const [carregando, setCarregando] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [search, setSearch] = useState("");
-const hoje = new Date();
-const hojeFormatado = hoje.toISOString().split("T")[0];
-const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
+  const hoje = new Date();
+  const hojeFormatado = hoje.toISOString().split("T")[0];
+  const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
 
   // Carrega agendamentos do dia atual
   useEffect(() => {
-  if (!diaSelecionado) return;
-  setCarregando(true);
+    if (!diaSelecionado) return;
+    setCarregando(true);
 
-  const [ano, mes, dia] = diaSelecionado.split("-").map(Number);
-  const inicioDia = new Date(ano, mes - 1, dia).toISOString();
-  const fimDia = new Date(ano, mes - 1, dia, 23, 59, 59).toISOString();
+    const [ano, mes, dia] = diaSelecionado.split("-").map(Number);
+    const inicioDia = new Date(ano, mes - 1, dia).toISOString();
+    const fimDia = new Date(ano, mes - 1, dia, 23, 59, 59).toISOString();
 
-  scheduleService.listar(inicioDia, fimDia)
-    .then((res) => {
-      const data = Array.isArray(res.data) ? res.data : [];
-      setAgendamentos(data.map(normalizar));
-    })
-    .catch((err) => console.error("Erro ao carregar agendamentos:", err))
-    .finally(() => setCarregando(false));
-}, [diaSelecionado]);
+    scheduleService.listar(inicioDia, fimDia)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        setAgendamentos(data.map(normalizar));
+      })
+      .catch((err) => console.error("Erro ao carregar agendamentos:", err))
+      .finally(() => setCarregando(false));
+  }, [diaSelecionado]);
 
- 
+
 
   // Aplica filtro de colaborador + busca por texto
   const agendamentosFiltrados = useMemo(() => {
-  return agendamentos.filter((item) => {
-    const texto = `
+    return agendamentos.filter((item) => {
+      const texto = `
       ${item.pet} ${item.tutor} ${item.especie}
       ${item.servico} ${item.porte} ${item.colaborador}
       ${item.observation} ${statusMap[item.status]?.label}
     `.toLowerCase();
-    return texto.includes(search.toLowerCase());
-  });
-}, [agendamentos, search]);
+      return texto.includes(search.toLowerCase());
+    });
+  }, [agendamentos, search]);
 
   function formatarHorario(dateTime) {
     return new Date(dateTime).toLocaleTimeString("pt-BR", {
@@ -135,21 +147,21 @@ const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
         </div>
 
         <div className="status-search-box">
- <label>Selecionar dia</label>
-<input
-  type="date"
-  value={diaSelecionado}
-  onChange={(e) => setDiaSelecionado(e.target.value)}
-/>
+          <label>Selecionar dia</label>
+          <input
+            type="date"
+            value={diaSelecionado}
+            onChange={(e) => setDiaSelecionado(e.target.value)}
+          />
 
-  <label>Buscar atendimento</label>
-  <input
-    type="text"
-    placeholder="Buscar por pet, tutor, serviço ou colaborador"
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-  />
-</div>
+          <label>Buscar atendimento</label>
+          <input
+            type="text"
+            placeholder="Buscar por pet, tutor, serviço ou colaborador"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </section>
 
       {carregando ? (
