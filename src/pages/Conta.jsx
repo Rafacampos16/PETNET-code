@@ -78,51 +78,21 @@ export default function App() {
       setErroEmail("Digite um e-mail para redefinir a senha.");
       return;
     }
-
     setErroEmail("");
     setEmailEnviado(false);
     setOpenModalResetSenha(true);
-
-    try {
-      /*
-        Quando a API estiver pronta, voce pode chamar aqui:
-
-        await authService.forgotPassword(login.email);
-
-        Essa API deve enviar o token/link para o e-mail do usuario.
-      */
-
-      console.log("Token enviado para:", login.email);
-
-      setOpenModalResetSenha(true);
-    } catch (error) {
-      setErroEmail(
-        error.response?.data?.error ||
-        "Nao foi possivel enviar o token. Tente novamente."
-      );
-    }
   }
 
 
   async function handleEnviarRecuperacao() {
     try {
-      /*
-        Quando a API estiver pronta, voce pode chamar aqui:
-  
-        await authService.forgotPassword(login.email);
-  
-        Essa API deve enviar o link de recuperacao para o e-mail do usuario.
-      */
-
-      console.log("Link de recuperacao enviado para:", login.email);
-
+      await authService.forgotPassword(login.email);
       setEmailEnviado(true);
     } catch (error) {
       setErroEmail(
         error.response?.data?.error ||
-        "Nao foi possivel enviar o e-mail de recuperacao. Tente novamente."
+        "Não foi possível enviar o e-mail de recuperação. Tente novamente."
       );
-
       setOpenModalResetSenha(false);
     }
   }
