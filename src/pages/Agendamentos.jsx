@@ -171,7 +171,14 @@ const Agendamentos = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) { setSuccessMsg(""); return; }
 
+    if (!horaInicio || !validarHoraInicio(horaInicio)) newErrors.inicio = true;
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) { setSuccessMsg(""); return; }
+
+    const [hora, min] = horaInicio.split(":").map(Number);
     const dateTime = new Date(selectedDate);
+    dateTime.setHours(hora, min, 0, 0);
 
     const petSelecionado = petsDisponiveis.find((p) => String(p.id) === String(pet));
     const colaborador = colaboradores.find((c) => c.cpf === colaboradorCpf);
@@ -183,6 +190,7 @@ const Agendamentos = () => {
     setAgendamentoResumo({
       cpf,
       cpfLimpo,
+      horaInicio,
       petId: pet,
       petNome: petSelecionado?.name || pet,
       colaboradorCpf,
@@ -348,7 +356,23 @@ const Agendamentos = () => {
               </select>
               {errors.duracao && <p className="erro-service">Selecione a duração.</p>}
             </div>
+
+            <div>
+              <label>Horário de início</label>
+              <input
+                type="text"
+                placeholder="Ex: 09:00"
+                value={horaInicio}
+                onChange={handleHoraInicioChange}
+                maxLength={5}
+                className={errors.inicio ? "input-error" : ""}
+                disabled={!selectedDate}
+              />
+              {errors.inicio && <p className="erro-service">Informe um horário válido.</p>}
+            </div>
           </div>
+
+
 
           {selectedDate && !dataPodeAgendar && (
             <p className="erro-service">
@@ -471,6 +495,11 @@ const Agendamentos = () => {
                 <span>Duração</span>
                 <strong>{agendamentoResumo.duracaoLabel}</strong>
               </div>
+              <div className="summary-item">
+                <span>Hora de início</span>
+                <strong>{agendamentoResumo.horaInicio}</strong>
+              </div>
+
               <div className="summary-item summary-full">
                 <span>Serviços</span>
                 <div className="summary-tags">

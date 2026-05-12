@@ -153,14 +153,6 @@ const StatusPage = () => {
             value={diaSelecionado}
             onChange={(e) => setDiaSelecionado(e.target.value)}
           />
-
-          <label>Buscar atendimento</label>
-          <input
-            type="text"
-            placeholder="Buscar por pet, tutor, serviço ou colaborador"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
         </div>
       </section>
 
