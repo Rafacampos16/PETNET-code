@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import serviceService from "../services/serviceService";
 import Header from "../components/Header";
 import "../styles/servicos.css";
-
 import banhoIcon from "../assets/icons/banho.png";
 import terapeuticoIcon from "../assets/icons/terapeutico.png";
 import tosahigIcon from "../assets/icons/tosahig.png";
@@ -24,21 +23,9 @@ import porosidadeIcon from "../assets/icons/porosidade.png";
 import defaultIcon from "../assets/icons/banho.png"; // ícone genérico
 
 const Servicos = () => {
-  const [services, setServices] = useState([]);
-
-  useEffect(() => {
-    const servicosSalvos = JSON.parse(localStorage.getItem("petnetServicos"));
-
-    if (servicosSalvos && servicosSalvos.length > 0) {
-      setServices(servicosSalvos.filter((servico) => servico.ativo));
-    } else {
-      localStorage.setItem("petnetServicos", JSON.stringify(servicosPadrao));
-      setServices(servicosPadrao.filter((servico) => servico.ativo));
-    }
-  }, []);
 
   const handleAgendar = (servico) => {
-    const phone = "5512992136141";
+    const phone = "5512992136141"; // coloque seu número com DDI e DDD
     const message = `Olá! Gostaria de agendar o serviço de ${servico}. Pode me informar os horários disponíveis?`;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
@@ -84,7 +71,6 @@ const Servicos = () => {
         <div className="container">
           <h2 className="servicos-title">NOSSOS SERVIÇOS</h2>
           <div className="servicos-divider"></div>
-
           <p className="servicos-subtitle">
             No PETNET, cada pet é tratado com amor, cuidado e muita dedicação!
             <br />
@@ -113,12 +99,6 @@ const Servicos = () => {
               </div>
             ))}
           </div>
-
-          {services.length === 0 && (
-            <p className="servicos-vazio">
-              Nenhum serviço ativo no momento.
-            </p>
-          )}
         </div>
       </section>
     </>
