@@ -190,7 +190,7 @@ const StatusPage = () => {
                         <div key={item.id} className="pet-card pet-card-mini">
                           <div className="pet-mini-top">
                             <div className="pet-time-mini">
-                              <strong>{formatarDuracao(item.duration)}</strong>
+                              <strong>{formatarHorario(item.date_time)}</strong>
                             </div>
                             <div className="pet-mini-info">
                               <h3>{item.pet}</h3>
