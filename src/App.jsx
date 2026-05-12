@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -16,11 +16,13 @@ import Agendamentos from "./pages/Agendamentos";
 import PetsCadastrados from "./pages/Pets_cadastrados";
 import Status from "./pages/Status";
 import Colaborador from "./pages/Colaborador";
+import AdminServicos from "./pages/AdminServicos";
 
 const App = () => (
   <Router>
     <GlobalStyles />
     <Header />
+
     <main style={{ marginTop: "4.5rem" }}>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -29,7 +31,7 @@ const App = () => (
         <Route path="/conta" element={<Conta />} />
         <Route path="/criarconta" element={<Criarconta />} />
         <Route path="/minhaconta" element={<Minhaconta />} />
-        <Route path="/meus-pets" element={<PetsCadastrados /> } />
+        <Route path="/meus-pets" element={<PetsCadastrados />} />
 
         <Route
           path="/admin"
@@ -77,13 +79,29 @@ const App = () => (
         />
 
         <Route
-          path="/colaborador"
+          path="/admin/colaborador"
           element={
+            <ProtectedRoute>
               <Colaborador />
+            </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/servicos"
+          element={
+            <ProtectedRoute>
+              <AdminServicos />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/colaborador" element={<Colaborador />} />
+
+        <Route path="/colaborador/agenda" element={<Status />} />
       </Routes>
     </main>
+
     <Footer />
   </Router>
 );

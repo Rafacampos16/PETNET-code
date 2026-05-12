@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import Header from "../components/Header";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import "../styles/administracao.css";
 
@@ -73,11 +73,12 @@ const atividadesRecentes = [
 ];
 
 const menu = [
-  { nome: "Dashboard", rota: "/administracao", ativo: true },
-  { nome: "Agendamentos", rota: "/agendamentos" },
-  { nome: "Clientes", rota: "/clientes" },
-  { nome: "Pets", rota: "/pets-cadastrados" },
-  { nome: "Status", rota: "/status" }
+  { nome: "Dashboard", rota: "/admin" },
+  { nome: "Agendamentos", rota: "/admin/agendamentos" },
+  { nome: "Serviços", rota: "/admin/servicos" },
+  { nome: "Clientes", rota: "/admin/clientes" },
+  { nome: "Pets", rota: "/admin/pets" },
+  { nome: "Status", rota: "/admin/colaborador" },
 ];
 
 function getStatusClass(status) {
@@ -90,6 +91,7 @@ function getStatusClass(status) {
 
 export default function Administracao() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [hoverLogout, setHoverLogout] = useState(false);
   const [periodoAtivo, setPeriodoAtivo] = useState("Hoje");
 
@@ -259,7 +261,7 @@ export default function Administracao() {
                   <button
                     key={item.nome}
                     type="button"
-                    className={item.ativo ? "active" : ""}
+                    className={location.pathname === item.rota ? "active" : ""}
                     onClick={() => navigate(item.rota)}
                   >
                     {item.nome}
@@ -382,7 +384,7 @@ export default function Administracao() {
                     <h2>Agenda de hoje</h2>
                     <p>Resumo do dia com horários, tutor e serviço.</p>
                   </div>
-                  <button type="button" onClick={() => navigate("/agendamentos")}>
+                  <button type="button" onClick={() => navigate("/admin/agendamentos")}>
                     Ver agenda
                   </button>
                 </div>

@@ -2,53 +2,123 @@ import React, { useMemo, useRef, useState } from "react";
 import { Cat, Dog } from "lucide-react";
 import "../styles/colaborador.css";
 
+const ScheduleStatus = {
+  SCHEDULED: "SCHEDULED",
+  CONFIRMED: "CONFIRMED",
+  CANCELED: "CANCELED",
+  FINISHED: "FINISHED",
+};
+
 const agendamentosIniciais = [
   {
     id: 1,
     tipo: "dog",
-    tutor: "Mariana Costa",
+    client_cpf: "12345678900",
+    pet_id: 1,
     pet: "Thor",
-    servico: "Banho",
+    tutor: "Mariana Costa",
+    collaborator_cpf: "98765432100",
+    colaborador: "Rafaela Campos",
+    date_time: "2026-05-08T09:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.SCHEDULED,
+    observation: "Cuidado extra com as patas",
+    services: [1],
+    servicosNomes: ["Banho"],
     porte: "Médio",
-    horarioPreferencial: "09:00"
   },
   {
     id: 2,
     tipo: "cat",
-    tutor: "Carlos Souza",
+    client_cpf: "23456789011",
+    pet_id: 2,
     pet: "Luna",
-    servico: "Tosa",
+    tutor: "Carlos Souza",
+    collaborator_cpf: "98765432100",
+    colaborador: "Rafaela Campos",
+    date_time: "2026-05-08T10:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.CONFIRMED,
+    observation: "Pet sensível a barulhos altos",
+    services: [2],
+    servicosNomes: ["Tosa"],
     porte: "Pequeno",
-    horarioPreferencial: "10:00"
   },
   {
     id: 3,
     tipo: "dog",
-    tutor: "Fernanda Lima",
+    client_cpf: "34567890122",
+    pet_id: 3,
     pet: "Mel",
-    servico: "Banho e tosa",
+    tutor: "Fernanda Lima",
+    collaborator_cpf: "98765432100",
+    colaborador: "Rafaela Campos",
+    date_time: "2026-05-08T11:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.SCHEDULED,
+    observation: "Usar shampoo hipoalergênico",
+    services: [1, 2],
+    servicosNomes: ["Banho", "Tosa"],
     porte: "Grande",
-    horarioPreferencial: "11:00"
   },
   {
     id: 4,
     tipo: "cat",
-    tutor: "Patrícia Alves",
+    client_cpf: "45678901233",
+    pet_id: 4,
     pet: "Nina",
-    servico: "Hidratação",
+    tutor: "Patrícia Alves",
+    collaborator_cpf: "98765432100",
+    colaborador: "Rafaela Campos",
+    date_time: "2026-05-08T13:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.CANCELED,
+    observation: "Tutor solicitou remarcação",
+    services: [3],
+    servicosNomes: ["Hidratação"],
     porte: "Pequeno",
-    horarioPreferencial: "13:00"
   },
   {
     id: 5,
     tipo: "dog",
-    tutor: "Rafael Martins",
+    client_cpf: "56789012344",
+    pet_id: 5,
     pet: "Bob",
-    servico: "Tosa higiênica",
+    tutor: "Rafael Martins",
+    collaborator_cpf: "98765432100",
+    colaborador: "Rafaela Campos",
+    date_time: "2026-05-08T14:00:00",
+    duration: "ONE_HOUR",
+    status: ScheduleStatus.FINISHED,
+    observation: "Atendimento finalizado sem observações adicionais",
+    services: [4],
+    servicosNomes: ["Tosa higiênica"],
     porte: "Médio",
-    horarioPreferencial: "14:00"
-  }
+  },
 ];
+
+const statusConfig = {
+  SCHEDULED: {
+    label: "Agendado",
+    className: "status-cinza",
+    dot: "gray",
+  },
+  CONFIRMED: {
+    label: "Confirmado",
+    className: "status-azul",
+    dot: "blue",
+  },
+  CANCELED: {
+    label: "Cancelado",
+    className: "status-vermelho",
+    dot: "red",
+  },
+  FINISHED: {
+    label: "Finalizado",
+    className: "status-verde",
+    dot: "green",
+  },
+};
 
 const PetIcon = ({ tipo, large = false }) => {
   const Icon = tipo === "cat" ? Cat : Dog;
@@ -61,47 +131,56 @@ const PetIcon = ({ tipo, large = false }) => {
 };
 
 const Colaborador = () => {
-  const [fila, setFila] = useState(agendamentosIniciais);
-  const [agenda, setAgenda] = useState([]);
-  const [dragItem, setDragItem] = useState(null);
-  const [selecionado, setSelecionado] = useState(null);
+  const [agendamentos, setAgendamentos] = useState(agendamentosIniciais);
+  const [selecionado, setSelecionado] = useState(agendamentosIniciais[0]);
   const [filtro, setFiltro] = useState("");
   const [dataAtual, setDataAtual] = useState("2026-05-08");
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const [formAgendamento, setFormAgendamento] = useState({
-    colaborador: "",
-    horaInicio: "",
-    duracao: ""
-  });
+  const [mensagem, setMensagem] = useState("");
 
   const inputDataRef = useRef(null);
 
-  const filaFiltrada = useMemo(() => {
-    return fila.filter((item) => {
-      const texto = `${item.tutor} ${item.pet} ${item.servico} ${item.porte}`.toLowerCase();
-      return texto.includes(filtro.toLowerCase());
-    });
-  }, [fila, filtro]);
+  const agendamentosFiltrados = useMemo(() => {
+    return agendamentos
+      .filter((item) => {
+        const dataAgendamento = item.date_time.split("T")[0];
+        return dataAgendamento === dataAtual;
+      })
+      .filter((item) => {
+        const texto = `
+          ${item.tutor}
+          ${item.pet}
+          ${item.colaborador}
+          ${item.status}
+          ${item.servicosNomes.join(" ")}
+          ${item.observation}
+        `.toLowerCase();
 
-  const agendaOrdenada = useMemo(() => {
-    return [...agenda].sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
-  }, [agenda]);
+        return texto.includes(filtro.toLowerCase());
+      })
+      .sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
+  }, [agendamentos, dataAtual, filtro]);
 
   const resumo = useMemo(() => {
-    const emAndamento = agenda.filter((item) => item.status === "andamento").length;
-    const concluidos = agenda.filter((item) => item.status === "concluido").length;
-    const cancelados = agenda.filter((item) => item.status === "cancelado").length;
+    const listaDoDia = agendamentos.filter(
+      (item) => item.date_time.split("T")[0] === dataAtual
+    );
 
     return {
-      agendados: agenda.length,
-      emAndamento,
-      concluidos,
-      cancelados,
-      naFila: fila.length
+      total: listaDoDia.length,
+      agendados: listaDoDia.filter(
+        (item) => item.status === ScheduleStatus.SCHEDULED
+      ).length,
+      confirmados: listaDoDia.filter(
+        (item) => item.status === ScheduleStatus.CONFIRMED
+      ).length,
+      cancelados: listaDoDia.filter(
+        (item) => item.status === ScheduleStatus.CANCELED
+      ).length,
+      finalizados: listaDoDia.filter(
+        (item) => item.status === ScheduleStatus.FINISHED
+      ).length,
     };
-  }, [agenda, fila.length]);
+  }, [agendamentos, dataAtual]);
 
   function formatarData(data) {
     const date = new Date(`${data}T00:00:00`);
@@ -110,10 +189,27 @@ const Colaborador = () => {
       weekday: "long",
       day: "2-digit",
       month: "long",
-      year: "numeric"
+      year: "numeric",
     });
 
     return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  function formatarHorario(dateTime) {
+    return new Date(dateTime).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function formatarDuracao(duration) {
+    const duracoes = {
+      THIRTY_MINUTES: "30 minutos",
+      ONE_HOUR: "1 hora",
+      TWO_HOURS: "2 horas",
+    };
+
+    return duracoes[duration] || duration;
   }
 
   function alterarData(dias) {
@@ -121,13 +217,8 @@ const Colaborador = () => {
     novaData.setDate(novaData.getDate() + dias);
 
     setDataAtual(novaData.toISOString().split("T")[0]);
-
-    setAgenda([]);
-    setFila(agendamentosIniciais);
     setSelecionado(null);
-    setDragItem(null);
-    setMostrarModal(false);
-    setErrors({});
+    setMensagem("");
   }
 
   function abrirCalendario() {
@@ -138,236 +229,76 @@ const Colaborador = () => {
     }
   }
 
-  function iniciarDrag(item, origem) {
-    setDragItem({ ...item, origem });
-  }
-
-  function devolverParaFila() {
-    if (!dragItem || dragItem.origem !== "agenda") return;
-
-    setFila((prev) =>
-      [...prev, { ...dragItem, status: "" }].sort((a, b) =>
-        a.horarioPreferencial.localeCompare(b.horarioPreferencial)
-      )
-    );
-
-    setAgenda((prev) => prev.filter((item) => item.id !== dragItem.id));
-    setSelecionado(null);
-    setDragItem(null);
-  }
-
-  function soltarNaAgenda() {
-    if (!dragItem) return;
-
-    setFormAgendamento({
-      colaborador: dragItem.colaborador || "",
-      horaInicio: dragItem.horaInicio || dragItem.horarioPreferencial || "",
-      duracao: dragItem.duracao || "60"
-    });
-
-    setErrors({});
-    setMostrarModal(true);
-  }
-
-  function abrirModalAgendamentoMobile(item) {
-    setDragItem({ ...item, origem: "fila" });
-
-    setFormAgendamento({
-      colaborador: item.colaborador || "",
-      horaInicio: item.horaInicio || item.horarioPreferencial || "",
-      duracao: item.duracao || "60"
-    });
-
-    setErrors({});
-    setMostrarModal(true);
-  }
-
-  function validarHora(hora) {
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    return regex.test(hora);
-  }
-
-  function confirmarMovimentacao() {
-    const newErrors = {};
-
-    if (!formAgendamento.colaborador.trim()) {
-      newErrors.colaborador = true;
-    }
-
-    if (!formAgendamento.horaInicio || !validarHora(formAgendamento.horaInicio)) {
-      newErrors.horaInicio = true;
-    }
-
-    if (!formAgendamento.duracao || Number(formAgendamento.duracao) <= 0) {
-      newErrors.duracao = true;
-    }
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) return;
-
-    const novoAgendamento = {
-      ...dragItem,
-      colaborador: formAgendamento.colaborador,
-      horaInicio: formAgendamento.horaInicio,
-      duracao: formAgendamento.duracao,
-      status: dragItem.status || "agendado"
-    };
-
-    setAgenda((prev) => {
-      const semDuplicado = prev.filter((item) => item.id !== novoAgendamento.id);
-
-      return [...semDuplicado, novoAgendamento].sort((a, b) =>
-        a.horaInicio.localeCompare(b.horaInicio)
-      );
-    });
-
-    if (dragItem.origem === "fila") {
-      setFila((prev) => prev.filter((item) => item.id !== dragItem.id));
-    }
-
-    setSelecionado(novoAgendamento);
-    setDragItem(null);
-    setMostrarModal(false);
-  }
-
-  function fecharModal() {
-    setMostrarModal(false);
-    setDragItem(null);
-    setErrors({});
-  }
-
-  function alterarStatus(status) {
-    if (!selecionado || !agenda.some((item) => item.id === selecionado.id)) {
-      alert("Selecione um agendamento na agenda primeiro.");
+  function alterarStatus(novoStatus) {
+    if (!selecionado) {
+      alert("Selecione um agendamento primeiro.");
       return;
     }
 
-    setAgenda((prev) =>
-      prev.map((item) =>
-        item.id === selecionado.id ? { ...item, status } : item
-      )
+    const agendamentosAtualizados = agendamentos.map((item) =>
+      item.id === selecionado.id
+        ? {
+          ...item,
+          status: novoStatus,
+        }
+        : item
     );
 
-    setSelecionado((prev) => ({
-      ...prev,
-      status
-    }));
+    const agendamentoAtualizado = {
+      ...selecionado,
+      status: novoStatus,
+    };
+
+    setAgendamentos(agendamentosAtualizados);
+    setSelecionado(agendamentoAtualizado);
+
+    setMensagem(
+      `Status de ${agendamentoAtualizado.pet} alterado para ${statusConfig[novoStatus].label
+      }.`
+    );
+
+    /*
+      Quando ligar com o back-end, aqui entraria o PATCH/PUT.
+
+      Exemplo do payload que pode ser enviado:
+
+      {
+        status: novoStatus
+      }
+
+      Ou, se o back precisar do objeto completo:
+
+      {
+        client_cpf: agendamentoAtualizado.client_cpf,
+        pet_id: agendamentoAtualizado.pet_id,
+        collaborator_cpf: agendamentoAtualizado.collaborator_cpf,
+        date_time: agendamentoAtualizado.date_time,
+        duration: agendamentoAtualizado.duration,
+        status: novoStatus,
+        observation: agendamentoAtualizado.observation,
+        services: agendamentoAtualizado.services
+      }
+    */
   }
 
   function getStatusClass(status) {
-    if (status === "andamento") return "status-azul";
-    if (status === "concluido") return "status-verde";
-    if (status === "cancelado") return "status-vermelho";
-    return "";
+    return statusConfig[status]?.className || "status-cinza";
+  }
+
+  function getStatusLabel(status) {
+    return statusConfig[status]?.label || status;
   }
 
   return (
     <div className="colaborador-page">
-      {mostrarModal && (
-        <div className="modal-overlay">
-          <div className="modal-box modal-agenda">
-            <div className="modal-header">
-              <h3>Confirmar atendimento</h3>
-              <p>Informe quem realizará o serviço e confirme os dados do horário.</p>
-            </div>
-
-            <div className="modal-pet-card">
-              <PetIcon tipo={dragItem?.tipo} />
-
-              <div>
-                <strong>{dragItem?.pet}</strong>
-                <span>{dragItem?.tutor}</span>
-                <small>{dragItem?.servico}</small>
-              </div>
-            </div>
-
-            <label>Colaborador responsável *</label>
-            <input
-              type="text"
-              placeholder="Digite o nome do colaborador"
-              value={formAgendamento.colaborador}
-              onChange={(e) => {
-                setFormAgendamento((prev) => ({
-                  ...prev,
-                  colaborador: e.target.value
-                }));
-                setErrors((prev) => ({ ...prev, colaborador: false }));
-              }}
-              className={errors.colaborador ? "input-error" : ""}
-            />
-
-            <div className="modal-dupla">
-              <div>
-                <label>Horário de início *</label>
-                <input
-                  type="text"
-                  placeholder="Ex: 09:00"
-                  maxLength="5"
-                  value={formAgendamento.horaInicio}
-                  onChange={(e) => {
-                    let value = e.target.value.replace(/\D/g, "");
-
-                    if (value.length > 4) value = value.slice(0, 4);
-
-                    if (value.length >= 3) {
-                      value = `${value.slice(0, 2)}:${value.slice(2)}`;
-                    }
-
-                    setFormAgendamento((prev) => ({
-                      ...prev,
-                      horaInicio: value
-                    }));
-                    setErrors((prev) => ({ ...prev, horaInicio: false }));
-                  }}
-                  className={errors.horaInicio ? "input-error" : ""}
-                />
-              </div>
-
-              <div>
-                <label>Duração *</label>
-                <input
-                  type="number"
-                  placeholder="Minutos"
-                  min="1"
-                  value={formAgendamento.duracao}
-                  onChange={(e) => {
-                    setFormAgendamento((prev) => ({
-                      ...prev,
-                      duracao: e.target.value
-                    }));
-                    setErrors((prev) => ({ ...prev, duracao: false }));
-                  }}
-                  className={errors.duracao ? "input-error" : ""}
-                />
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button type="button" className="btn-cancelar" onClick={fecharModal}>
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                className="btn-confirmar"
-                onClick={confirmarMovimentacao}
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="colaborador-shell">
         <header className="colaborador-topbar">
           <div>
-            <span className="colab-badge">Painel do colaborador</span>
-            <h1>Agenda de atendimentos</h1>
+            <span className="colab-badge">Controle de status</span>
+            <h1>Status dos agendamentos</h1>
             <p>
-              Arraste os agendamentos para a agenda e eles serão organizados
-              automaticamente pelo horário de início.
+              Acompanhe os atendimentos cadastrados e atualize o status para
+              exibição na agenda do colaborador.
             </p>
           </div>
 
@@ -385,13 +316,8 @@ const Colaborador = () => {
                 value={dataAtual}
                 onChange={(e) => {
                   setDataAtual(e.target.value);
-
-                  setAgenda([]);
-                  setFila(agendamentosIniciais);
                   setSelecionado(null);
-                  setDragItem(null);
-                  setMostrarModal(false);
-                  setErrors({});
+                  setMensagem("");
                 }}
                 className="calendar-hidden"
               />
@@ -403,25 +329,27 @@ const Colaborador = () => {
           </div>
         </header>
 
+        {mensagem && <div className="status-feedback">{mensagem}</div>}
+
         <section className="colaborador-stats">
+          <div className="stat-card">
+            <small>Total do dia</small>
+            <strong>{resumo.total}</strong>
+          </div>
+
           <div className="stat-card">
             <small>Agendados</small>
             <strong>{resumo.agendados}</strong>
           </div>
 
           <div className="stat-card">
-            <small>Em andamento</small>
-            <strong>{resumo.emAndamento}</strong>
+            <small>Confirmados</small>
+            <strong>{resumo.confirmados}</strong>
           </div>
 
           <div className="stat-card">
-            <small>Concluídos</small>
-            <strong>{resumo.concluidos}</strong>
-          </div>
-
-          <div className="stat-card">
-            <small>Na fila</small>
-            <strong>{resumo.naFila}</strong>
+            <small>Finalizados</small>
+            <strong>{resumo.finalizados}</strong>
           </div>
         </section>
 
@@ -429,57 +357,47 @@ const Colaborador = () => {
           <aside className="fila-card">
             <div className="card-header">
               <div>
-                <h3>Fila de agendamentos</h3>
-                <p>Arraste para a agenda ao lado</p>
+                <h3>Agendamentos</h3>
+                <p>Selecione um atendimento para alterar o status</p>
               </div>
 
-              <span className="badge">{filaFiltrada.length}</span>
+              <span className="badge">{agendamentosFiltrados.length}</span>
             </div>
 
             <div className="search-box">
               <input
                 type="text"
-                placeholder="Buscar por tutor, pet ou serviço"
+                placeholder="Buscar por tutor, pet, serviço ou status"
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
               />
             </div>
 
-            <div
-              className="fila-list"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={devolverParaFila}
-            >
-              {filaFiltrada.length > 0 ? (
-                filaFiltrada.map((item) => (
+            <div className="fila-list">
+              {agendamentosFiltrados.length > 0 ? (
+                agendamentosFiltrados.map((item) => (
                   <div
                     key={item.id}
-                    className="fila-item"
-                    draggable
-                    onDragStart={() => iniciarDrag(item, "fila")}
-                    onClick={() => setSelecionado({ ...item, horario: null })}
+                    className={`fila-item ${selecionado?.id === item.id ? "selecionado" : ""
+                      }`}
+                    onClick={() => {
+                      setSelecionado(item);
+                      setMensagem("");
+                    }}
                   >
                     <PetIcon tipo={item.tipo} />
 
                     <div className="info">
                       <h4>{item.pet}</h4>
                       <p>{item.tutor}</p>
-                      <small>{item.servico}</small>
+                      <small>{item.servicosNomes.join(", ")}</small>
                     </div>
 
                     <div className="fila-actions">
-                      <span className="hora">{item.horarioPreferencial}</span>
-
-                      <button
-                        type="button"
-                        className="btn-mobile-agendar"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          abrirModalAgendamentoMobile(item);
-                        }}
-                      >
-                        Adicionar
-                      </button>
+                      <span className="hora">{formatarHorario(item.date_time)}</span>
+                      <small className={getStatusClass(item.status)}>
+                        {getStatusLabel(item.status)}
+                      </small>
                     </div>
                   </div>
                 ))
@@ -487,7 +405,7 @@ const Colaborador = () => {
                 <div className="empty-state">
                   <strong>Nenhum agendamento encontrado</strong>
                   <p>
-                    Todos os atendimentos já foram organizados ou o filtro não
+                    Não existem atendimentos para esta data ou o filtro não
                     encontrou resultados.
                   </p>
                 </div>
@@ -495,93 +413,133 @@ const Colaborador = () => {
             </div>
 
             <div className="drag-help">
-              <strong>Arraste um agendamento</strong>
-              <span>para montar a agenda do dia</span>
+              <strong>Fluxo atualizado</strong>
+              <span>O agendamento é criado na tela de agendamentos.</span>
             </div>
           </aside>
 
-          <section
-            className="agenda-card"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={soltarNaAgenda}
-          >
+          <section className="agenda-card">
             <div className="card-header agenda-card-header">
               <div>
-                <h3>Minha agenda</h3>
-                <p>Os atendimentos são ordenados automaticamente por horário</p>
+                <h3>Agenda do dia</h3>
+                <p>Visualização dos atendimentos por horário e status</p>
               </div>
             </div>
 
             <div className="agenda-body agenda-body-dinamica">
-              {agendaOrdenada.length > 0 ? (
-                agendaOrdenada.map((item) => (
+              {agendamentosFiltrados.length > 0 ? (
+                agendamentosFiltrados.map((item) => (
                   <div
                     key={item.id}
                     className={`agenda-item ${getStatusClass(item.status)} ${selecionado?.id === item.id ? "selecionado" : ""
                       }`}
-                    draggable
-                    onDragStart={() => iniciarDrag(item, "agenda")}
-                    onClick={() => setSelecionado(item)}
+                    onClick={() => {
+                      setSelecionado(item);
+                      setMensagem("");
+                    }}
                   >
                     <div className="agenda-time">
-                      <strong>{item.horaInicio}</strong>
-                      <span>{item.duracao} min</span>
+                      <strong>{formatarHorario(item.date_time)}</strong>
+                      <span>{formatarDuracao(item.duration)}</span>
                     </div>
 
                     <div className="agenda-info">
                       <strong>{item.pet}</strong>
-                      <p>{item.servico}</p>
+                      <p>{item.servicosNomes.join(", ")}</p>
                       <small>{item.tutor}</small>
                     </div>
 
                     <div className="agenda-colaborador">
                       <span>{item.colaborador}</span>
-                      <small>{item.status || "agendado"}</small>
+                      <small>{getStatusLabel(item.status)}</small>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="agenda-empty agenda-empty-large">
                   <strong>Agenda vazia</strong>
-                  <span>Arraste um atendimento da fila para começar</span>
-                  <small>Depois de confirmar, ele será ordenado pelo horário informado</small>
+                  <span>Nenhum atendimento encontrado para esta data</span>
+                  <small>
+                    Os agendamentos criados aparecerão aqui para controle de status.
+                  </small>
                 </div>
               )}
             </div>
           </section>
 
-          <aside className="detalhes-card">
+          <aside className="detalhes-card detalhes-card-compacto">
             <div className="card-header">
               <div>
-                <h3>Detalhes</h3>
-                <p>Informações do atendimento selecionado</p>
+                <h3>Alterar status</h3>
+                <p>Selecione o atendimento e atualize a situação</p>
               </div>
             </div>
 
-            <div className="pet-info">
+            <div className="pet-info pet-info-compacta">
               <PetIcon tipo={selecionado?.tipo || "dog"} large />
 
               <div>
-                <h2>{selecionado?.pet || "---"}</h2>
-                <p>{selecionado?.tutor || "---"}</p>
-                <small>{selecionado?.servico || "---"}</small>
+                <h2>{selecionado?.pet || "Selecione um pet"}</h2>
+                <p>{selecionado?.tutor || "Nenhum atendimento selecionado"}</p>
+                <small>{selecionado?.servicosNomes?.join(", ") || "---"}</small>
               </div>
             </div>
 
-            <div className="info-box">
+            <div className="status-atual-box">
+              <span>Status atual</span>
+              <strong className={selecionado?.status ? getStatusClass(selecionado.status) : ""}>
+                {selecionado?.status ? getStatusLabel(selecionado.status) : "---"}
+              </strong>
+            </div>
+
+            <div className="actions-box actions-box-principal">
+              <div className="actions">
+                <button
+                  className="btn-custom gray"
+                  onClick={() => alterarStatus(ScheduleStatus.SCHEDULED)}
+                >
+                  <span>○</span>
+                  Agendado
+                </button>
+
+                <button
+                  className="btn-custom blue"
+                  onClick={() => alterarStatus(ScheduleStatus.CONFIRMED)}
+                >
+                  <span>✓</span>
+                  Confirmar
+                </button>
+
+                <button
+                  className="btn-custom green"
+                  onClick={() => alterarStatus(ScheduleStatus.FINISHED)}
+                >
+                  <span>✓</span>
+                  Finalizar
+                </button>
+
+                <button
+                  className="btn-custom red"
+                  onClick={() => alterarStatus(ScheduleStatus.CANCELED)}
+                >
+                  <span>×</span>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+
+            <div className="info-box info-box-resumido">
               <div className="info-row">
                 <span>Horário</span>
                 <strong>
-                  {selecionado?.horaInicio ||
-                    selecionado?.horarioPreferencial ||
-                    "---"}
+                  {selecionado?.date_time ? formatarHorario(selecionado.date_time) : "---"}
                 </strong>
               </div>
 
               <div className="info-row">
                 <span>Duração</span>
                 <strong>
-                  {selecionado?.duracao ? `${selecionado.duracao} minutos` : "---"}
+                  {selecionado?.duration ? formatarDuracao(selecionado.duration) : "---"}
                 </strong>
               </div>
 
@@ -591,68 +549,33 @@ const Colaborador = () => {
               </div>
 
               <div className="info-row">
-                <span>Porte</span>
-                <strong>{selecionado?.porte || "---"}</strong>
-              </div>
-
-              <div className="info-row">
-                <span>Status</span>
-                <strong>{selecionado?.status || "---"}</strong>
+                <span>Observação</span>
+                <strong>{selecionado?.observation || "---"}</strong>
               </div>
             </div>
 
-            <div className="actions-box">
-              <h3>Ações</h3>
-
-              <div className="actions">
-                <button
-                  className="btn-custom blue"
-                  onClick={() => alterarStatus("andamento")}
-                >
-                  <span>▶</span>
-                  Iniciar atendimento
-                </button>
-
-                <button
-                  className="btn-custom green"
-                  onClick={() => alterarStatus("concluido")}
-                >
-                  <span>✓</span>
-                  Finalizar
-                </button>
-
-                <button
-                  className="btn-custom red"
-                  onClick={() => alterarStatus("cancelado")}
-                >
-                  <span>×</span>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-
-            <div className="status-box">
-              <h3>Legenda de status</h3>
+            <div className="status-box status-box-compacto">
+              <h3>Legenda</h3>
 
               <div className="status-grid">
                 <div>
+                  <span className="dot gray"></span>
+                  Agendado
+                </div>
+
+                <div>
                   <span className="dot blue"></span>
-                  Em andamento
+                  Confirmado
                 </div>
 
                 <div>
                   <span className="dot green"></span>
-                  Concluído
+                  Finalizado
                 </div>
 
                 <div>
                   <span className="dot red"></span>
                   Cancelado
-                </div>
-
-                <div>
-                  <span className="dot gray"></span>
-                  Na fila
                 </div>
               </div>
             </div>
