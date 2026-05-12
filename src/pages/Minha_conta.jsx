@@ -121,7 +121,7 @@ export default function MinhaConta() {
     if (label === "Pequeno") return "S";
     if (label === "Médio" || label === "Medio") return "M";
     if (label === "Grande") return "L";
-    if (label === "Gigante") return "G";
+    if (label === "Gigante") return "XL";
     return label;
   }
 
@@ -144,7 +144,7 @@ export default function MinhaConta() {
       nascimentoPet: pet.birth_date
         ? new Date(pet.birth_date).toLocaleDateString("pt-BR")
         : "",
-      sexoPet: pet.sex,
+      sexoPet: pet.sex || "",
     }));
   }
 
@@ -161,12 +161,13 @@ export default function MinhaConta() {
           nome: user.name,
           email: user.email,
           telefone: user.contacts?.[0]?.number || "",
-          endereco: user.addresses?.[0]?.location?.split(",")[0]?.trim() || "",
-          bairro: user.addresses?.[0]?.location?.split(",")[1]?.trim() || "",
+          endereco: user.addresses?.[0]?.address || "",
+          bairro: user.addresses?.[0]?.neighborhood || "",
           cep: user.addresses?.[0]?.cep || "",
-          estado: user.addresses?.[0]?.location?.split(",")[3]?.trim() || "",
-          cidade: user.addresses?.[0]?.location?.split(",")[2]?.trim() || "",
-          numero: user.addresses?.[0]?.complement || "",
+          complemento: user.addresses?.[0]?.complement || "",
+          localizacao: user.addresses?.[0]?.locaticion || "",
+          tipo: user.addresses?.[0].type || "",
+          numero: user.addresses?.[0]?.number || "",
           nomePet: "",
           especiePet: "",
           racaPet: "",
@@ -191,25 +192,19 @@ export default function MinhaConta() {
             nome: user.name,
             email: user.email,
             telefone: user.contacts?.[0]?.number || "",
-            endereco:
-              user.addresses?.[0]?.location?.split(",")[0]?.trim() || "",
-            bairro:
-              user.addresses?.[0]?.location?.split(",")[1]?.trim() || "",
+            endereco: user.addresses?.[0]?.address || "",
+            bairro: user.addresses?.[0]?.neighborhood  || "",
             cep: user.addresses?.[0]?.cep || "",
-            estado:
-              user.addresses?.[0]?.location?.split(",")[3]?.trim() || "",
-            cidade:
-              user.addresses?.[0]?.location?.split(",")[2]?.trim() || "",
             numero: user.addresses?.[0]?.complement || "",
             nomePet: primeiroPet.name || "",
-            especiePet: primeiroPet.species,
+            especiePet: primeiroPet.species || "",
             racaPet: primeiroPet.breed || "",
-            portePet: primeiroPet.size,
+            portePet: primeiroPet.size || "",
             pesoPet: primeiroPet.weight || "",
             nascimentoPet: primeiroPet.birth_date
               ? new Date(primeiroPet.birth_date).toLocaleDateString("pt-BR")
               : "",
-            sexoPet: primeiroPet.sex,
+            sexoPet: primeiroPet.sex || "",
           }));
         }
       } catch (err) {
@@ -246,14 +241,14 @@ export default function MinhaConta() {
         ...(dados || {}),
         petId: petAtual.id,
         nomePet: petAtual.name || "",
-        especiePet: petAtual.species,
+        especiePet: petAtual.species || "",
         racaPet: petAtual.breed || "",
-        portePet: petAtual.size,
+        portePet: petAtual.size || "",
         pesoPet: petAtual.weight || "",
         nascimentoPet: petAtual.birth_date
           ? new Date(petAtual.birth_date).toISOString().split("T")[0]
           : "",
-        sexoPet: petAtual.sex,
+        sexoPet: petAtual.sex || "",
       }));
     } else {
       setFormEditar((prev) => ({
@@ -296,14 +291,14 @@ export default function MinhaConta() {
       ...(prev || {}),
       petId: petEscolhido.id,
       nomePet: petEscolhido.name || "",
-      especiePet: petEscolhido.species,
+      especiePet: petEscolhido.species || "",
       racaPet: petEscolhido.breed || "",
-      portePet: petEscolhido.size,
+      portePet: petEscolhido.size || "",
       pesoPet: petEscolhido.weight || "",
       nascimentoPet: petEscolhido.birth_date
         ? new Date(petEscolhido.birth_date).toISOString().split("T")[0]
         : "",
-      sexoPet: petEscolhido.sex,
+      sexoPet: petEscolhido.sex || "",
     }));
   }
 
@@ -322,10 +317,13 @@ export default function MinhaConta() {
             number: formEditar.telefone,
           },
           address: {
-            type: "Casa",
+            type: formEditar.tipo,
             cep: formEditar.cep?.replace(/\D/g, ""),
-            location: `${formEditar.endereco}, ${formEditar.bairro}, ${formEditar.cidade}, ${formEditar.estado}`,
-            complement: formEditar.numero,
+            address: formEditar.endereco,
+            number: formEditar.numero,
+            neighborhood: formEditar.bairro,
+            complement: formEditar.complemento || "",
+            locaticion: formEditar.localizacao || "",
           },
         };
 
@@ -336,12 +334,13 @@ export default function MinhaConta() {
           nome: formEditar.nome,
           email: formEditar.email,
           telefone: formEditar.telefone,
+          tipo: formEditar.tipo,
           endereco: formEditar.endereco,
+          numero: formEditar.numero,
+          complemento: formEditar.complemento,
           bairro: formEditar.bairro,
           cep: formEditar.cep,
-          estado: formEditar.estado,
-          cidade: formEditar.cidade,
-          numero: formEditar.numero,
+          localizacao: formEditar.localizacao,
         }));
 
         setModalEditar(false);
@@ -380,19 +379,23 @@ export default function MinhaConta() {
             ? {
               ...pet,
               ...bodyPet,
+              // Mantém os labels PT-BR no array local para o modal funcionar corretamente
+              species: formEditar.especiePet,
+              size: formEditar.portePet,
+              sex: formEditar.sexoPet,
             }
             : pet
         );
 
         setPets(petsAtualizados);
 
-        const petAtualizado = petsAtualizados.find(
-          (pet) => String(pet.id) === String(petEmEdicaoId)
+        // Mantém o pet em destaque como o que estava selecionado antes da edição
+        const petDestaque = petsAtualizados.find(
+          (pet) => String(pet.id) === String(petSelecionadoId)
         );
 
-        if (petAtualizado) {
-          setPetSelecionadoId(petAtualizado.id);
-          preencherDadosPetNaTela(petAtualizado);
+        if (petDestaque) {
+          preencherDadosPetNaTela(petDestaque);
         }
 
         setModalEditar(false);
@@ -596,10 +599,19 @@ export default function MinhaConta() {
                   <MapPin size={15} /> Endereço
                 </span>
                 <p>
+                  Tipo: {dados.tipo} <br />
                   {dados.endereco}, Nº {dados.numero} <br />
+
+                  {dados.complemento && (
+                    <>Complemento: {dados.complemento} <br /></>
+                  )}
+
                   Bairro: {dados.bairro} <br />
                   CEP: {dados.cep} <br />
-                  {dados.cidade} - {dados.estado}
+
+                  {dados.localizacao && (
+                    <>Localização: {dados.localizacao}</>
+                  )}
                 </p>
               </div>
             </div>
@@ -669,10 +681,10 @@ export default function MinhaConta() {
 
                   <span
                     className={`agendamento-badge ${item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
-                          ? "aguardando"
-                          : "agendado"
+                      ? "concluido"
+                      : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
                       }`}
                   >
                     {item.status}
@@ -862,10 +874,10 @@ export default function MinhaConta() {
                   </p>
                   <span
                     className={`agend-status ${item.status === "Concluído"
-                        ? "concluido"
-                        : item.status === "Aguardando"
-                          ? "aguardando"
-                          : "agendado"
+                      ? "concluido"
+                      : item.status === "Aguardando"
+                        ? "aguardando"
+                        : "agendado"
                       }`}
                   >
                     {item.status}
@@ -947,62 +959,32 @@ export default function MinhaConta() {
                 <>
                   <label>
                     Endereço
-                    <input
-                      name="endereco"
-                      type="text"
-                      value={formEditar.endereco || ""}
-                      onChange={atualizarCampo}
-                    />
-                  </label>
-
-                  <label>
-                    Bairro
-                    <input
-                      name="bairro"
-                      type="text"
-                      value={formEditar.bairro || ""}
-                      onChange={atualizarCampo}
-                    />
-                  </label>
-
-                  <label>
-                    CEP
-                    <input
-                      name="cep"
-                      type="text"
-                      value={formEditar.cep || ""}
-                      onChange={atualizarCampo}
-                    />
-                  </label>
-
-                  <label>
-                    Estado (UF)
-                    <input
-                      name="estado"
-                      type="text"
-                      value={formEditar.estado || ""}
-                      onChange={atualizarCampo}
-                    />
-                  </label>
-
-                  <label>
-                    Cidade
-                    <input
-                      name="cidade"
-                      type="text"
-                      value={formEditar.cidade || ""}
-                      onChange={atualizarCampo}
-                    />
+                    <input name="endereco" type="text" value={formEditar.endereco || ""} onChange={atualizarCampo} />
                   </label>
 
                   <label>
                     Número
-                    <input
-                      name="numero"
-                      type="text"
-                      value={formEditar.numero || ""}
-                      onChange={atualizarCampo}
-                    />
+                    <input name="numero" type="text" value={formEditar.numero || ""} onChange={atualizarCampo} />
+                  </label>
+
+                  <label>
+                    Complemento
+                    <input name="complemento" type="text" value={formEditar.complemento || ""} onChange={atualizarCampo} />
+                  </label>
+
+                  <label>
+                    Bairro
+                    <input name="bairro" type="text" value={formEditar.bairro || ""} onChange={atualizarCampo} />
+                  </label>
+
+                  <label>
+                    CEP
+                    <input name="cep" type="text" value={formEditar.cep || ""} onChange={atualizarCampo} />
+                  </label>
+
+                  <label>
+                    Localização
+                    <input name="localizacao" type="text" value={formEditar.localizacao || ""} onChange={atualizarCampo} />
                   </label>
                 </>
               )}
