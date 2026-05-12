@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/reset-password.css";
 import focinhoIcon from "../assets/icons/paw-cat.png";
+import authService from "../services/authService";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -45,31 +46,11 @@ function ResetPassword() {
 
     try {
       setCarregando(true);
-
-      const response = await fetch("http://localhost:3000/api/auth/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token,
-          novaSenha,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Nao foi possivel redefinir a senha.");
-      }
-
+      await authService.resetPassword(token, novaSenha);
       setMensagem("Senha redefinida com sucesso! Redirecionando para o login...");
-
-      setTimeout(() => {
-        navigate("/conta");
-      }, 2000);
+      setTimeout(() => navigate("/conta"), 2000);
     } catch (error) {
-      setErro(error.message || "Erro ao redefinir senha. Tente novamente.");
+      setErro(error.response?.data?.error || "Erro ao redefinir senha. Tente novamente.");
     } finally {
       setCarregando(false);
     }
