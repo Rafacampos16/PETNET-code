@@ -16,7 +16,7 @@ services:
       - .env.prod
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.petnet-frontend.rule=Host(`netcao.com.br`)"
+      - "traefik.http.routers.petnet-frontend.rule=Host(`netcao.com.br`) || Host(`www.netcao.com.br`)"
       - "traefik.http.routers.petnet-frontend.entrypoints=websecure"
       - "traefik.http.routers.petnet-frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.petnet-frontend.loadbalancer.server.port=8080" # ← Nginx agora escuta na 8080
