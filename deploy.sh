@@ -28,7 +28,8 @@ git pull origin main
 
 # ---- 2. Build e Deploy ----
 echo -e "${YELLOW}🔨 Construindo e iniciando o container do Frontend...${NC}"
-docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d --build
+docker compose -f $COMPOSE_FILE --env-file $ENV_FILE build --no-cache
+docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d
 
 # ---- 3. Limpeza de imagens antigas ----
 echo -e "${YELLOW}🧹 Limpando imagens antigas não utilizadas...${NC}"
