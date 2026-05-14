@@ -1,0 +1,28 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: petnet-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080" # ← Bloqueia acesso externo, só permite localhost/Traefik via rede docker
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - .env.prod
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.petnet-frontend.rule=Host(`netcao.com.br`)"
+      - "traefik.http.routers.petnet-frontend.entrypoints=websecure"
+      - "traefik.http.routers.petnet-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.petnet-frontend.loadbalancer.server.port=8080" # ← Nginx agora escuta na 8080
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
