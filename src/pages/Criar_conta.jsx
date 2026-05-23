@@ -21,6 +21,9 @@ export default function Cadastro() {
   const [erroSenha, setErroSenha] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
 
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [erroCep, setErroCep] = useState("");
+
   const [form, setForm] = useState({
     nome: "",
     cpf: "",
@@ -51,6 +54,7 @@ export default function Cadastro() {
 
     if (name === "cep") {
       novoValor = value.replace(/\D/g, "").slice(0, 8);
+      setErroCep("");
     }
 
     if (name === "nome") {
@@ -83,6 +87,55 @@ export default function Cadastro() {
 
     setErroSenha("");
     return true;
+  }
+
+  async function buscarEnderecoPorCep() {
+    const cepLimpo = form.cep.replace(/\D/g, "");
+
+    if (!cepLimpo) return;
+
+    if (cepLimpo.length !== 8) {
+      setErroCep("Digite um CEP válido com 8 números.");
+      setErroCampo((prev) => ({ ...prev, cep: true }));
+      return;
+    }
+
+    setBuscandoCep(true);
+    setErroCep("");
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await response.json();
+
+      if (data.erro) {
+        setErroCep("CEP não encontrado. Verifique o número informado.");
+        setErroCampo((prev) => ({ ...prev, cep: true }));
+        return;
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        cep: cepLimpo,
+        endereco: data.logradouro || prev.endereco,
+        bairro: data.bairro || prev.bairro,
+        localizacao: data.localidade && data.uf
+          ? `${data.localidade} - ${data.uf}`
+          : prev.localizacao,
+      }));
+
+      setErroCampo((prev) => ({
+        ...prev,
+        cep: false,
+        endereco: false,
+        bairro: false,
+        localizacao: false,
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar CEP:", error);
+      setErroCep("Não foi possível consultar o CEP agora.");
+    } finally {
+      setBuscandoCep(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -267,8 +320,11 @@ export default function Cadastro() {
                       placeholder="Digite seu CEP"
                       value={form.cep}
                       onChange={handleChange}
+                      onBlur={buscarEnderecoPorCep}
                       className={erroCampo.cep ? "input-erro" : ""}
                     />
+                    {buscandoCep && <small className="cep-helper">Buscando endereço...</small>}
+                    {erroCep && <small className="cep-erro">{erroCep}</small>}
                   </div>
                 </div>
 
@@ -276,25 +332,25 @@ export default function Cadastro() {
                   <div className="campo">
                     <label>Localização</label>
                     <input
-  name="localizacao"
-  type="text"
-  placeholder="Ex: Próximo ao metrô, portão azul, etc."
-  value={form.localizacao}
-  onChange={handleChange}
-  className={erroCampo.localizacao ? "input-erro" : ""}
-/>
+                      name="localizacao"
+                      type="text"
+                      placeholder="Ex: Próximo ao metrô, portão azul, etc."
+                      value={form.localizacao}
+                      onChange={handleChange}
+                      className={erroCampo.localizacao ? "input-erro" : ""}
+                    />
                   </div>
 
                   <div className="campo">
                     <label>Complemento</label>
-                   <input
-  name="complemento"
-  type="text"
-  placeholder="Casa, apartamento, bloco..."
-  value={form.complemento}
-  onChange={handleChange}
-  className={erroCampo.complemento ? "input-erro" : ""}
-/>
+                    <input
+                      name="complemento"
+                      type="text"
+                      placeholder="Casa, apartamento, bloco..."
+                      value={form.complemento}
+                      onChange={handleChange}
+                      className={erroCampo.complemento ? "input-erro" : ""}
+                    />
                   </div>
 
                   <div className="campo">

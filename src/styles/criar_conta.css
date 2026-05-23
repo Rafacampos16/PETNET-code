@@ -282,7 +282,11 @@ input:focus {
 
 /* BOTÃO */
 .btn {
-  background: linear-gradient(90deg, var(--petnet-blue) 0%, var(--petnet-blue-dark) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--petnet-blue) 0%,
+    var(--petnet-blue-dark) 100%
+  );
   color: var(--petnet-white);
   border: none;
   padding: 16px 34px;
@@ -352,4 +356,20 @@ input[type="password"]::-webkit-password-reveal {
   .btn {
     width: 100%;
   }
+}
+
+.cep-helper {
+  display: block;
+  margin-top: 6px;
+  color: #3370eb;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cep-erro {
+  display: block;
+  margin-top: 6px;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
 }

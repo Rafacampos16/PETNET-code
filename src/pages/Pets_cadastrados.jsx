@@ -6,8 +6,8 @@ import "../styles/petsRegistrados.css";
 import PetImg from "../assets/images/cao.png";
 import PetImg2 from "../assets/images/gato.png";
 import petService from "../services/petService";
+import { userService } from "../services/userService";
 import LoadingScreen from "../components/LoadingScreen";
-
 
 const ExpandedPetInfo = ({ data }) => {
   return (
@@ -29,8 +29,8 @@ const ExpandedPetInfo = ({ data }) => {
         </div>
 
         <div className="pet-expand-card">
-          <label>CPF do dono</label>
-          <span>{data.user_cpf || "Não informado"}</span>
+          <label>Nome do dono</label>
+          <span>{data.owner_name || "Não informado"}</span>
         </div>
       </div>
     </div>
@@ -62,6 +62,7 @@ const formatarData = (data) => {
 const Pets_cadastrados = () => {
   const navigate = useNavigate();
   const [pets, setPets] = useState([]);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [especieFiltro, setEspecieFiltro] = useState("");
   const [porteFiltro, setPorteFiltro] = useState("");
@@ -73,7 +74,12 @@ const Pets_cadastrados = () => {
     const carregar = async () => {
       try {
         let dados = [];
-        //Se for admin chama função para listar todos os pets cadastrados no sistema, caso contrário, somente os pets do cliente cadastrado
+        
+        // Carrega todos os usuários para mapear CPF -> Nome
+        const usersRes = await userService.listUsers();
+        const allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
+        setUsers(allUsers);
+
         if (isAdmin) {
           dados = await petService.listar();
         } else {
@@ -82,6 +88,9 @@ const Pets_cadastrados = () => {
 
         if (Array.isArray(dados) && dados.length > 0) {
           const petsFormatados = dados.map((pet) => {
+            // Encontra o dono pelo CPF
+            const dono = allUsers.find(u => u.cpf === pet.user_cpf);
+            
             return {
               id: pet.id,
               name: pet.name,
@@ -93,6 +102,7 @@ const Pets_cadastrados = () => {
               sex: pet.sex || "",
               observations: pet.observations,
               user_cpf: pet.user_cpf,
+              owner_name: dono?.name || "Não informado",
               photo: pet.picture_blob || "",
             };
           });
@@ -122,7 +132,7 @@ const Pets_cadastrados = () => {
     const weight = String(pet.weight || "").toLowerCase();
     const sex = pet.sex?.toLowerCase() || "";
     const observations = pet.observations?.toLowerCase() || "";
-    const user = pet.user_cpf?.toLowerCase() || "";
+    const ownerName = pet.owner_name?.toLowerCase() || "";
     const birthDate = pet.birth_date?.toLowerCase() || "";
 
     return (
@@ -133,7 +143,7 @@ const Pets_cadastrados = () => {
         weight.includes(termo) ||
         sex.includes(termo) ||
         observations.includes(termo) ||
-        user.includes(termo) ||
+        ownerName.includes(termo) ||
         birthDate.includes(termo)) &&
       (especieFiltro === "" || pet.species === especieFiltro) &&
       (porteFiltro === "" || pet.size === porteFiltro)
@@ -242,7 +252,7 @@ const Pets_cadastrados = () => {
 
               <div className="pet-main-info">
                 <span className="pet-name-cell">{row.name}</span>
-                <span className="pet-owner-cell">Dono: {row.user_cpf}</span>
+                <span className="pet-owner-cell">Dono: {row.owner_name}</span>
               </div>
             </div>
           );
@@ -317,7 +327,7 @@ const Pets_cadastrados = () => {
           <FiSearch className="pets-search-icon-modern" />
           <input
             type="text"
-            placeholder="Buscar por nome do pet, CPF do dono, espécie, raça..."
+            placeholder="Buscar por nome do pet, nome do dono, espécie, raça..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pets-search-input-modern"

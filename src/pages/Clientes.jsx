@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import pawCatIcon from "../assets/icons/paw-cat.png";
 import petClienteIcon from "../assets/icons/pet-cliente.png";
@@ -15,6 +16,8 @@ import {
 import "../styles/clientes.css";
 import { userService } from "../services/userService";
 import petService from "../services/petService";
+
+
 
 const PetsExpand = ({ data }) => {
   if (!data.pets || data.pets.length === 0) {
@@ -64,7 +67,8 @@ const Clientes = () => {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [clienteParaExcluir, setClienteParaExcluir] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [tipoUsuarioFiltro, setTipoUsuarioFiltro] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const carregar = async () => {
@@ -87,11 +91,13 @@ const Clientes = () => {
             nome: user.name,
             cpf: user.cpf,
             email: user.email,
+            tipo: user.type || "Cliente",
             telefone: user.contacts?.[0]?.number || "--",
             endereco: user.addresses?.[0]?.address,
             numero: user.addresses?.[0]?.number,
             bairro: user.addresses?.[0]?.neighborhood,
             cep: user.addresses?.[0]?.cep,
+            ativo: user.active !== false,
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
               tipo: pet.species,
@@ -146,21 +152,32 @@ const Clientes = () => {
 
   const salvarEdicao = async () => {
     const body = {
-      name: clienteEditando.nome,
-      email: clienteEditando.email,
-      contact: {
-        name: clienteEditando.nome,
-        number: clienteEditando.telefone,
-      },
-      address: {
-        type: "Casa",
-        cep: clienteEditando.cep?.replace(/\D/g, ""),
-        locaticion: clienteEditando.localizacao || "", // se existir
-        neighborhood: clienteEditando.bairro || "",
-        address: clienteEditando.endereco || "",
-        number: clienteEditando.numero || "",
-        complement: clienteEditando.complemento || "",
-      },
+      name: form.nome,
+      cpf: form.cpf,
+      email: form.email,
+      type: form.tipo,
+      active: true,
+      must_create_password: true,
+
+      contact: form.telefone
+        ? {
+          name: "Principal",
+          number: form.telefone,
+        }
+        : undefined,
+
+      address:
+        form.endereco || form.cep
+          ? {
+            type: form.tipoEndereco || "Casa",
+            cep: form.cep,
+            address: form.endereco,
+            number: form.numero,
+            neighborhood: form.bairro,
+            complement: form.complemento,
+            locaticion: form.localizacao,
+          }
+          : undefined,
     };
     try {
       await userService.updateUser(clienteEditando.cpf, body);
@@ -192,13 +209,29 @@ const Clientes = () => {
   const cidadesUnicas = [...new Set(clientes.map((c) => c.cidade))].sort();
   const estadosUnicos = [...new Set(clientes.map((c) => c.estado))].sort();
 
+  const normalizarTipoUsuario = (tipo = "") => {
+    const tipoLower = tipo.toLowerCase();
+
+    if (tipoLower === "admin" || tipoLower === "administrador") {
+      return "Admin";
+    }
+
+    if (tipoLower === "colaborador") {
+      return "Colaborador";
+    }
+
+    return "Cliente";
+  };
+
   const filteredClientes = clientes.filter((cliente) => {
     const termo = search.toLowerCase();
+    const tipoNormalizado = normalizarTipoUsuario(cliente.tipo);
 
     return (
       (cliente.nome.toLowerCase().includes(termo) ||
         cliente.cpf.toLowerCase().includes(termo) ||
         (cliente.email && cliente.email.toLowerCase().includes(termo))) &&
+      (tipoUsuarioFiltro === "" || tipoNormalizado === tipoUsuarioFiltro) &&
       (cidadeFiltro === "" || cliente.cidade === cidadeFiltro) &&
       (estadoFiltro === "" || cliente.estado === estadoFiltro)
     );
@@ -280,6 +313,32 @@ const Clientes = () => {
     },
   };
 
+  const alternarStatusUsuario = async (usuario) => {
+    const novoStatus = !usuario.ativo;
+
+    try {
+      await userService.updateUser(usuario.cpf, {
+        active: novoStatus,
+      });
+
+      setClientes((prev) =>
+        prev.map((item) =>
+          item.cpf === usuario.cpf
+            ? {
+              ...item,
+              ativo: novoStatus,
+            }
+            : item
+        )
+      );
+
+      alert(novoStatus ? "Usuário ativado com sucesso!" : "Usuário desativado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao alterar status do usuário:", err);
+      alert(err.response?.data?.error || "Erro ao alterar status do usuário.");
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -297,6 +356,30 @@ const Clientes = () => {
               <span className="cliente-cpf-cell">{row.cpf}</span>
             </div>
           </div>
+        ),
+      },
+      {
+        name: "Tipo",
+        center: true,
+        width: "150px",
+        sortable: true,
+        selector: (row) => normalizarTipoUsuario(row.tipo),
+        cell: (row) => (
+          <span className={`badge-tipo badge-${normalizarTipoUsuario(row.tipo).toLowerCase()}`}>
+            {normalizarTipoUsuario(row.tipo)}
+          </span>
+        ),
+      },
+      {
+        name: "Status",
+        center: true,
+        width: "130px",
+        sortable: true,
+        selector: (row) => (row.ativo ? "Ativo" : "Inativo"),
+        cell: (row) => (
+          <span className={`badge-status-usuario ${row.ativo ? "ativo" : "inativo"}`}>
+            {row.ativo ? "Ativo" : "Inativo"}
+          </span>
         ),
       },
       {
@@ -344,12 +427,21 @@ const Clientes = () => {
       {
         name: "Ações",
         center: true,
-        width: "150px",
+        width: "260px",
         cell: (row) => (
-          <button className="btn-ver" onClick={() => abrirModal(row)}>
-            <FiEye size={15} />
-            Ver cliente
-          </button>
+          <div className="acoes-usuario-table">
+            <button className="btn-ver" onClick={() => abrirModal(row)}>
+              <FiEye size={15} />
+              Ver
+            </button>
+
+            <button
+              className={`btn-status-usuario ${row.ativo ? "desativar" : "ativar"}`}
+              onClick={() => alternarStatusUsuario(row)}
+            >
+              {row.ativo ? "Desativar" : "Ativar"}
+            </button>
+          </div>
         ),
       },
     ],
@@ -367,7 +459,7 @@ const Clientes = () => {
 
   return (
     <div className="clientes-container">
-      <h1 className="titulo-clientes">Gerenciamento de Clientes</h1>
+      <h1 className="titulo-clientes">Gerenciamento de Usuários</h1>
 
       <div className="table-toolbar">
         <div className="search-box-professional">
@@ -379,6 +471,21 @@ const Clientes = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="search-big"
           />
+        </div>
+
+        <div className="filters-bar">
+          <div className="filter-group">
+            <label>Tipo de usuário</label>
+            <select
+              value={tipoUsuarioFiltro}
+              onChange={(e) => setTipoUsuarioFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="Cliente">Clientes</option>
+              <option value="Colaborador">Colaboradores</option>
+              <option value="Admin">Administradores</option>
+            </select>
+          </div>
         </div>
 
         {/* <div className="filters-bar">
@@ -417,9 +524,17 @@ const Clientes = () => {
       <div className="table-card">
         <div className="table-card-top">
           <div>
-            <h2>Lista de clientes</h2>
-            <p>{filteredClientes.length} cliente(s) encontrado(s)</p>
+            <h2>Lista de usuários</h2>
+            <p>{filteredClientes.length} usuário(s) encontrado(s)</p>
           </div>
+
+          <button
+            type="button"
+            className="btn-novo-usuario"
+            onClick={() => navigate("/admin/usuarios/novo")}
+          >
+            + Novo usuário
+          </button>
         </div>
 
         <DataTable
@@ -431,7 +546,7 @@ const Clientes = () => {
           persistTableHead
           noDataComponent={
             <div className="empty-table">
-              Nenhum cliente encontrado com os filtros informados.
+              Nenhum usuário encontrado com os filtros informados.
             </div>
           }
           customStyles={customStyles}
@@ -454,7 +569,7 @@ const Clientes = () => {
 
               <div>
                 <h2>{clienteSelecionado.nome}</h2>
-                <p>Visualização de cadastro do cliente</p>
+                <p>Visualização de cadastro do usuário</p>
               </div>
             </div>
 
@@ -569,7 +684,7 @@ const Clientes = () => {
             </div>
 
             <div className="pets-section-custom">
-              <div className="pets-section-title">🐾 Pets do Cliente</div>
+              <div className="pets-section-title">🐾 Pets do Usuário</div>
 
               {clienteSelecionado.pets?.length ? (
                 <div className="pets-list-grid">

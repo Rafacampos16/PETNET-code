@@ -70,8 +70,8 @@ const FAQ = () => {
           </div>
 
           <a
-            href={`https://wa.me/5512992136141?text=${encodeURIComponent(
-              "Ola! Restou uma duvida e gostaria de mais informacoes, pode me ajudar?"
+            href={`https://wa.me/5512996539100?text=${encodeURIComponent(
+              "Olá! Restou uma dúvida e gostaria de mais informações, pode me ajudar?"
             )}`}
             target="_blank"
             rel="noopener noreferrer"

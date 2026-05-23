@@ -8,6 +8,8 @@ import { userService } from "../services/userService";
 import petService from "../services/petService";
 import serviceService from "../services/serviceService";
 import scheduleService from "../services/scheduleService";
+import { enviarEmailConfirmacaoAgendamento } from "../utils/emailNotifications";
+import { criarNotificacaoConfirmacaoAgendamento } from "../utils/notificacoesLocal";
 
 const DISPONIBILIDADE_POR_DATA = {
   //ainda sem rota no backend
@@ -24,10 +26,11 @@ const DURACOES = [
 ];
 
 const Agendamentos = () => {
-  const [cpf, setCpf] = useState("");
-  const [clienteValido, setClienteValido] = useState(false);
-  const [buscandoCliente, setBuscandoCliente] = useState(false);
-  const [erroCliente, setErroCliente] = useState("");
+  const [nomeBusca, setNomeBusca] = useState("");
+  const [clientesEncontrados, setClientesEncontrados] = useState([]);
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
+  const [buscandoClientes, setBuscandoClientes] = useState(false);
+  const [erroBusca, setErroBusca] = useState("");
 
   const [petsDisponiveis, setPetsDisponiveis] = useState([]);
   const [pet, setPet] = useState("");
@@ -49,7 +52,6 @@ const Agendamentos = () => {
   const [agendamentoResumo, setAgendamentoResumo] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
-  // Carrega serviços e colaboradores ao montar
   useEffect(() => {
     serviceService.listar()
       .then((data) => setServicos(Array.isArray(data) ? data : []))
@@ -66,6 +68,87 @@ const Agendamentos = () => {
       .catch((err) => console.error("Erro ao carregar colaboradores:", err));
   }, []);
 
+  useEffect(() => {
+    const busca = nomeBusca.trim();
+
+    if (busca.length < 1 || clienteSelecionado) {
+      setClientesEncontrados([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      buscarClientes(busca);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [nomeBusca, clienteSelecionado]);
+
+  const limparCPF = (cpf = "") => {
+    return String(cpf).replace(/\D/g, "");
+  };
+
+  const formatarCPF = (cpf = "") => {
+    const cpfLimpo = limparCPF(cpf);
+
+    if (cpfLimpo.length !== 11) return cpf;
+
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
+  const buscarClientes = async (termo) => {
+    setBuscandoClientes(true);
+    setErroBusca("");
+
+    try {
+      const res = await userService.listUsers();
+      const todos = Array.isArray(res.data) ? res.data : [];
+
+      const termoFormatado = termo.toLowerCase().trim();
+      const termoCpf = limparCPF(termo);
+
+      const resultados = todos
+        .filter((u) => u.type === "Cliente" || !u.type)
+        .filter((u) => {
+          const nome = u.name?.toLowerCase() || "";
+          const cpf = limparCPF(u.cpf);
+
+          const nomeComecaComBusca = nome.startsWith(termoFormatado);
+          const cpfComecaComBusca = termoCpf && cpf.startsWith(termoCpf);
+
+          return nomeComecaComBusca || cpfComecaComBusca;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      setClientesEncontrados(resultados.slice(0, 8));
+    } catch (err) {
+      console.error("Erro na busca:", err);
+      setErroBusca("Não foi possível buscar clientes.");
+    } finally {
+      setBuscandoClientes(false);
+    }
+  };
+
+  const selecionarCliente = async (cliente) => {
+    setClienteSelecionado(cliente);
+    setClientesEncontrados([]);
+    setNomeBusca(cliente.name);
+    setErroBusca("");
+    setPet("");
+    setPetsDisponiveis([]);
+
+    try {
+      const resPets = await petService.listar();
+      const todos = Array.isArray(resPets) ? resPets : resPets?.data || [];
+      const petsDoCliente = todos.filter(
+        (p) => String(p.user_cpf) === String(cliente.cpf)
+      );
+      setPetsDisponiveis(petsDoCliente);
+    } catch (err) {
+      console.error("Erro ao carregar pets:", err);
+      setErroBusca("Não foi possível carregar os pets deste cliente.");
+    }
+  };
+
   const selectedDateKey = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
   const statusDia = selectedDateKey
     ? DISPONIBILIDADE_POR_DATA[selectedDateKey] || "disponivel"
@@ -78,55 +161,6 @@ const Agendamentos = () => {
     if (statusDia === "semHorarios") return "Sem vagas disponíveis no momento.";
     return "Dia liberado para novos agendamentos.";
   };
-
-  const handleCpfChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 11) value = value.slice(0, 11);
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-
-    setCpf(value);
-    setPet("");
-    setPetsDisponiveis([]);
-    setClienteValido(false);
-    setErroCliente("");
-    setErrors((prev) => ({ ...prev, cliente: false, pet: false }));
-    setSuccessMsg("");
-  };
-
-  // Busca cliente e seus pets ao completar o CPF
-  useEffect(() => {
-    const cpfLimpo = cpf.replace(/\D/g, "");
-    if (cpfLimpo.length !== 11) return;
-
-    setBuscandoCliente(true);
-    setErroCliente("");
-    setClienteValido(false);
-    setPetsDisponiveis([]);
-    setPet("");
-
-    userService.showUser(cpfLimpo)
-      .then(async (res) => {
-        const user = res.data;
-        if (!user) {
-          setErroCliente("Cliente não encontrado.");
-          return;
-        }
-
-        setClienteValido(true);
-
-        // Busca todos os pets e filtra pelo CPF do cliente
-        const resPets = await petService.listar();
-        const todos = Array.isArray(resPets) ? resPets : resPets?.data || [];
-        const petsDocliente = todos.filter(
-          (p) => String(p.user_cpf) === String(cpfLimpo)
-        );
-        setPetsDisponiveis(petsDocliente);
-      })
-      .catch(() => setErroCliente("Cliente não encontrado."))
-      .finally(() => setBuscandoCliente(false));
-  }, [cpf]);
 
   const handleHoraInicioChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -158,9 +192,8 @@ const Agendamentos = () => {
 
   const handleSubmit = () => {
     const newErrors = {};
-    const cpfLimpo = cpf.replace(/\D/g, "");
 
-    if (cpfLimpo.length !== 11 || !clienteValido) newErrors.cliente = true;
+    if (!clienteSelecionado || !clienteSelecionado.cpf) newErrors.cliente = true;
     if (!pet) newErrors.pet = true;
     if (!colaboradorCpf) newErrors.colaborador = true;
     if (!selectedDate) newErrors.data = true;
@@ -188,8 +221,10 @@ const Agendamentos = () => {
     const duracaoLabel = DURACOES.find((d) => d.value === duracao)?.label || duracao;
 
     setAgendamentoResumo({
-      cpf,
-      cpfLimpo,
+      clienteNome: clienteSelecionado?.name || "",
+      clienteEmail: clienteSelecionado?.email || "",
+      cpf: clienteSelecionado?.name || "",
+      cpfLimpo: clienteSelecionado?.cpf || "",
       horaInicio,
       petId: pet,
       petNome: petSelecionado?.name || pet,
@@ -208,6 +243,7 @@ const Agendamentos = () => {
 
   const confirmarAgendamento = async () => {
     setEnviando(true);
+
     try {
       await scheduleService.criar({
         client_cpf: agendamentoResumo.cpfLimpo,
@@ -220,11 +256,24 @@ const Agendamentos = () => {
         services: agendamentoResumo.servicos.map((s) => s.id),
       });
 
+      try {
+        if (agendamentoResumo.clienteEmail) {
+          await enviarEmailConfirmacaoAgendamento(agendamentoResumo);
+        }
+
+        criarNotificacaoConfirmacaoAgendamento(agendamentoResumo);
+      } catch (erroNotificacao) {
+        console.error(
+          "Agendamento criado, mas houve erro ao enviar notificação:",
+          erroNotificacao
+        );
+      }
+
       setSuccessMsg("Agendamento realizado com sucesso!");
-      setCpf("");
-      setPet("");
+      setNomeBusca("");
+      setClienteSelecionado(null);
       setPetsDisponiveis([]);
-      setClienteValido(false);
+      setPet("");
       setColaboradorCpf("");
       setSelectedDate(null);
       setHoraInicio("");
@@ -267,17 +316,64 @@ const Agendamentos = () => {
             <p>Preencha os dados para reservar um atendimento.</p>
           </div>
 
-          <label>Selecione o cliente</label>
-          <input
-            type="text"
-            placeholder="Digite o CPF"
-            value={cpf}
-            onChange={handleCpfChange}
-            maxLength="14"
-            className={errors.cliente ? "input-error" : ""}
-          />
-          {buscandoCliente && <p className="helper-text">Buscando cliente...</p>}
-          {erroCliente && <p className="helper-text erro-service">{erroCliente}</p>}
+          <label>Buscar cliente</label>
+          <div style={{ position: "relative" }}>
+            <input
+              type="text"
+              placeholder="Digite o nome ou CPF do cliente"
+              value={nomeBusca}
+              onChange={(e) => {
+                setNomeBusca(e.target.value);
+                setClienteSelecionado(null);
+                setPetsDisponiveis([]);
+                setPet("");
+                setErrors((prev) => ({ ...prev, cliente: false }));
+              }}
+              className={errors.cliente ? "input-error" : ""}
+              autoComplete="off"
+            />
+
+            {clientesEncontrados.length > 0 && !clienteSelecionado && (
+              <ul className="clientes-sugestoes">
+                {clientesEncontrados.map((cliente) => (
+                  <li
+                    key={cliente.cpf}
+                    className="cliente-sugestao-item"
+                    onClick={() => selecionarCliente(cliente)}
+                  >
+                    <div className="cliente-sugestao-avatar">
+                      {cliente.name?.charAt(0).toUpperCase() || "C"}
+                    </div>
+
+                    <div className="cliente-sugestao-info">
+                      <strong>{cliente.name}</strong>
+
+                      {cliente.cpf && (
+                        <span>CPF: {formatarCPF(cliente.cpf)}</span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+          </div>
+
+          {buscandoClientes && <p className="helper-text">Buscando...</p>}
+          {erroBusca && <p className="helper-text erro-service">{erroBusca}</p>}
+
+          {nomeBusca.trim().length > 0 &&
+            !buscandoClientes &&
+            clientesEncontrados.length === 0 &&
+            !clienteSelecionado && (
+              <p className="helper-text">
+                Nenhum cliente encontrado com esse nome ou CPF.
+              </p>
+            )}
+
+          {errors.cliente && !clienteSelecionado && (
+            <p className="erro-service">Selecione um cliente na lista.</p>
+          )}
 
           <label>Selecione o pet</label>
           <select
@@ -287,7 +383,7 @@ const Agendamentos = () => {
               setErrors((prev) => ({ ...prev, pet: false }));
             }}
             className={errors.pet ? "input-error" : ""}
-            disabled={!clienteValido}
+            disabled={!clienteSelecionado}
           >
             <option value="">Selecione o nome do pet</option>
             {petsDisponiveis.map((p) => (
@@ -296,7 +392,7 @@ const Agendamentos = () => {
               </option>
             ))}
           </select>
-          {clienteValido && petsDisponiveis.length === 0 && (
+          {clienteSelecionado && petsDisponiveis.length === 0 && (
             <p className="helper-text">Nenhum pet encontrado para este cliente.</p>
           )}
           {errors.pet && <p className="erro-service">Selecione um pet.</p>}
@@ -371,8 +467,6 @@ const Agendamentos = () => {
               {errors.inicio && <p className="erro-service">Informe um horário válido.</p>}
             </div>
           </div>
-
-
 
           {selectedDate && !dataPodeAgendar && (
             <p className="erro-service">

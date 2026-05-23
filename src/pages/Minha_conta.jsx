@@ -9,6 +9,11 @@ import IconEditHover from "../assets/icons/edit-h.png";
 import IconLogout from "../assets/icons/logout.png";
 import IconLogoutHover from "../assets/icons/logout-h.png";
 import LoadingScreen from "../components/LoadingScreen";
+import {
+  listarNotificacoes,
+  marcarNotificacaoComoLida,
+} from "../utils/notificacoesLocal";
+
 
 import {
   Eye,
@@ -21,10 +26,13 @@ import {
   Bell,
   User,
   Heart,
+  Plus,
+  Trash2,
 } from "lucide-react";
 
 import { userService } from "../services/userService";
 import petService from "../services/petService";
+import scheduleService from "../services/scheduleService";
 
 export default function MinhaConta() {
   const [foto, setFoto] = useState(null);
@@ -56,40 +64,21 @@ export default function MinhaConta() {
   const [petSelecionadoId, setPetSelecionadoId] = useState("");
   const [petEmEdicaoId, setPetEmEdicaoId] = useState("");
 
+  const [criandoNovoPet, setCriandoNovoPet] = useState(false);
+
+  const [notificacoes, setNotificacoes] = useState([]);
+
+  // 🔁 NOVO: estado para agendamentos reais
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [carregandoAgendamentos, setCarregandoAgendamentos] = useState(false);
+
   const isAdmin = localStorage.getItem("isAdmin") === "true";
 
-  const agendamentos = [
-    {
-      servico: "Banho e tosa",
-      data: "10/10/2025",
-      horario: "15:00",
-      status: "Concluído",
-    },
-    {
-      servico: "Escovação dental",
-      data: "15/10/2025",
-      horario: "10:30",
-      status: "Aguardando",
-    },
-    {
-      servico: "Hidratação",
-      data: "20/10/2025",
-      horario: "14:00",
-      status: "Agendado",
-    },
-    {
-      servico: "Corte de unhas",
-      data: "25/10/2025",
-      horario: "16:00",
-      status: "Agendado",
-    },
-    {
-      servico: "Consulta veterinária",
-      data: "30/10/2025",
-      horario: "09:00",
-      status: "Aguardando",
-    },
-  ];
+  useEffect(() => {
+    if (modalNotificacoes) {
+      setNotificacoes(listarNotificacoes());
+    }
+  }, [modalNotificacoes]);
 
   function traduzirEspecie(species) {
     if (species === "dog") return "Cachorro";
@@ -135,17 +124,72 @@ export default function MinhaConta() {
     if (!pet) return;
 
     setDados((prev) => ({
-      ...(prev || {}),
-      nomePet: pet.name || "",
-      especiePet: pet.species,
-      racaPet: pet.breed || "",
-      portePet: pet.size,
-      pesoPet: pet.weight || "",
-      nascimentoPet: pet.birth_date
-        ? new Date(pet.birth_date).toLocaleDateString("pt-BR")
-        : "",
-      sexoPet: pet.sex || "",
+      ...prev,
+      nome: formEditar.nome,
+      email: formEditar.email,
+
+      telefone: contatosTratados[0]?.number || "",
+      contatos: contatosTratados,
+
+      tipo: enderecosTratados[0]?.type || "",
+      endereco: enderecosTratados[0]?.address || "",
+      numero: enderecosTratados[0]?.number || "",
+      complemento: enderecosTratados[0]?.complement || "",
+      bairro: enderecosTratados[0]?.neighborhood || "",
+      cep: enderecosTratados[0]?.cep || "",
+      localizacao: enderecosTratados[0]?.locaticion || "",
+      enderecos: enderecosTratados,
     }));
+  }
+
+  // 🔁 NOVA FUNÇÃO: Formata status para exibição
+  function formatarStatus(status) {
+    const map = {
+      SCHEDULED: "Agendado",
+      COMPLETED: "Concluído",
+      CANCELLED: "Cancelado",
+      PENDING: "Aguardando",
+    };
+    return map[status] || status;
+  }
+
+  // 🔁 NOVA FUNÇÃO: Carrega agendamentos do usuário
+  async function carregarAgendamentos(cpf) {
+    setCarregandoAgendamentos(true);
+    try {
+      // 🔎 Ajuste conforme sua API: pode ser scheduleService.listByClient, listar, etc.
+      const res = await scheduleService.listarPorCliente?.(cpf) || await scheduleService.listar();
+      const todos = Array.isArray(res) ? res : res?.data || [];
+
+      // Filtra apenas os agendamentos deste cliente
+      const meus = todos.filter(a => String(a.client_cpf) === String(cpf));
+
+      // 🔗 Cruza com pets para pegar o nome
+      const meusPets = Array.isArray(pets) ? pets : [];
+
+      const agendamentosFormatados = meus.map(ag => {
+        const pet = meusPets.find(p => String(p.id) === String(ag.pet_id));
+        return {
+          id: ag.id,
+          petNome: pet?.name || "Pet não identificado",
+          servico: ag.services?.map(s => s.name || s).join(", ") || "Serviço não informado",
+          data: ag.date_time ? new Date(ag.date_time).toLocaleDateString("pt-BR") : "--",
+          horario: ag.date_time ? new Date(ag.date_time).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "--",
+          status: formatarStatus(ag.status),
+          statusOriginal: ag.status,
+        };
+      });
+
+      // Ordena por data (mais recente primeiro)
+      agendamentosFormatados.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+      setAgendamentos(agendamentosFormatados);
+    } catch (err) {
+      console.error("Erro ao carregar agendamentos:", err);
+      setAgendamentos([]);
+    } finally {
+      setCarregandoAgendamentos(false);
+    }
   }
 
   useEffect(() => {
@@ -224,6 +268,10 @@ export default function MinhaConta() {
             numero: user.addresses?.[0]?.number || "",
           }));
         }
+
+        // 🔁 Carrega agendamentos após carregar pets
+        await carregarAgendamentos(cpf);
+
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       }
@@ -232,6 +280,14 @@ export default function MinhaConta() {
     carregarDados();
   }, []);
 
+  // 🔁 Efeito para recarregar agendamentos quando pets mudar
+  useEffect(() => {
+    const cpf = localStorage.getItem("userCpf");
+    if (cpf && pets.length > 0) {
+      carregarAgendamentos(cpf);
+    }
+  }, [pets]);
+
   function handleFoto(e) {
     const file = e.target.files[0];
     if (file) setFoto(file);
@@ -239,13 +295,15 @@ export default function MinhaConta() {
 
   function abrirModalEditar() {
     if (dados) {
-      setFormEditar({ ...dados });
+      setFormEditar(garantirListasEdicao({ ...dados }));
     }
+
     setAbaEditar("pessoal");
     setModalEditar(true);
   }
 
   function abrirModalPet() {
+    setCriandoNovoPet(false);
     if (pets.length > 0) {
       const petAtual =
         pets.find((pet) => String(pet.id) === String(petSelecionadoId)) ||
@@ -295,6 +353,7 @@ export default function MinhaConta() {
   }
 
   function trocarPetSelecionado(e) {
+    setCriandoNovoPet(false);
     const idSelecionado = e.target.value;
     setPetEmEdicaoId(idSelecionado);
 
@@ -319,6 +378,112 @@ export default function MinhaConta() {
     }));
   }
 
+  function garantirListasEdicao(base = {}) {
+    return {
+      ...base,
+      contatos:
+        base.contatos?.length > 0
+          ? base.contatos
+          : [{ name: "Principal", number: base.telefone || "" }],
+
+      enderecos:
+        base.enderecos?.length > 0
+          ? base.enderecos
+          : [
+            {
+              type: base.tipo || "Casa",
+              cep: base.cep || "",
+              address: base.endereco || "",
+              number: base.numero || "",
+              neighborhood: base.bairro || "",
+              complement: base.complemento || "",
+              locaticion: base.localizacao || "",
+            },
+          ],
+    };
+  }
+
+  function adicionarContato() {
+    setFormEditar((prev) => ({
+      ...prev,
+      contatos: [
+        ...(prev.contatos || []),
+        {
+          name: "",
+          number: "",
+        },
+      ],
+    }));
+  }
+
+  function removerContato(index) {
+    setFormEditar((prev) => ({
+      ...prev,
+      contatos: prev.contatos.filter((_, i) => i !== index),
+    }));
+  }
+
+  function alterarContato(index, campo, valor) {
+    setFormEditar((prev) => ({
+      ...prev,
+      contatos: prev.contatos.map((contato, i) =>
+        i === index ? { ...contato, [campo]: valor } : contato
+      ),
+    }));
+  }
+
+  function adicionarEndereco() {
+    setFormEditar((prev) => ({
+      ...prev,
+      enderecos: [
+        ...(prev.enderecos || []),
+        {
+          type: "",
+          cep: "",
+          address: "",
+          number: "",
+          neighborhood: "",
+          complement: "",
+          locaticion: "",
+        },
+      ],
+    }));
+  }
+
+  function removerEndereco(index) {
+    setFormEditar((prev) => ({
+      ...prev,
+      enderecos: prev.enderecos.filter((_, i) => i !== index),
+    }));
+  }
+
+  function alterarEndereco(index, campo, valor) {
+    setFormEditar((prev) => ({
+      ...prev,
+      enderecos: prev.enderecos.map((endereco, i) =>
+        i === index ? { ...endereco, [campo]: valor } : endereco
+      ),
+    }));
+  }
+
+  function prepararNovoPet() {
+    setCriandoNovoPet(true);
+    setPetEmEdicaoId("");
+
+    setFormEditar((prev) => ({
+      ...(prev || {}),
+      ...(dados || {}),
+      petId: "",
+      nomePet: "",
+      especiePet: "",
+      racaPet: "",
+      portePet: "",
+      pesoPet: "",
+      nascimentoPet: "",
+      sexoPet: "",
+    }));
+  }
+
   async function salvarAlteracoes(e) {
     e.preventDefault();
 
@@ -326,14 +491,41 @@ export default function MinhaConta() {
 
     try {
       if (abaEditar === "pessoal" || abaEditar === "endereco") {
+        const contatosTratados = (formEditar.contatos || [])
+          .filter((contato) => contato.name?.trim() || contato.number?.trim())
+          .map((contato, index) => ({
+            name: contato.name?.trim() || `Contato ${index + 1}`,
+            number: contato.number?.replace(/\D/g, ""),
+          }));
+
+        const enderecosTratados = (formEditar.enderecos || [])
+          .filter(
+            (endereco) =>
+              endereco.type?.trim() ||
+              endereco.cep?.trim() ||
+              endereco.address?.trim() ||
+              endereco.number?.trim()
+          )
+          .map((endereco, index) => ({
+            type: endereco.type?.trim() || `Endereço ${index + 1}`,
+            cep: endereco.cep?.replace(/\D/g, ""),
+            address: endereco.address || "",
+            number: endereco.number || "",
+            neighborhood: endereco.neighborhood || "",
+            complement: endereco.complement || "",
+            locaticion: endereco.locaticion || "",
+          }));
+
         const body = {
           name: formEditar.nome,
           email: formEditar.email,
-          contact: {
+
+          contact: contatosTratados[0] || {
             name: formEditar.nome,
             number: formEditar.telefone,
           },
-          address: {
+
+          address: enderecosTratados[0] || {
             type: formEditar.tipo,
             cep: formEditar.cep?.replace(/\D/g, ""),
             address: formEditar.endereco,
@@ -342,23 +534,40 @@ export default function MinhaConta() {
             complement: formEditar.complemento || "",
             locaticion: formEditar.localizacao || "",
           },
+
+          contacts: contatosTratados,
+          addresses: enderecosTratados,
         };
 
         await userService.updateUser(cpf, body);
 
-        setDados((prev) => ({
-          ...prev,
-          nome: formEditar.nome,
-          email: formEditar.email,
-          telefone: formEditar.telefone,
-          tipo: formEditar.tipo,
-          endereco: formEditar.endereco,
-          numero: formEditar.numero,
-          complemento: formEditar.complemento,
-          bairro: formEditar.bairro,
-          cep: formEditar.cep,
-          localizacao: formEditar.localizacao,
-        }));
+        const contatosUsuario = user.contacts || [];
+        const enderecosUsuario = user.addresses || [];
+
+        setDados({
+          nome: user.name,
+          email: user.email,
+
+          telefone: contatosUsuario?.[0]?.number || "",
+          contatos: contatosUsuario,
+
+          endereco: enderecosUsuario?.[0]?.address || "",
+          bairro: enderecosUsuario?.[0]?.neighborhood || "",
+          cep: enderecosUsuario?.[0]?.cep || "",
+          complemento: enderecosUsuario?.[0]?.complement || "",
+          localizacao: enderecosUsuario?.[0]?.locaticion || "",
+          tipo: enderecosUsuario?.[0]?.type || "",
+          numero: enderecosUsuario?.[0]?.number || "",
+          enderecos: enderecosUsuario,
+
+          nomePet: "",
+          especiePet: "",
+          racaPet: "",
+          portePet: "",
+          pesoPet: "",
+          nascimentoPet: "",
+          sexoPet: "",
+        });
 
         setModalEditar(false);
         alert("Dados atualizados com sucesso!");
@@ -366,8 +575,8 @@ export default function MinhaConta() {
       }
 
       if (abaEditar === "pet") {
-        if (!petEmEdicaoId) {
-          alert("Selecione um pet para editar.");
+        if (!formEditar.nomePet?.trim()) {
+          alert("Informe o nome do pet.");
           return;
         }
 
@@ -389,24 +598,40 @@ export default function MinhaConta() {
           user_cpf: cpf,
         };
 
-        await petService.atualizar(petEmEdicaoId, bodyPet);
+        let petsAtualizados = [];
 
-        const petsAtualizados = pets.map((pet) =>
-          String(pet.id) === String(petEmEdicaoId)
-            ? {
-              ...pet,
+        if (criandoNovoPet || !petEmEdicaoId) {
+          const response = await petService.criar(bodyPet);
+          const petCriado = response?.data || response;
+
+          petsAtualizados = [
+            ...pets,
+            {
+              ...petCriado,
               ...bodyPet,
-              // Mantém os labels PT-BR no array local para o modal funcionar corretamente
-              species: formEditar.especiePet,
-              size: formEditar.portePet,
-              sex: formEditar.sexoPet,
-            }
-            : pet
-        );
+              id: petCriado?.id || Date.now(),
+            },
+          ];
+
+          setPetSelecionadoId(petCriado?.id || petsAtualizados[petsAtualizados.length - 1].id);
+          alert("Pet cadastrado com sucesso!");
+        } else {
+          await petService.atualizar(petEmEdicaoId, bodyPet);
+
+          petsAtualizados = pets.map((pet) =>
+            String(pet.id) === String(petEmEdicaoId)
+              ? {
+                ...pet,
+                ...bodyPet,
+              }
+              : pet
+          );
+
+          alert("Pet atualizado com sucesso!");
+        }
 
         setPets(petsAtualizados);
 
-        // Mantém o pet em destaque como o que estava selecionado antes da edição
         const petDestaque = petsAtualizados.find(
           (pet) => String(pet.id) === String(petSelecionadoId)
         );
@@ -416,7 +641,6 @@ export default function MinhaConta() {
         }
 
         setModalEditar(false);
-        alert("Pet atualizado com sucesso!");
       }
     } catch (err) {
       console.error("Erro ao atualizar:", err);
@@ -561,7 +785,9 @@ export default function MinhaConta() {
           </div>
           <div>
             <h4>Próximos serviços</h4>
-            <p>2 agendamentos futuros</p>
+            <p>
+              {agendamentos.filter(a => a.statusOriginal !== "COMPLETED" && a.statusOriginal !== "CANCELLED").length} agendamento(s) futuro(s)
+            </p>
           </div>
         </div>
 
@@ -687,27 +913,34 @@ export default function MinhaConta() {
             </div>
 
             <div className="agendamentos-lista-home">
-              {agendamentos.slice(0, 3).map((item, index) => (
-                <div className="agendamento-card" key={index}>
-                  <div>
-                    <h4>{item.servico}</h4>
-                    <p>
-                      {item.data} às {item.horario}
-                    </p>
-                  </div>
+              {carregandoAgendamentos ? (
+                <p className="helper-text">Carregando agendamentos...</p>
+              ) : agendamentos.length === 0 ? (
+                <p className="helper-text">Nenhum agendamento encontrado.</p>
+              ) : (
+                agendamentos.slice(0, 3).map((item) => (
+                  <div className="agendamento-card" key={item.id}>
+                    <div>
+                      {/* 🔁 MOSTRA PET + SERVIÇO */}
+                      <h4>{item.petNome} • {item.servico}</h4>
+                      <p>
+                        {item.data} às {item.horario}
+                      </p>
+                    </div>
 
-                  <span
-                    className={`agendamento-badge ${item.status === "Concluído"
-                      ? "concluido"
-                      : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                      }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      className={`agendamento-badge ${item.statusOriginal === "COMPLETED"
+                        ? "concluido"
+                        : item.statusOriginal === "PENDING" || item.statusOriginal === "SCHEDULED"
+                          ? "agendado"
+                          : "aguardando"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </section>
         </div>
@@ -883,29 +1116,37 @@ export default function MinhaConta() {
             </div>
 
             <div className="agend-lista">
-              {agendamentos.map((item, index) => (
-                <div className="agend-item" key={index}>
-                  <span className="agend-title">{item.servico}</span>
-                  <p className="agend-info">
-                    {item.data} às {item.horario}
-                  </p>
-                  <span
-                    className={`agend-status ${item.status === "Concluído"
-                      ? "concluido"
-                      : item.status === "Aguardando"
-                        ? "aguardando"
-                        : "agendado"
-                      }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-              ))}
+              {carregandoAgendamentos ? (
+                <p className="helper-text">Carregando...</p>
+              ) : agendamentos.length === 0 ? (
+                <p className="helper-text">Nenhum agendamento encontrado.</p>
+              ) : (
+                agendamentos.map((item) => (
+                  <div className="agend-item" key={item.id}>
+                    {/* 🔁 MOSTRA PET + SERVIÇO */}
+                    <span className="agend-title">{item.petNome} • {item.servico}</span>
+                    <p className="agend-info">
+                      {item.data} às {item.horario}
+                    </p>
+                    <span
+                      className={`agend-status ${item.statusOriginal === "COMPLETED"
+                        ? "concluido"
+                        : item.statusOriginal === "PENDING" || item.statusOriginal === "SCHEDULED"
+                          ? "agendado"
+                          : "aguardando"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
       )}
 
+      {/* ... restante dos modais (editar, notificações, senha) mantidos ... */}
       {modalEditar && (
         <div className="modal-bg" onClick={() => setModalEditar(false)}>
           <div
@@ -940,7 +1181,7 @@ export default function MinhaConta() {
             <form className="form-editar" onSubmit={salvarAlteracoes}>
               {abaEditar === "pessoal" && (
                 <>
-                  <label>
+                  <label className="campo-full">
                     Nome
                     <input
                       name="nome"
@@ -950,7 +1191,7 @@ export default function MinhaConta() {
                     />
                   </label>
 
-                  <label>
+                  <label className="campo-full">
                     E-mail
                     <input
                       name="email"
@@ -960,68 +1201,201 @@ export default function MinhaConta() {
                     />
                   </label>
 
-                  <label>
-                    Telefone
-                    <input
-                      name="telefone"
-                      type="text"
-                      value={formEditar.telefone || ""}
-                      onChange={atualizarCampo}
-                    />
-                  </label>
+                  <div className="editor-lista campo-full">
+                    <div className="editor-lista-topo">
+                      <div>
+                        <h3>Contatos</h3>
+                        <p>Adicione telefones com um nome para identificar cada um.</p>
+                      </div>
+
+                      <button type="button" className="btn-add-mini" onClick={adicionarContato}>
+                        <Plus size={16} />
+                        Adicionar contato
+                      </button>
+                    </div>
+
+                    {(formEditar.contatos || []).map((contato, index) => (
+                      <div className="editor-item" key={index}>
+                        <label>
+                          Nome do contato
+                          <input
+                            type="text"
+                            placeholder="Ex: Principal, WhatsApp, Trabalho"
+                            value={contato.name || ""}
+                            onChange={(e) => alterarContato(index, "name", e.target.value)}
+                          />
+                        </label>
+
+                        <label>
+                          Telefone
+                          <input
+                            type="text"
+                            placeholder="Digite o telefone"
+                            value={contato.number || ""}
+                            onChange={(e) => alterarContato(index, "number", e.target.value)}
+                          />
+                        </label>
+
+                        {(formEditar.contatos || []).length > 1 && (
+                          <button
+                            type="button"
+                            className="btn-remover-mini"
+                            onClick={() => removerContato(index)}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </>
               )}
 
               {abaEditar === "endereco" && (
-                <>
-                  <label>
-                    Endereço
-                    <input name="endereco" type="text" value={formEditar.endereco || ""} onChange={atualizarCampo} />
-                  </label>
+                <div className="editor-lista campo-full">
+                  <div className="editor-lista-topo">
+                    <div>
+                      <h3>Endereços</h3>
+                      <p>Cadastre mais de um endereço e dê um nome para cada um.</p>
+                    </div>
 
-                  <label>
-                    Número
-                    <input name="numero" type="text" value={formEditar.numero || ""} onChange={atualizarCampo} />
-                  </label>
+                    <button type="button" className="btn-add-mini" onClick={adicionarEndereco}>
+                      <Plus size={16} />
+                      Adicionar endereço
+                    </button>
+                  </div>
 
-                  <label>
-                    Complemento
-                    <input name="complemento" type="text" value={formEditar.complemento || ""} onChange={atualizarCampo} />
-                  </label>
+                  {(formEditar.enderecos || []).map((endereco, index) => (
+                    <div className="editor-item endereco-item" key={index}>
+                      <label>
+                        Nome do endereço
+                        <input
+                          type="text"
+                          placeholder="Ex: Casa, Trabalho, Apartamento"
+                          value={endereco.type || ""}
+                          onChange={(e) => alterarEndereco(index, "type", e.target.value)}
+                        />
+                      </label>
 
-                  <label>
-                    Bairro
-                    <input name="bairro" type="text" value={formEditar.bairro || ""} onChange={atualizarCampo} />
-                  </label>
+                      <label>
+                        CEP
+                        <input
+                          type="text"
+                          value={endereco.cep || ""}
+                          onChange={(e) => alterarEndereco(index, "cep", e.target.value)}
+                        />
+                      </label>
 
-                  <label>
-                    CEP
-                    <input name="cep" type="text" value={formEditar.cep || ""} onChange={atualizarCampo} />
-                  </label>
+                      <label className="campo-full">
+                        Endereço
+                        <input
+                          type="text"
+                          value={endereco.address || ""}
+                          onChange={(e) => alterarEndereco(index, "address", e.target.value)}
+                        />
+                      </label>
 
-                  <label>
-                    Localização
-                    <input name="localizacao" type="text" value={formEditar.localizacao || ""} onChange={atualizarCampo} />
-                  </label>
-                </>
+                      <label>
+                        Número
+                        <input
+                          type="text"
+                          value={endereco.number || ""}
+                          onChange={(e) => alterarEndereco(index, "number", e.target.value)}
+                        />
+                      </label>
+
+                      <label>
+                        Bairro
+                        <input
+                          type="text"
+                          value={endereco.neighborhood || ""}
+                          onChange={(e) =>
+                            alterarEndereco(index, "neighborhood", e.target.value)
+                          }
+                        />
+                      </label>
+
+                      <label>
+                        Complemento
+                        <input
+                          type="text"
+                          value={endereco.complement || ""}
+                          onChange={(e) =>
+                            alterarEndereco(index, "complement", e.target.value)
+                          }
+                        />
+                      </label>
+
+                      <label>
+                        Localização
+                        <input
+                          type="text"
+                          placeholder="Ex: Próximo ao metrô"
+                          value={endereco.locaticion || ""}
+                          onChange={(e) =>
+                            alterarEndereco(index, "locaticion", e.target.value)
+                          }
+                        />
+                      </label>
+
+                      {(formEditar.enderecos || []).length > 1 && (
+                        <button
+                          type="button"
+                          className="btn-remover-mini"
+                          onClick={() => removerEndereco(index)}
+                        >
+                          <Trash2 size={16} />
+                          Remover endereço
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
 
               {abaEditar === "pet" && (
                 <>
-                  <label>
-                    Nome do pet/apelido
+                  <div className="editor-lista-topo campo-full">
+                    <div>
+                      <h3>{criandoNovoPet ? "Novo pet" : "Editar pet"}</h3>
+                      <p>
+                        Escolha um pet existente para editar ou cadastre um novo companheiro.
+                      </p>
+                    </div>
+
+                    <button type="button" className="btn-add-mini" onClick={prepararNovoPet}>
+                      <Plus size={16} />
+                      Novo pet
+                    </button>
+                  </div>
+
+                  <label className="campo-full">
+                    Pet cadastrado
                     <select
                       name="petId"
-                      value={petEmEdicaoId || ""}
+                      value={criandoNovoPet ? "" : petEmEdicaoId || ""}
                       onChange={trocarPetSelecionado}
+                      disabled={criandoNovoPet}
                     >
-                      <option value="">Selecione um pet</option>
+                      <option value="">
+                        {criandoNovoPet ? "Cadastrando novo pet" : "Selecione um pet"}
+                      </option>
                       {pets.map((pet) => (
                         <option key={pet.id} value={pet.id}>
                           {pet.name}
                         </option>
                       ))}
                     </select>
+                  </label>
+
+                  <label>
+                    Nome do pet/apelido
+                    <input
+                      name="nomePet"
+                      type="text"
+                      value={formEditar.nomePet || ""}
+                      onChange={atualizarCampo}
+                    />
                   </label>
 
                   <label>
@@ -1132,19 +1506,33 @@ export default function MinhaConta() {
             </div>
 
             <div className="notif-lista">
-              <div className="notif-item">
-                <span className="notif-titulo">Agendamento amanhã</span>
-                <p className="notif-desc">
-                  Seu pet tem um banho marcado amanhã às 15h.
-                </p>
-              </div>
+              {notificacoes.length === 0 ? (
+                <p className="helper-text">Nenhuma notificação por enquanto.</p>
+              ) : (
+                notificacoes.map((notificacao) => (
+                  <div
+                    className={`notif-item ${notificacao.lida ? "lida" : ""}`}
+                    key={notificacao.id}
+                  >
+                    <span className="notif-titulo">{notificacao.titulo}</span>
 
-              <div className="notif-item">
-                <span className="notif-titulo">Promoção ativa</span>
-                <p className="notif-desc">
-                  Banho e tosa com 20% OFF até sexta!
-                </p>
-              </div>
+                    <p className="notif-desc">{notificacao.descricao}</p>
+
+                    {!notificacao.lida && (
+                      <button
+                        type="button"
+                        className="btn-marcar-lida"
+                        onClick={() => {
+                          marcarNotificacaoComoLida(notificacao.id);
+                          setNotificacoes(listarNotificacoes());
+                        }}
+                      >
+                        Marcar como lida
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

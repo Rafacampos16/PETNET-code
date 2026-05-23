@@ -6,9 +6,10 @@
 
 .hero-content {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8rem;
   align-items: center;
-  text-align: center;
+  text-align: left;
 }
 
 .hero-text h1 {
@@ -23,8 +24,8 @@
   font-size: 1.25rem;
   margin-bottom: 2rem;
   max-width: 40rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .hero-image {
@@ -36,4 +37,22 @@
 .hero-image img {
   max-width: 350px;
   border-radius: 1rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+
+  .hero-text p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
 }

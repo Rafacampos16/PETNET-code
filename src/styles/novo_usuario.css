@@ -1,0 +1,207 @@
+.novo-usuario-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 42px 24px 60px;
+  color: #1f2937;
+}
+
+.novo-usuario-header {
+  margin-bottom: 24px;
+}
+
+.novo-usuario-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #eef4ff;
+  color: #3370eb;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.novo-usuario-header h1 {
+  font-size: 2.4rem;
+  color: #3370eb;
+  margin: 0 0 8px;
+  font-weight: 900;
+}
+
+.novo-usuario-header p {
+  max-width: 720px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.novo-usuario-card {
+  background: #ffffff;
+  border: 1px solid #e6edff;
+  border-radius: 24px;
+  box-shadow: 0 14px 35px rgba(28, 63, 140, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.novo-section {
+  border: 1px solid #e6edff;
+  border-radius: 20px;
+  padding: 18px;
+  background: #fbfcff;
+}
+
+.novo-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #17336c;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.novo-section-title svg {
+  color: #3370eb;
+}
+
+.novo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.novo-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #445066;
+}
+
+.novo-grid input,
+.novo-grid select {
+  width: 100%;
+  min-height: 46px;
+  border: 1.8px solid #d9e6ff;
+  border-radius: 12px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.novo-grid input:focus,
+.novo-grid select:focus {
+  border-color: #3370eb;
+  box-shadow: 0 0 0 4px rgba(51, 112, 235, 0.12);
+}
+
+.campo-full {
+  grid-column: 1 / -1;
+}
+
+.input-erro {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.senha-info-box {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff8c9;
+  color: #7a6200;
+}
+
+.senha-info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.senha-info-box strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 900;
+}
+
+.senha-info-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.novo-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancelar-novo,
+.btn-salvar-novo {
+  min-width: 150px;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-cancelar-novo {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-cancelar-novo:hover {
+  background: #d7dbe1;
+}
+
+.btn-salvar-novo {
+  background: linear-gradient(90deg, #3370eb, #2457bd);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(51, 112, 235, 0.2);
+}
+
+.btn-salvar-novo:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-salvar-novo:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .novo-usuario-page {
+    padding: 28px 14px 50px;
+  }
+
+  .novo-usuario-header h1 {
+    font-size: 2rem;
+  }
+
+  .novo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-full {
+    grid-column: auto;
+  }
+
+  .novo-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancelar-novo,
+  .btn-salvar-novo {
+    width: 100%;
+  }
+}

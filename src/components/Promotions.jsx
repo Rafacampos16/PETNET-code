@@ -4,8 +4,8 @@ import { ShoppingCart, Tag, Sparkles } from "lucide-react";
 
 const Promotions = () => {
   const handleAproveitar = (promo, price) => {
-    const phone = "5512992136141";
-    const message = `Ola! Quero aproveitar a promocao ${promo} com o valor de R$${price}. Pode me passar mais informacoes?`;
+    const phone = "5512996539100";
+    const message = `Olá! Quero aproveitar a promoção ${promo} com o valor de R$${price}. Pode me passar mais informações?`;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");

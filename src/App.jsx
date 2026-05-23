@@ -18,10 +18,14 @@ import Status from "./pages/Status";
 import Colaborador from "./pages/Colaborador";
 import AdminServicos from "./pages/AdminServicos";
 import ResetPassword from "./pages/ResetPassword";
+import ScrollToTopButton from "./components/ScrollToTopButton";
+import ScrollToTop from "./components/ScrollToTop";
+import NovoUsuario from "./pages/NovoUsuario";
 
 const App = () => (
   <Router>
     <GlobalStyles />
+      <ScrollToTop />
     <Header />
 
     <main style={{ marginTop: "4.5rem" }}>
@@ -34,6 +38,7 @@ const App = () => (
         <Route path="/minhaconta" element={<Minhaconta />} />
         <Route path="/meus-pets" element={<PetsCadastrados />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/admin/usuarios/novo" element={<NovoUsuario />} />
 
         <Route
           path="/admin"
@@ -103,6 +108,8 @@ const App = () => (
         <Route path="/colaborador/agenda" element={<Status />} />
       </Routes>
     </main>
+
+    <ScrollToTopButton />
 
     <Footer />
   </Router>

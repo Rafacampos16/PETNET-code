@@ -813,3 +813,106 @@
     width: 100%;
   }
 }
+
+.badge-tipo {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-cliente {
+  background-color: rgba(51, 112, 235, 0.1);
+  color: #3370eb;
+}
+
+.badge-colaborador {
+  background-color: rgba(249, 238, 124, 0.55);
+  color: #8a7400;
+}
+
+.badge-admin {
+  background-color: rgba(31, 41, 55, 0.1);
+  color: #1f2937;
+}
+
+.btn-novo-usuario {
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #3370eb, #2457bd);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(51, 112, 235, 0.2);
+  transition: 0.2s ease;
+}
+
+.btn-novo-usuario:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(51, 112, 235, 0.26);
+}
+
+@media (max-width: 768px) {
+  .table-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .btn-novo-usuario {
+    width: 100%;
+  }
+}
+
+.badge-status-usuario {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.badge-status-usuario.ativo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-status-usuario.inativo {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.acoes-usuario-table {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-status-usuario {
+  min-height: 34px;
+  padding: 0 11px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-status-usuario.ativar {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.btn-status-usuario.desativar {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-status-usuario:hover {
+  transform: translateY(-1px);
+}

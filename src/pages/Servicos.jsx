@@ -25,7 +25,7 @@ import defaultIcon from "../assets/icons/banho.png"; // ícone genérico
 const Servicos = () => {
 
   const handleAgendar = (servico) => {
-    const phone = "5512992136141"; // coloque seu número com DDI e DDD
+    const phone = "5512996539100"; // coloque seu número com DDI e DDD
     const message = `Olá! Gostaria de agendar o serviço de ${servico}. Pode me informar os horários disponíveis?`;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;

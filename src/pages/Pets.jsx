@@ -5,6 +5,7 @@ import petService from "../services/petService";
 import Footer from "../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
+import { userService } from "../services/userService";
 
 import {
   FiLock,
@@ -28,6 +29,10 @@ function Pets() {
   const forcarNovoCadastro = params.get("novo") === "true";
 
   const [loadingPets, setLoadingPets] = useState(true);
+  const [clientes, setClientes] = useState([]);
+  const [clienteBusca, setClienteBusca] = useState("");
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
+  const [buscandoClientes, setBuscandoClientes] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -42,6 +47,31 @@ function Pets() {
   });
 
   const [erros, setErros] = useState({});
+
+  useEffect(() => {
+    async function carregarClientes() {
+      if (!isAdmin) return;
+
+      setBuscandoClientes(true);
+
+      try {
+        const response = await userService.listUsers();
+        const todos = Array.isArray(response.data) ? response.data : [];
+
+        const apenasClientes = todos.filter(
+          (usuario) => usuario.type === "Cliente" || !usuario.type
+        );
+
+        setClientes(apenasClientes);
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+      } finally {
+        setBuscandoClientes(false);
+      }
+    }
+
+    carregarClientes();
+  }, [isAdmin]);
 
   useEffect(() => {
     async function verificarPets() {
@@ -95,6 +125,8 @@ function Pets() {
     });
 
     setErros({});
+    setClienteBusca("");
+    setClienteSelecionado(null);
   }
 
   function handleChange(e) {
@@ -106,9 +138,46 @@ function Pets() {
     setForm({ ...form, picture_url: e.target.files[0] });
   }
 
+  function limparCPF(cpf = "") {
+    return String(cpf).replace(/\D/g, "");
+  }
+
+  function formatarCPF(cpf = "") {
+    const cpfLimpo = limparCPF(cpf);
+
+    if (cpfLimpo.length !== 11) return cpf;
+
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  }
+
+  const clientesFiltrados = clientes
+    .filter((cliente) => {
+      const busca = clienteBusca.trim().toLowerCase();
+      const buscaCpf = limparCPF(clienteBusca);
+
+      if (!busca) return false;
+
+      const nome = cliente.name?.toLowerCase() || "";
+      const cpf = limparCPF(cliente.cpf);
+
+      return nome.startsWith(busca) || cpf.startsWith(buscaCpf);
+    })
+    .slice(0, 8);
+
+  function selecionarCliente(cliente) {
+    setClienteSelecionado(cliente);
+    setClienteBusca(cliente.name);
+    setErros((prev) => ({ ...prev, cliente: false }));
+  }
+
   function validarCampos() {
     const novosErros = {};
     const faltando = [];
+
+    if (isAdmin && !clienteSelecionado) {
+      novosErros.cliente = true;
+      faltando.push("Cliente");
+    }
 
     if (!form.name.trim()) {
       novosErros.name = true;
@@ -118,10 +187,6 @@ function Pets() {
       novosErros.species = true;
       faltando.push("Espécie");
     }
-    if (!form.breed.trim()) {
-      novosErros.breed = true;
-      faltando.push("Raça");
-    }
     if (!form.size.trim()) {
       novosErros.size = true;
       faltando.push("Porte");
@@ -129,10 +194,6 @@ function Pets() {
     if (!form.weight) {
       novosErros.weight = true;
       faltando.push("Peso");
-    }
-    if (!form.birth_date.trim()) {
-      novosErros.birth_date = true;
-      faltando.push("Data de nascimento");
     }
     if (!form.sex.trim()) {
       novosErros.sex = true;
@@ -174,15 +235,19 @@ function Pets() {
         FEMEA: "F",
       };
 
+      const cpfResponsavel = isAdmin ? clienteSelecionado?.cpf : userCpf;
+
       const data = {
         name: form.name,
         species: speciesMap[form.species],
-        breed: form.breed,
+        breed: form.breed.trim() || "SRD",
         size: sizeMap[form.size],
         weight: Number(form.weight),
-        birth_date: new Date(form.birth_date).toISOString(),
+        birth_date: form.birth_date
+          ? new Date(form.birth_date).toISOString()
+          : null,
         sex: sexMap[form.sex],
-        user_cpf: userCpf,
+        user_cpf: cpfResponsavel,
         observations: form.observations,
       };
 
@@ -308,6 +373,73 @@ function Pets() {
 
               <form id="petForm" className="form" onSubmit={handleSubmit}>
                 <div className="form-left">
+                  {isAdmin && (
+                    <div className="form-section">
+                      <h3 className="form-section-title">Cliente responsável</h3>
+
+                      <label>BUSCAR CLIENTE</label>
+
+                      <div className="cliente-pet-search-wrapper">
+                        <input
+                          type="text"
+                          placeholder="Digite o nome ou CPF do cliente"
+                          value={clienteBusca}
+                          onChange={(e) => {
+                            setClienteBusca(e.target.value);
+                            setClienteSelecionado(null);
+                            setErros((prev) => ({ ...prev, cliente: false }));
+                          }}
+                          className={erros.cliente ? "input-erro" : ""}
+                          autoComplete="off"
+                        />
+
+                        {clientesFiltrados.length > 0 && !clienteSelecionado && (
+                          <ul className="cliente-pet-sugestoes">
+                            {clientesFiltrados.map((cliente) => (
+                              <li
+                                key={cliente.cpf}
+                                className="cliente-pet-sugestao-item"
+                                onClick={() => selecionarCliente(cliente)}
+                              >
+                                <div className="cliente-pet-avatar">
+                                  {cliente.name?.charAt(0).toUpperCase() || "C"}
+                                </div>
+
+                                <div className="cliente-pet-info">
+                                  <strong>{cliente.name}</strong>
+                                  <span>CPF: {formatarCPF(cliente.cpf)}</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {buscandoClientes && (
+                        <p className="helper-text">Carregando clientes...</p>
+                      )}
+
+                      {clienteBusca.trim().length > 0 &&
+                        clientesFiltrados.length === 0 &&
+                        !clienteSelecionado &&
+                        !buscandoClientes && (
+                          <p className="helper-text">
+                            Nenhum cliente encontrado com esse nome ou CPF.
+                          </p>
+                        )}
+
+                      {clienteSelecionado && (
+                        <p className="cliente-pet-selecionado">
+                          Cliente selecionado: <strong>{clienteSelecionado.name}</strong>
+                        </p>
+                      )}
+
+                      {erros.cliente && (
+                        <p className="erro-service">Selecione um cliente para vincular o pet.</p>
+                      )}
+                    </div>
+                  )}
+
                   <div className="form-section">
                     <h3 className="form-section-title">Dados principais</h3>
 
@@ -333,14 +465,13 @@ function Pets() {
                       <option value="GATO">Gato</option>
                     </select>
 
-                    <label>RAÇA</label>
+                    <label>RAÇA <span className="campo-opcional">(opcional)</span></label>
                     <input
                       type="text"
                       name="breed"
                       placeholder="Informe a raça do seu pet"
                       onChange={handleChange}
                       value={form.breed}
-                      className={erros.breed ? "input-erro" : ""}
                     />
                   </div>
 
@@ -381,7 +512,7 @@ function Pets() {
 
                     <div className="linhas dupla">
                       <div>
-                        <label>DATA DE NASCIMENTO</label>
+                        <label>DATA DE NASCIMENTO <span className="campo-opcional">(opcional)</span></label>
                         <div className="input-icon-wrapper">
                           <FiCalendar className="input-icon" />
                           <input
@@ -389,11 +520,7 @@ function Pets() {
                             name="birth_date"
                             onChange={handleChange}
                             value={form.birth_date}
-                            className={
-                              erros.birth_date
-                                ? "input-erro input-with-icon"
-                                : "input-with-icon"
-                            }
+                            className="input-with-icon"
                           />
                         </div>
                       </div>
@@ -417,10 +544,10 @@ function Pets() {
                   <div className="form-section">
                     <h3 className="form-section-title">Observação</h3>
 
-                    <label>OBSERVAÇÃO</label>
+                    <label>OBSERVAÇÃO <span className="campo-opcional">(opcional)</span></label>
                     <textarea
                       name="observations"
-                      placeholder="Digite uma observação sobre o pet (opcional)"
+                      placeholder="Digite uma observação sobre o pet"
                       onChange={handleChange}
                       value={form.observations}
                       rows={5}
