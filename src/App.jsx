@@ -21,11 +21,13 @@ import ResetPassword from "./pages/ResetPassword";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import ScrollToTop from "./components/ScrollToTop";
 import NovoUsuario from "./pages/NovoUsuario";
+import Logs from "./pages/Logs";
+import MeusAgendamentos from "./pages/MeusAgendamentos";
 
 const App = () => (
   <Router>
     <GlobalStyles />
-      <ScrollToTop />
+    <ScrollToTop />
     <Header />
 
     <main style={{ marginTop: "4.5rem" }}>
@@ -39,6 +41,7 @@ const App = () => (
         <Route path="/meus-pets" element={<PetsCadastrados />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin/usuarios/novo" element={<NovoUsuario />} />
+        <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
 
         <Route
           path="/admin"
@@ -99,6 +102,15 @@ const App = () => (
           element={
             <ProtectedRoute>
               <AdminServicos />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/logs"
+          element={
+            <ProtectedRoute allowedRoles={["dev"]}>
+              <Logs />
             </ProtectedRoute>
           }
         />

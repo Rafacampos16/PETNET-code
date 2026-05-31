@@ -1,95 +1,156 @@
 .footer {
   background-color: #3370eb;
-  color: white;
-  padding: 3rem 0;
+  color: #ffffff;
+  padding: 3rem 1.5rem 2rem;
 }
 
 .footer-grid {
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1.2fr 1.2fr 1fr 1.1fr;
   gap: 2rem;
   padding-bottom: 2rem;
 }
 
+.footer-grid > div {
+  min-width: 0;
+}
+
 .footer-grid h3 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  margin: 0 0 0.65rem;
 }
 
 .footer-grid h4 {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0 0 0.7rem;
 }
 
 .footer-grid p {
-  line-height: 1.5;
-  margin: 0.3rem 0;
+  line-height: 1.55;
+  margin: 0.35rem 0;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.footer-grid p svg {
+  vertical-align: middle;
+  margin-right: 0.35rem;
+  flex-shrink: 0;
 }
 
 .social-icons {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
-  margin-top: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.social-icons svg {
+  width: 34px;
+  height: 34px;
+  padding: 0.45rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: 0.2s ease;
+}
+
+.social-icons svg:hover {
+  background: #f9ee7c;
+  color: #3370eb;
+  transform: translateY(-2px);
+}
+
+.newsletter-form {
+  width: 100%;
+  margin-top: 0.7rem;
 }
 
 .footer-grid input,
 .footer-grid button {
   width: 100%;
   box-sizing: border-box;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: none;
-  padding: 0.75rem;
-  font-size: 0.9rem;
+  padding: 0.82rem 0.9rem;
+  font-size: 0.92rem;
 }
 
 .footer-grid input {
-  margin-top: 0.5rem;
   outline: none;
+  color: #1f2937;
+  background: #ffffff;
+}
+
+.footer-grid input:focus {
+  box-shadow: 0 0 0 4px rgba(249, 238, 124, 0.28);
 }
 
 .footer-grid button {
-  margin-top: 0.6rem;
-  background-color: #ffe666;
+  margin-top: 0.65rem;
+  background-color: #f9ee7c;
   color: #1e3a8a;
-  font-weight: 600;
+  font-weight: 900;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .footer-grid button:hover {
   background-color: #fcdb35;
+  transform: translateY(-1px);
 }
-
 
 .footer-bottom {
+  max-width: 1100px;
+  margin: 0 auto;
   text-align: center;
-  font-size: 0.75rem;
-  opacity: 0.85;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 1.5rem;
-  margin-top: 1rem;
+  font-size: 0.78rem;
+  opacity: 0.88;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  padding-top: 1.4rem;
 }
 
-@media (max-width: 768px) {
+/* TABLET */
+@media (max-width: 1024px) {
   .footer {
-    padding: 2rem 1rem;
+    padding: 2.5rem 1.4rem 1.8rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.5rem;
+  }
+
+  .footer-grid h3 {
+    font-size: 1.25rem;
+  }
+
+  .footer-grid p {
+    font-size: 0.92rem;
+  }
+}
+
+/* CELULAR */
+@media (max-width: 650px) {
+  .footer {
+    padding: 2.2rem 1rem 1.6rem;
     text-align: center;
   }
 
   .footer-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1.7rem;
+    padding-bottom: 1.5rem;
   }
 
-  .footer-grid div {
+  .footer-grid > div {
     width: 100%;
-    max-width: 300px;
+    max-width: 340px;
+    margin: 0 auto;
   }
 
   .social-icons {
@@ -98,77 +159,94 @@
 
   .footer-grid input,
   .footer-grid button {
-    width: 100%;
-    max-width: 280px;
-    margin: 0.5rem auto;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
     display: block;
   }
 
   .footer-bottom {
-    font-size: 0.8rem;
-    padding-top: 1rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    padding-top: 1.1rem;
   }
 }
+
+/* MODAL DE CONFIRMAÇÃO */
 
 .modal-bg {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(15, 23, 42, 0.58);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease-in-out;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease-in-out;
 }
 
 .modal-confirmacao {
+  width: min(100%, 390px);
   background: #ffffff;
-  padding: 30px 24px;
-  width: 380px;
-  border-radius: 16px;
+  padding: 1.8rem 1.5rem;
+  border-radius: 22px;
   text-align: center;
-  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.25);
-  animation: slideUp 0.35s ease-out;
-  z-index: 10000;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease-out;
 }
 
 .modal-confirmacao h2 {
-  margin-bottom: 12px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #1a1a1a;
+  margin: 0 0 0.75rem;
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #3370eb;
 }
 
 .modal-confirmacao p {
-  margin-bottom: 18px;
-  font-size: 17px;
-  color: #333;
+  margin: 0 0 1.2rem;
+  font-size: 1rem;
+  color: #334155;
+  line-height: 1.5;
 }
 
 .modal-confirmacao button {
   background-color: #3370eb;
   color: white;
   border: none;
-  padding: 10px 24px;
-  border-radius: 10px;
-  font-size: 16px;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.96rem;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .modal-confirmacao button:hover {
-  opacity: 0.85;
+  background-color: #285bd1;
+  transform: translateY(-1px);
 }
 
-/* animações */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(18px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

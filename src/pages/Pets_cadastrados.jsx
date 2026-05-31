@@ -74,7 +74,7 @@ const Pets_cadastrados = () => {
     const carregar = async () => {
       try {
         let dados = [];
-        
+
         // Carrega todos os usuários para mapear CPF -> Nome
         const usersRes = await userService.listUsers();
         const allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
@@ -90,7 +90,7 @@ const Pets_cadastrados = () => {
           const petsFormatados = dados.map((pet) => {
             // Encontra o dono pelo CPF
             const dono = allUsers.find(u => u.cpf === pet.user_cpf);
-            
+
             return {
               id: pet.id,
               name: pet.name,
@@ -235,6 +235,7 @@ const Pets_cadastrados = () => {
         name: "Pet",
         sortable: true,
         grow: 1.6,
+        minWidth: "280px",
         cell: (row) => {
           const isDog =
             row.species?.toLowerCase() === "cachorro" ||
@@ -261,6 +262,7 @@ const Pets_cadastrados = () => {
       {
         name: "Espécie / Raça",
         grow: 1.3,
+        minWidth: "210px",
         cell: (row) => (
           <div className="pet-stack-cell">
             <span className="pet-species-badge">{row.species}</span>
@@ -297,7 +299,7 @@ const Pets_cadastrados = () => {
       {
         name: "Nascimento",
         center: true,
-        width: "150px",
+        width: "170px",
         cell: (row) => (
           <span className="birth-cell">
             <FiCalendar size={14} />

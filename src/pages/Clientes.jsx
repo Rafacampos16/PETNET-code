@@ -345,6 +345,7 @@ const Clientes = () => {
         name: "Cliente",
         sortable: true,
         grow: 1.5,
+        minWidth: "260px",
         cell: (row) => (
           <div className="cell-cliente">
             <div className="cliente-avatar">
@@ -385,6 +386,7 @@ const Clientes = () => {
       {
         name: "Contato",
         grow: 1.6,
+        minWidth: "210px",
         cell: (row) => (
           <div className="cell-contato">
             <span>
@@ -427,7 +429,7 @@ const Clientes = () => {
       {
         name: "Ações",
         center: true,
-        width: "260px",
+        width: "280px",
         cell: (row) => (
           <div className="acoes-usuario-table">
             <button className="btn-ver" onClick={() => abrirModal(row)}>

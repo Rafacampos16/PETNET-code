@@ -52,6 +52,8 @@ const Agendamentos = () => {
   const [agendamentoResumo, setAgendamentoResumo] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
+  const [avisoDataHorario, setAvisoDataHorario] = useState(false);
+
   useEffect(() => {
     serviceService.listar()
       .then((data) => setServicos(Array.isArray(data) ? data : []))
@@ -163,10 +165,19 @@ const Agendamentos = () => {
   };
 
   const handleHoraInicioChange = (e) => {
+    if (!selectedDate) {
+      setAvisoDataHorario(true);
+      setHoraInicio("");
+      return;
+    }
+
     let value = e.target.value.replace(/\D/g, "");
+
     if (value.length > 4) value = value.slice(0, 4);
     if (value.length >= 3) value = `${value.slice(0, 2)}:${value.slice(2)}`;
+
     setHoraInicio(value);
+    setAvisoDataHorario(false);
     setErrors((prev) => ({ ...prev, inicio: false }));
     setSuccessMsg("");
   };
@@ -184,6 +195,7 @@ const Agendamentos = () => {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setHoraInicio("");
+    setAvisoDataHorario(false);
     setErrors((prev) => ({ ...prev, data: false, inicio: false, duracao: false }));
     setSuccessMsg("");
   };
@@ -460,10 +472,27 @@ const Agendamentos = () => {
                 placeholder="Ex: 09:00"
                 value={horaInicio}
                 onChange={handleHoraInicioChange}
+                onFocus={() => {
+                  if (!selectedDate) {
+                    setAvisoDataHorario(true);
+                  }
+                }}
+                onClick={() => {
+                  if (!selectedDate) {
+                    setAvisoDataHorario(true);
+                  }
+                }}
                 maxLength={5}
-                className={errors.inicio ? "input-error" : ""}
-                disabled={!selectedDate}
+                className={errors.inicio || avisoDataHorario ? "input-error" : ""}
+                readOnly={!selectedDate}
               />
+
+              {avisoDataHorario && !selectedDate && (
+                <p className="aviso-data-horario">
+                  Selecione uma data no calendário antes de informar o horário.
+                </p>
+              )}
+
               {errors.inicio && <p className="erro-service">Informe um horário válido.</p>}
             </div>
           </div>

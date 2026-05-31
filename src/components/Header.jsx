@@ -32,6 +32,12 @@ import CriarServicoIconHover from "../assets/icons/criarServico-hover.png";
 import AgendaColaboradorIcon from "../assets/icons/agendaColaborador.png";
 import AgendaColaboradorIconHover from "../assets/icons/agendaColaborador-hover.png";
 
+import AgendaClienteIcon from "../assets/icons/agendaCliente.png";
+import AgendaClienteIconHover from "../assets/icons/agendaCliente-hover.png";
+
+import logIcon from "../assets/icons/log.png";
+import logHoverIcon from "../assets/icons/log-hover.png";
+
 import "../styles/header.css";
 
 const Header = () => {
@@ -44,11 +50,13 @@ const Header = () => {
   const isAdmin = localStorage.getItem("isAdmin") === "true";
   const isUser = localStorage.getItem("isUser") === "true";
   const isColaborador = localStorage.getItem("isColaborador") === "true";
+  const isDev = localStorage.getItem("isDev") === "true";
 
   const [petsHover, setPetsHover] = useState(false);
   const [pataHover, setPataHover] = useState(false);
   const [contaHover, setContaHover] = useState(false);
   const [homeHover, setHomeHover] = useState(false);
+  const [agendaClienteHover, setAgendaClienteHover] = useState(false);
 
   const [admPetsHover, setAdmPetsHover] = useState(false);
   const [admClientsHover, setAdmClientsHover] = useState(false);
@@ -61,6 +69,7 @@ const Header = () => {
   const [colabHomeHover, setColabHomeHover] = useState(false);
   const [colabContaHover, setColabContaHover] = useState(false);
 
+  const [logHover, setLogHover] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogoClick = () => {
@@ -78,7 +87,7 @@ const Header = () => {
   };
 
   const handleContaClick = () => {
-    if (isAdmin || isColaborador || isUser) {
+    if (isAdmin || isColaborador || isUser || isDev) {
       navigate("/minhaconta");
     } else {
       navigate("/conta");
@@ -108,8 +117,9 @@ const Header = () => {
           </div>
 
           <div
-            className={`header-right ${isAdminPage || isColaboradorPage ? "admin-nav" : ""
-              }`}
+            className={`header-right ${
+              isAdminPage || isColaboradorPage ? "admin-nav" : ""
+            }`}
           >
             {isAdminPage && (
               <>
@@ -403,7 +413,35 @@ const Header = () => {
                   </span>
                 </div>
 
-                {isAdmin && (
+                {isUser && (
+                  <div
+                    className="menu-item"
+                    onMouseEnter={() => setAgendaClienteHover(true)}
+                    onMouseLeave={() => setAgendaClienteHover(false)}
+                    onClick={() => navigate("/meus-agendamentos")}
+                  >
+                    <img
+                      src={
+                        agendaClienteHover
+                          ? AgendaClienteIconHover
+                          : AgendaClienteIcon
+                      }
+                      alt="Agenda"
+                      className="icon-link"
+                    />
+                    <span
+                      style={{
+                        color: agendaClienteHover
+                          ? "var(--petnet-yellow)"
+                          : "white",
+                      }}
+                    >
+                      Agenda
+                    </span>
+                  </div>
+                )}
+
+                {(isAdmin || isDev) && (
                   <div
                     className="menu-item"
                     onMouseEnter={() => setAdminHover(true)}
@@ -421,6 +459,28 @@ const Header = () => {
                       }}
                     >
                       Gerência
+                    </span>
+                  </div>
+                )}
+
+                {isDev && (
+                  <div
+                    className="menu-item"
+                    onMouseEnter={() => setLogHover(true)}
+                    onMouseLeave={() => setLogHover(false)}
+                    onClick={() => navigate("/logs")}
+                  >
+                    <img
+                      src={logHover ? logHoverIcon : logIcon}
+                      alt="Logs"
+                      className="icon-link"
+                    />
+                    <span
+                      style={{
+                        color: logHover ? "var(--petnet-yellow)" : "white",
+                      }}
+                    >
+                      Logs
                     </span>
                   </div>
                 )}
@@ -600,7 +660,18 @@ const Header = () => {
                   Pets
                 </span>
 
-                {isAdmin && (
+                {isUser && (
+                  <span
+                    onClick={() => {
+                      navigate("/meus-agendamentos");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Agenda
+                  </span>
+                )}
+
+                {(isAdmin || isDev) && (
                   <span
                     onClick={() => {
                       navigate("/admin");
@@ -608,6 +679,17 @@ const Header = () => {
                     }}
                   >
                     Gerência
+                  </span>
+                )}
+
+                {isDev && (
+                  <span
+                    onClick={() => {
+                      navigate("/logs");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Logs
                   </span>
                 )}
 
