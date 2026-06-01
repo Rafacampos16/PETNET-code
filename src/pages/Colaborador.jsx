@@ -11,10 +11,10 @@ const ScheduleStatus = {
 };
 
 const statusConfig = {
-  SCHEDULED: { label: "Agendado",   className: "status-cinza",   dot: "gray"  },
-  CONFIRMED:  { label: "Confirmado", className: "status-azul",    dot: "blue"  },
-  CANCELED:   { label: "Cancelado",  className: "status-vermelho", dot: "red"   },
-  FINISHED:   { label: "Finalizado", className: "status-verde",   dot: "green" },
+  SCHEDULED: { label: "Agendado", className: "status-cinza", dot: "gray" },
+  CONFIRMED: { label: "Confirmado", className: "status-azul", dot: "blue" },
+  CANCELED: { label: "Cancelado", className: "status-vermelho", dot: "red" },
+  FINISHED: { label: "Finalizado", className: "status-verde", dot: "green" },
 };
 
 // Transforma o objeto da API no formato que o componente usa
@@ -87,8 +87,8 @@ const Colaborador = () => {
   }, [agendamentos, filtro]);
 
   const resumo = useMemo(() => ({
-    total:      agendamentos.length,
-    agendados:  agendamentos.filter((i) => i.status === ScheduleStatus.SCHEDULED).length,
+    total: agendamentos.length,
+    agendados: agendamentos.filter((i) => i.status === ScheduleStatus.SCHEDULED).length,
     confirmados: agendamentos.filter((i) => i.status === ScheduleStatus.CONFIRMED).length,
     cancelados: agendamentos.filter((i) => i.status === ScheduleStatus.CANCELED).length,
     finalizados: agendamentos.filter((i) => i.status === ScheduleStatus.FINISHED).length,
@@ -110,13 +110,13 @@ const Colaborador = () => {
 
   function formatarDuracao(duration) {
     const duracoes = {
-      THIRTY_MIN:     "30 minutos",
+      THIRTY_MIN: "30 minutos",
       FORTY_FIVE_MIN: "45 minutos",
-      ONE_HOUR:       "1 hora",
-      ONE_HALF_HOUR:  "1h30",
-      TWO_HOURS:      "2 horas",
+      ONE_HOUR: "1 hora",
+      ONE_HALF_HOUR: "1h30",
+      TWO_HOURS: "2 horas",
       TWO_HALF_HOURS: "2h30",
-      THREE_HOURS:    "3 horas",
+      THREE_HOURS: "3 horas",
     };
     return duracoes[duration] || duration;
   }
@@ -317,7 +317,18 @@ const Colaborador = () => {
                 </div>
               </section>
 
-              <aside className="detalhes-card detalhes-card-compacto">
+              <aside
+                className={`detalhes-card detalhes-card-compacto ${selecionado ? "detalhes-aberto" : ""
+                  }`}
+              >
+                <button
+                  type="button"
+                  className="fechar-detalhes-mobile"
+                  onClick={() => setSelecionado(null)}
+                  aria-label="Fechar detalhes"
+                >
+                  ×
+                </button>
                 <div className="card-header">
                   <div>
                     <h3>Alterar status</h3>

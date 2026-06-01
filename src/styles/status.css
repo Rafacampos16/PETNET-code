@@ -584,3 +584,267 @@
     text-align: left;
   }
 }
+
+/* STATUS - VISUAL MOBILE MELHORADO */
+
+.status-mobile-tabs {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .status-container {
+    padding: 1.4rem 1rem 3rem;
+    background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  }
+
+  .status-hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .status-badge {
+    width: fit-content;
+    font-size: 0.74rem;
+    padding: 0.45rem 0.75rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .status-title {
+    color: #3370eb;
+    font-size: 1.85rem;
+    line-height: 1.08;
+  }
+
+  .status-subtitle {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .status-search-box {
+    width: 100%;
+    border-radius: 1.15rem;
+    padding: 0.9rem;
+  }
+
+  .status-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .summary-card {
+    padding: 0.85rem;
+    border-radius: 1rem;
+  }
+
+  .summary-card small {
+    font-size: 0.68rem;
+  }
+
+  .summary-card strong {
+    font-size: 1.55rem;
+  }
+
+  .status-mobile-tabs {
+    max-width: 1450px;
+    margin: 0 auto 1rem;
+    display: flex;
+    gap: 0.65rem;
+    overflow-x: auto;
+    padding: 0.25rem 0 0.45rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .status-mobile-tabs::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .status-mobile-tabs::-webkit-scrollbar-thumb {
+    background: #c8dcff;
+    border-radius: 999px;
+  }
+
+  .status-mobile-tabs button {
+    flex: 0 0 auto;
+    min-width: 150px;
+    border: 1px solid #dce7ff;
+    border-radius: 999px;
+    padding: 0.7rem 0.9rem;
+    background: #ffffff;
+    color: #3370eb;
+    font-size: 0.78rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(51, 112, 235, 0.06);
+  }
+
+  .status-mobile-tabs button span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    margin-left: 0.45rem;
+    border-radius: 999px;
+    background: #edf3ff;
+    color: #3370eb;
+    font-size: 0.74rem;
+  }
+
+  .status-mobile-tabs button.active {
+    background: #3370eb;
+    color: #ffffff;
+    border-color: #3370eb;
+    box-shadow: 0 10px 24px rgba(51, 112, 235, 0.2);
+  }
+
+  .status-mobile-tabs button.active span {
+    background: #f9ee7c;
+    color: #17386f;
+  }
+
+  .status-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .status-column {
+    display: none;
+    min-height: auto;
+    padding: 0.9rem;
+    border-radius: 1.25rem;
+  }
+
+  .status-column.mobile-active {
+    display: block;
+  }
+
+  .column-header {
+    border-radius: 1rem;
+    padding: 0.85rem;
+  }
+
+  .column-header h2 {
+    font-size: 0.95rem;
+  }
+
+  .column-header p {
+    font-size: 0.78rem;
+  }
+
+  .status-card-list {
+    gap: 0.75rem;
+  }
+
+  .pet-card {
+    border-radius: 1rem;
+    padding: 0.85rem;
+  }
+
+  .pet-mini-top {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .pet-time-mini {
+    padding: 0.7rem 0.45rem;
+  }
+
+  .pet-time-mini strong {
+    font-size: 1rem;
+  }
+
+  .pet-mini-info h3 {
+    font-size: 1rem;
+  }
+
+  .pet-mini-info p {
+    font-size: 0.84rem;
+    white-space: normal;
+  }
+
+  .pet-mini-collaborator strong {
+    white-space: normal;
+  }
+
+  .detalhes-btn-mini {
+    min-height: 42px;
+    font-size: 0.84rem;
+  }
+
+  .empty-column {
+    padding: 1rem;
+  }
+
+  .modal-overlay {
+    padding: 0.8rem;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-height: 86vh;
+    overflow-y: auto;
+    padding: 1.1rem;
+    border-radius: 1.2rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .modal-info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .modal-collaborator {
+    padding: 0.85rem;
+  }
+
+  .modal-collaborator strong {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .status-container {
+    padding: 1.2rem 0.8rem 2.6rem;
+  }
+
+  .status-title {
+    font-size: 1.6rem;
+  }
+
+  .status-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .summary-card {
+    border-left-width: 4px;
+  }
+
+  .status-mobile-tabs button {
+    min-width: 138px;
+    font-size: 0.72rem;
+  }
+
+  .pet-mini-top {
+    grid-template-columns: 1fr;
+  }
+
+  .pet-time-mini {
+    width: fit-content;
+    min-width: 82px;
+  }
+
+  .modal-header {
+    gap: 0.75rem;
+  }
+
+  .modal-x {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+}

@@ -38,7 +38,7 @@ const speciesMap = {
 };
 
 const sizeMap = {
- S: 'Pequeno',
+  S: 'Pequeno',
   M: 'Médio',
   L: 'Grande',
   XL: 'Gigante'
@@ -64,9 +64,11 @@ const StatusPage = () => {
   const [carregando, setCarregando] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [search, setSearch] = useState("");
+  const [statusMobileAtivo, setStatusMobileAtivo] = useState(ScheduleStatus.SCHEDULED);
   const hoje = new Date();
   const hojeFormatado = hoje.toISOString().split("T")[0];
   const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
+
 
   // Carrega agendamentos do dia atual
   useEffect(() => {
@@ -169,13 +171,31 @@ const StatusPage = () => {
             ))}
           </section>
 
+          <section className="status-mobile-tabs">
+            {Object.keys(statusMap).map((statusKey) => (
+              <button
+                key={statusKey}
+                type="button"
+                className={statusMobileAtivo === statusKey ? "active" : ""}
+                onClick={() => setStatusMobileAtivo(statusKey)}
+              >
+                {statusMap[statusKey].label}
+                <span>{getAgendamentosPorStatus(statusKey).length}</span>
+              </button>
+            ))}
+          </section>
+
           <section className="status-columns">
             {Object.keys(statusMap).map((statusKey) => {
               const agendamentos = getAgendamentosPorStatus(statusKey);
               const statusInfo = statusMap[statusKey];
 
               return (
-                <article key={statusKey} className={`status-column ${statusInfo.className}`}>
+                <article
+                  key={statusKey}
+                  className={`status-column ${statusInfo.className} ${statusMobileAtivo === statusKey ? "mobile-active" : ""
+                    }`}
+                >
                   <div className="column-header">
                     <div>
                       <h2>{statusInfo.label}</h2>

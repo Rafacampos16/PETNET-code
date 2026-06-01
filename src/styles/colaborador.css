@@ -890,3 +890,246 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* AJUSTE FINAL MOBILE - DETALHES COMO MODAL */
+
+.fechar-detalhes-mobile {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .colaborador-page {
+    padding: 1.4rem 0.85rem 2.5rem;
+  }
+
+  .colaborador-topbar {
+    gap: 1rem;
+  }
+
+  .colaborador-topbar h1 {
+    color: #3370eb;
+    font-size: 1.7rem;
+    line-height: 1.1;
+  }
+
+  .colaborador-topbar p {
+    font-size: 0.9rem;
+  }
+
+  .colab-badge {
+    font-size: 0.74rem;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .date-control {
+    width: 100%;
+    gap: 0.55rem;
+    padding: 0.55rem;
+    border-radius: 18px;
+  }
+
+  .date-btn {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .date-display span {
+    font-size: 0.82rem;
+    line-height: 1.25;
+  }
+
+  .colaborador-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .stat-card small {
+    font-size: 0.72rem;
+  }
+
+  .stat-card strong {
+    font-size: 1.55rem;
+  }
+
+  .agenda-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .fila-card,
+  .agenda-card {
+    padding: 1rem;
+    border-radius: 22px;
+  }
+
+  .detalhes-card {
+    display: none;
+  }
+
+  .detalhes-card.detalhes-aberto {
+    display: block;
+    position: fixed;
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    z-index: 3000;
+    width: calc(100vw - 1.6rem);
+    max-width: 520px;
+    max-height: 86vh;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+    padding: 1.1rem;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow:
+      0 24px 70px rgba(15, 23, 42, 0.28),
+      0 0 0 9999px rgba(15, 23, 42, 0.42);
+  }
+
+  .fechar-detalhes-mobile {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #edf3ff;
+    color: #3370eb;
+    font-size: 1.45rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .detalhes-card .card-header {
+    padding-right: 2.8rem;
+  }
+
+  .pet-info {
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+    gap: 0.8rem;
+  }
+
+  .pet-info h2 {
+    font-size: 1.1rem;
+  }
+
+  .pet-info p,
+  .pet-info small {
+    font-size: 0.84rem;
+  }
+
+  .pet-icon.large {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    border-radius: 16px;
+  }
+
+  .status-atual-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.9rem;
+  }
+
+  .actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .btn-custom {
+    min-height: 42px;
+    font-size: 0.78rem;
+    border-radius: 14px;
+  }
+
+  .info-box {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .info-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+    padding: 0.75rem 0;
+  }
+
+  .info-row strong {
+    text-align: left;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fila-item {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .agenda-body-dinamica {
+    min-height: auto;
+    padding: 0.75rem;
+    border-radius: 20px;
+  }
+
+  .agenda-item {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .agenda-time {
+    width: fit-content;
+  }
+
+  .agenda-info strong,
+  .agenda-info p,
+  .agenda-info small {
+    white-space: normal;
+  }
+
+  .agenda-colaborador {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .agenda-colaborador span {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .colaborador-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detalhes-card.detalhes-aberto {
+    width: calc(100vw - 1rem);
+    padding: 1rem;
+    border-radius: 20px;
+  }
+}
