@@ -704,18 +704,6 @@ export default function MinhaConta() {
           </p>
         </div>
 
-        <button
-          className="btn-notificacao"
-          onClick={() => setModalNotificacoes(true)}
-          onMouseEnter={() => setHoverSino(true)}
-          onMouseLeave={() => setHoverSino(false)}
-        >
-          <img
-            src={hoverSino ? SinoIconHover : SinoIcon}
-            alt="Notificações"
-            className="icone-sino"
-          />
-        </button>
       </div>
 
       <div className="conta-top-grid">

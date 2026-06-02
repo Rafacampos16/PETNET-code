@@ -4,72 +4,91 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import "../styles/administracao.css";
 
-import IconLogout from "../assets/icons/logout.png";
 import IconLogoutHover from "../assets/icons/logout-h.png";
 
-const periodos = ["Hoje", "7 dias", "30 dias"];
+const periodos = ["Hoje", "Mensal", "Anual"];
 
 const dadosPorPeriodo = {
   Hoje: {
     cards: [
-      { titulo: "Agendamentos", valor: "18", detalhe: "+3 vs ontem", tipo: "azul" },
-      { titulo: "Confirmação", valor: "89%", detalhe: "média do dia", tipo: "amarelo" },
-      { titulo: "Clientes ativos", valor: "12", detalhe: "em atendimento", tipo: "verde" },
-      { titulo: "Ocupação", valor: "75%", detalhe: "agenda preenchida", tipo: "roxo" }
+      { titulo: "Agendamentos", valor: "18", detalhe: "total do dia", tipo: "azul" },
+      { titulo: "Cancelados", valor: "2", detalhe: "atendimentos cancelados", tipo: "amarelo" },
+      { titulo: "Finalizados", valor: "7", detalhe: "serviços concluídos", tipo: "verde" },
+      { titulo: "Entregues", valor: "4", detalhe: "pets entregues ao cliente", tipo: "roxo" },
     ],
     fluxo: [2, 5, 3, 4, 3, 1],
     fluxoLabels: ["08h", "10h", "12h", "14h", "16h", "18h"],
     servicos: [8, 5, 3, 2],
     servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    status: [11, 5, 2],
-    statusLabels: ["Confirmados", "Pendentes", "Cancelados"],
-    agendaResumo: { atendimentos: 5, confirmados: 3, pendentes: 1 }
+    colaboradoresPets: [6, 5, 4, 3],
+    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João"],
+    agendaResumo: {
+      atendimentos: 18,
+      confirmados: 9,
+      cancelados: 2,
+      finalizados: 7,
+      entregues: 4,
+    },
   },
-  "7 dias": {
+
+  Mensal: {
     cards: [
-      { titulo: "Agendamentos", valor: "63", detalhe: "+9 na semana", tipo: "azul" },
-      { titulo: "Confirmação", valor: "84%", detalhe: "média semanal", tipo: "amarelo" },
-      { titulo: "Clientes ativos", valor: "37", detalhe: "últimos 7 dias", tipo: "verde" },
-      { titulo: "Ocupação", valor: "71%", detalhe: "média semanal", tipo: "roxo" }
-    ],
-    fluxo: [8, 10, 9, 11, 13, 7, 5],
-    fluxoLabels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    servicos: [28, 18, 10, 7],
-    servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    status: [50, 9, 4],
-    statusLabels: ["Confirmados", "Pendentes", "Cancelados"],
-    agendaResumo: { atendimentos: 23, confirmados: 18, pendentes: 3 }
-  },
-  "30 dias": {
-    cards: [
-      { titulo: "Agendamentos", valor: "214", detalhe: "+12% no mês", tipo: "azul" },
-      { titulo: "Confirmação", valor: "82%", detalhe: "média mensal", tipo: "amarelo" },
-      { titulo: "Clientes ativos", valor: "89", detalhe: "+5 nesta semana", tipo: "verde" },
-      { titulo: "Ocupação", valor: "78%", detalhe: "média mensal", tipo: "roxo" }
+      { titulo: "Agendamentos", valor: "214", detalhe: "total do mês", tipo: "azul" },
+      { titulo: "Cancelados", valor: "8", detalhe: "cancelados no mês", tipo: "amarelo" },
+      { titulo: "Finalizados", valor: "176", detalhe: "finalizados no mês", tipo: "verde" },
+      { titulo: "Entregues", valor: "132", detalhe: "entregues no mês", tipo: "roxo" },
     ],
     fluxo: [48, 52, 56, 58],
-    fluxoLabels: ["Sem 1", "Sem 2", "Sem 3", "Sem 4"],
+    fluxoLabels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
     servicos: [92, 61, 34, 27],
     servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    status: [176, 21, 8],
-    statusLabels: ["Confirmados", "Pendentes", "Cancelados"],
-    agendaResumo: { atendimentos: 88, confirmados: 71, pendentes: 12 }
-  }
+    colaboradoresPets: [54, 48, 43, 37, 32],
+    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João", "Beatriz"],
+    agendaResumo: {
+      atendimentos: 214,
+      confirmados: 30,
+      cancelados: 8,
+      finalizados: 176,
+      entregues: 132,
+    },
+  },
+
+  Anual: {
+    cards: [
+      { titulo: "Agendamentos", valor: "864", detalhe: "total no ano", tipo: "azul" },
+      { titulo: "Cancelados", valor: "36", detalhe: "cancelados no ano", tipo: "amarelo" },
+      { titulo: "Finalizados", valor: "702", detalhe: "finalizados no ano", tipo: "verde" },
+      { titulo: "Entregues", valor: "511", detalhe: "entregues no ano", tipo: "roxo" },
+    ],
+    fluxo: [96, 118, 132, 145, 181, 192],
+    fluxoLabels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+    servicos: [364, 245, 146, 109],
+    servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
+    colaboradoresPets: [184, 160, 142, 118, 96, 82],
+    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João", "Beatriz", "Lucas"],
+    agendaResumo: {
+      atendimentos: 864,
+      confirmados: 126,
+      cancelados: 36,
+      finalizados: 702,
+      entregues: 511,
+    },
+  },
 };
 
 const agendaHoje = [
   { horario: "09:00", pet: "Thor", tutor: "Mariana Costa", servico: "Banho", status: "Confirmado" },
-  { horario: "10:30", pet: "Luna", tutor: "Carlos Souza", servico: "Tosa", status: "Pendente" },
+  { horario: "10:30", pet: "Luna", tutor: "Carlos Souza", servico: "Tosa", status: "Finalizado" },
   { horario: "11:15", pet: "Mel", tutor: "Fernanda Lima", servico: "Consulta", status: "Confirmado" },
   { horario: "14:00", pet: "Nina", tutor: "Patrícia Alves", servico: "Vacina", status: "Cancelado" },
-  { horario: "15:20", pet: "Bob", tutor: "Rafael Martins", servico: "Banho e tosa", status: "Confirmado" }
+  { horario: "15:20", pet: "Bob", tutor: "Rafael Martins", servico: "Banho e tosa", status: "Entregue" },
 ];
 
 const atividadesRecentes = [
   { titulo: "Novo agendamento", texto: "Thor foi agendado para banho.", hora: "há 5 min" },
-  { titulo: "Cadastro atualizado", texto: "Mariana Costa alterou o telefone.", hora: "há 18 min" },
+  { titulo: "Status finalizado", texto: "Luna teve o atendimento finalizado.", hora: "há 18 min" },
   { titulo: "Serviço confirmado", texto: "Consulta da Mel confirmada pela tutora.", hora: "há 32 min" },
-  { titulo: "Cancelamento registrado", texto: "Vacina da Nina foi cancelada.", hora: "há 1 h" }
+  { titulo: "Entrega registrada", texto: "Bob foi entregue ao cliente.", hora: "há 1 h" },
 ];
 
 const menu = [
@@ -78,20 +97,22 @@ const menu = [
   { nome: "Serviços", rota: "/admin/servicos" },
   { nome: "Clientes", rota: "/admin/clientes" },
   { nome: "Pets", rota: "/admin/pets" },
-  { nome: "Status", rota: "/admin/colaborador" },
+  { nome: "Status", rota: "/admin/status" },
 ];
 
 function getStatusClass(status) {
   const normalizado = status.toLowerCase();
 
   if (normalizado === "confirmado") return "admin-status admin-status-confirmado";
-  if (normalizado === "pendente") return "admin-status admin-status-pendente";
+  if (normalizado === "finalizado") return "admin-status admin-status-finalizado";
+  if (normalizado === "entregue") return "admin-status admin-status-entregue";
   return "admin-status admin-status-cancelado";
 }
 
 export default function Administracao() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [hoverLogout, setHoverLogout] = useState(false);
   const [periodoAtivo, setPeriodoAtivo] = useState("Hoje");
 
@@ -104,13 +125,13 @@ export default function Administracao() {
         toolbar: { show: false },
         zoom: { enabled: false },
         fontFamily: "inherit",
-        parentHeightOffset: 0
+        parentHeightOffset: 0,
       },
       colors: ["#3370EB"],
       dataLabels: { enabled: false },
       stroke: {
         curve: "smooth",
-        width: 4
+        width: 4,
       },
       fill: {
         type: "gradient",
@@ -118,8 +139,8 @@ export default function Administracao() {
           shadeIntensity: 1,
           opacityFrom: 0.34,
           opacityTo: 0.04,
-          stops: [0, 90, 100]
-        }
+          stops: [0, 90, 100],
+        },
       },
       grid: {
         borderColor: "#E6EEFF",
@@ -129,22 +150,22 @@ export default function Administracao() {
           top: 18,
           right: 18,
           bottom: 8,
-          left: 12
-        }
+          left: 12,
+        },
       },
       xaxis: {
         categories: dados.fluxoLabels,
         axisBorder: { show: false },
         axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } }
+        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
       },
       yaxis: {
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } }
+        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
       },
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} agendamentos` }
-      }
+        y: { formatter: (value) => `${value} agendamentos` },
+      },
     }),
     [dados]
   );
@@ -154,15 +175,15 @@ export default function Administracao() {
       chart: {
         type: "bar",
         toolbar: { show: false },
-        fontFamily: "inherit"
+        fontFamily: "inherit",
       },
       plotOptions: {
         bar: {
           horizontal: true,
           borderRadius: 10,
           barHeight: "62%",
-          distributed: true
-        }
+          distributed: true,
+        },
       },
       colors: ["#3370EB", "#6D7CF6", "#2EC4B6", "#F5B942"],
       dataLabels: { enabled: false },
@@ -170,70 +191,63 @@ export default function Administracao() {
         borderColor: "#E6EEFF",
         strokeDashArray: 4,
         xaxis: { lines: { show: true } },
-        yaxis: { lines: { show: false } }
+        yaxis: { lines: { show: false } },
       },
       xaxis: {
         categories: dados.servicosLabels,
         axisBorder: { show: false },
         axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } }
+        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
       },
       yaxis: {
-        labels: { style: { colors: "#30456F", fontWeight: 800 } }
+        labels: { style: { colors: "#30456F", fontWeight: 800 } },
       },
       legend: { show: false },
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} atendimentos` }
-      }
+        y: { formatter: (value) => `${value} atendimentos` },
+      },
     }),
     [dados]
   );
 
-  const statusOptions = useMemo(
+  const colaboradoresOptions = useMemo(
     () => ({
       chart: {
-        type: "donut",
-        fontFamily: "inherit"
+        type: "bar",
+        toolbar: { show: false },
+        fontFamily: "inherit",
       },
-      labels: dados.statusLabels,
-      colors: ["#3370EB", "#F5D94E", "#EF7A9B"],
-      legend: { show: false },
-      stroke: { width: 0 },
       plotOptions: {
-        pie: {
-          donut: {
-            size: "72%",
-            labels: {
-              show: true,
-              name: {
-                show: true,
-                color: "#7180A0",
-                fontSize: "12px",
-                fontWeight: 800
-              },
-              value: {
-                show: true,
-                color: "#17386F",
-                fontSize: "26px",
-                fontWeight: 900
-              },
-              total: {
-                show: true,
-                label: "Total",
-                color: "#7180A0",
-                fontSize: "12px",
-                fontWeight: 800
-              }
-            }
-          }
-        }
+        bar: {
+          horizontal: true,
+          borderRadius: 10,
+          barHeight: "58%",
+          distributed: true,
+        },
       },
+      colors: ["#3370EB", "#12B76A", "#7C3AED", "#F5B942", "#2EC4B6", "#EF7A9B"],
       dataLabels: { enabled: false },
+      grid: {
+        borderColor: "#E6EEFF",
+        strokeDashArray: 4,
+        xaxis: { lines: { show: true } },
+        yaxis: { lines: { show: false } },
+      },
+      xaxis: {
+        categories: dados.colaboradoresLabels,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
+      },
+      yaxis: {
+        labels: { style: { colors: "#30456F", fontWeight: 800 } },
+      },
+      legend: { show: false },
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} registros` }
-      }
+        y: { formatter: (value) => `${value} pets atendidos` },
+      },
     }),
     [dados]
   );
@@ -281,9 +295,10 @@ export default function Administracao() {
                   <strong>{dados.agendaResumo.atendimentos}</strong>
                   <small>atendimentos</small>
                 </div>
+
                 <div>
-                  <span>Pendentes</span>
-                  <strong>{dados.agendaResumo.pendentes}</strong>
+                  <span>Cancelados</span>
+                  <strong>{dados.agendaResumo.cancelados}</strong>
                   <small>na agenda</small>
                 </div>
               </div>
@@ -345,36 +360,13 @@ export default function Administracao() {
                   <span>{periodoAtivo}</span>
                 </div>
 
-                <div className="admin-chart-center">
+                <div className="admin-chart-center admin-chart-flow">
                   <Chart
                     options={fluxoOptions}
                     series={[{ name: "Agendamentos", data: dados.fluxo }]}
                     type="area"
-                    height={340}
+                    height={390}
                   />
-                </div>
-              </section>
-
-              <section className="admin-panel admin-panel-status">
-                <div className="admin-panel-header">
-                  <h2>Status</h2>
-                </div>
-
-                <Chart
-                  options={statusOptions}
-                  series={dados.status}
-                  type="donut"
-                  height={250}
-                />
-
-                <div className="admin-status-legend">
-                  {dados.statusLabels.map((label, index) => (
-                    <div key={label}>
-                      <span className={`dot dot-${index}`} />
-                      <small>{label}</small>
-                      <strong>{dados.status[index]}</strong>
-                    </div>
-                  ))}
                 </div>
               </section>
 
@@ -384,6 +376,7 @@ export default function Administracao() {
                     <h2>Agenda de hoje</h2>
                     <p>Resumo do dia com horários, tutor e serviço.</p>
                   </div>
+
                   <button type="button" onClick={() => navigate("/admin/agendamentos")}>
                     Ver agenda
                   </button>
@@ -394,13 +387,20 @@ export default function Administracao() {
                     <span>Total</span>
                     <strong>{dados.agendaResumo.atendimentos}</strong>
                   </div>
+
                   <div>
                     <span>Confirmados</span>
                     <strong>{dados.agendaResumo.confirmados}</strong>
                   </div>
+
                   <div>
-                    <span>Pendentes</span>
-                    <strong>{dados.agendaResumo.pendentes}</strong>
+                    <span>Finalizados</span>
+                    <strong>{dados.agendaResumo.finalizados}</strong>
+                  </div>
+
+                  <div>
+                    <span>Entregues</span>
+                    <strong>{dados.agendaResumo.entregues}</strong>
                   </div>
                 </div>
 
@@ -415,6 +415,7 @@ export default function Administracao() {
                         <th>Status</th>
                       </tr>
                     </thead>
+
                     <tbody>
                       {agendaHoje.map((item, index) => (
                         <tr key={`${item.pet}-${index}`}>
@@ -431,6 +432,7 @@ export default function Administracao() {
                   </table>
                 </div>
               </section>
+
               <section className="admin-panel admin-panel-services">
                 <div className="admin-panel-header">
                   <h2>Serviços mais buscados</h2>
@@ -446,6 +448,21 @@ export default function Administracao() {
                 </div>
               </section>
 
+              <section className="admin-panel admin-panel-collaborators">
+                <div className="admin-panel-header">
+                  <h2>Pets por colaborador</h2>
+                </div>
+
+                <div className="admin-chart-center">
+                  <Chart
+                    options={colaboradoresOptions}
+                    series={[{ name: "Pets", data: dados.colaboradoresPets }]}
+                    type="bar"
+                    height={320}
+                  />
+                </div>
+              </section>
+
               <section className="admin-panel admin-panel-activity">
                 <div className="admin-panel-header">
                   <h2>Atividade recente</h2>
@@ -455,6 +472,7 @@ export default function Administracao() {
                   {atividadesRecentes.map((item, index) => (
                     <div className="admin-activity-item" key={`${item.titulo}-${index}`}>
                       <div className="admin-activity-dot" />
+
                       <div>
                         <strong>{item.titulo}</strong>
                         <p>{item.texto}</p>

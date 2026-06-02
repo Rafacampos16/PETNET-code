@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import PataIcon from "../assets/icons/pata.png";
@@ -38,6 +38,14 @@ import AgendaClienteIconHover from "../assets/icons/agendaCliente-hover.png";
 import logIcon from "../assets/icons/log.png";
 import logHoverIcon from "../assets/icons/log-hover.png";
 
+import SinoIcon from "../assets/icons/sininho-h.png";
+import SinoIconHover from "../assets/icons/sininho.png";
+
+import {
+  listarNotificacoes,
+  marcarNotificacaoComoLida,
+} from "../utils/notificacoesLocal";
+
 import "../styles/header.css";
 
 const Header = () => {
@@ -72,6 +80,46 @@ const Header = () => {
   const [logHover, setLogHover] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [sinoHover, setSinoHover] = useState(false);
+  const [modalNotificacoes, setModalNotificacoes] = useState(false);
+  const [notificacoes, setNotificacoes] = useState([]);
+
+  const isLogged = isAdmin || isUser || isColaborador || isDev;
+
+  useEffect(() => {
+    if (!isLogged) {
+      setNotificacoes([]);
+      return;
+    }
+
+    carregarNotificacoes();
+
+    window.addEventListener("storage", carregarNotificacoes);
+    window.addEventListener("focus", carregarNotificacoes);
+
+    return () => {
+      window.removeEventListener("storage", carregarNotificacoes);
+      window.removeEventListener("focus", carregarNotificacoes);
+    };
+  }, [isLogged, location.pathname]);
+
+  function carregarNotificacoes() {
+    const lista = listarNotificacoes();
+    setNotificacoes(lista);
+  }
+
+  function abrirModalNotificacoes() {
+    carregarNotificacoes();
+    setModalNotificacoes(true);
+  }
+
+  function marcarComoLida(id) {
+    marcarNotificacaoComoLida(id);
+    carregarNotificacoes();
+  }
+
+  const totalNaoLidas = notificacoes.filter((notificacao) => !notificacao.lida).length;
+
   const handleLogoClick = () => {
     if (isAdminPage) {
       navigate("/admin");
@@ -98,6 +146,28 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="header-content">
+          {isLogged && (
+            <button
+              type="button"
+              className="navbar-notification-btn"
+              onMouseEnter={() => setSinoHover(true)}
+              onMouseLeave={() => setSinoHover(false)}
+              onClick={abrirModalNotificacoes}
+              aria-label="Notificações"
+            >
+              <img
+                src={sinoHover ? SinoIconHover : SinoIcon}
+                alt="Notificações"
+                className="navbar-notification-icon"
+              />
+
+              {totalNaoLidas > 0 && (
+                <span className="navbar-notification-badge">
+                  {totalNaoLidas > 9 ? "9+" : totalNaoLidas}
+                </span>
+              )}
+            </button>
+          )}
           <div
             className="logo-center"
             onClick={handleLogoClick}
@@ -117,9 +187,8 @@ const Header = () => {
           </div>
 
           <div
-            className={`header-right ${
-              isAdminPage || isColaboradorPage ? "admin-nav" : ""
-            }`}
+            className={`header-right ${isAdminPage || isColaboradorPage ? "admin-nav" : ""
+              }`}
           >
             {isAdminPage && (
               <>
@@ -253,7 +322,7 @@ const Header = () => {
                   className="menu-item"
                   onMouseEnter={() => setAdmColaboradorHover(true)}
                   onMouseLeave={() => setAdmColaboradorHover(false)}
-                  onClick={() => navigate("/admin/colaborador")}
+                  onClick={() => navigate("/admin/status")}
                 >
                   <img
                     src={
@@ -595,7 +664,7 @@ const Header = () => {
 
                 <span
                   onClick={() => {
-                    navigate("/admin/colaborador");
+                    navigate("/admin/status");
                     setMenuOpen(false);
                   }}
                 >
@@ -715,10 +784,70 @@ const Header = () => {
               </>
             )}
           </div>
-        </div>
+               </div>
       </div>
+
+      {modalNotificacoes && (
+        <div
+          className="navbar-notification-overlay"
+          onClick={() => setModalNotificacoes(false)}
+        >
+          <div
+            className="navbar-notification-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="navbar-notification-top">
+              <div>
+                <span>Central de notificações</span>
+                <h2>Notificações</h2>
+              </div>
+
+              <button
+                type="button"
+                className="navbar-notification-close"
+                onClick={() => setModalNotificacoes(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="navbar-notification-list">
+              {notificacoes.length === 0 ? (
+                <div className="navbar-notification-empty">
+                  <strong>Nenhuma notificação por enquanto</strong>
+                  <p>Quando houver novidades, elas aparecerão aqui.</p>
+                </div>
+              ) : (
+                notificacoes.map((notificacao) => (
+                  <div
+                    className={`navbar-notification-item ${
+                      notificacao.lida ? "lida" : ""
+                    }`}
+                    key={notificacao.id}
+                  >
+                    <div>
+                      <strong>{notificacao.titulo}</strong>
+                      <p>{notificacao.descricao}</p>
+                    </div>
+
+                    {!notificacao.lida && (
+                      <button
+                        type="button"
+                        onClick={() => marcarComoLida(notificacao.id)}
+                      >
+                        Marcar como lida
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
+
 
 export default Header;

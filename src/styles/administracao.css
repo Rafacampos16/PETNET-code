@@ -51,7 +51,6 @@
   box-shadow: var(--shadow-blue);
   color: var(--petnet-white);
   z-index: 5;
-
   max-height: none;
   overflow-y: visible;
 }
@@ -155,9 +154,7 @@
   font-size: 1.35rem;
 }
 
-.admin-content {
-  min-width: 0;
-}
+/* TOPO */
 
 .admin-topbar {
   display: flex;
@@ -255,6 +252,8 @@
   height: 20px;
 }
 
+/* INDICADORES */
+
 .admin-card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -289,7 +288,6 @@
 
 .admin-main-card.amarelo {
   background: linear-gradient(135deg, #f2a900, #f6c343);
-  color: #ffffff;
 }
 
 .admin-main-card.verde {
@@ -328,14 +326,17 @@
   opacity: 0.82;
 }
 
+/* GRID PRINCIPAL */
+
 .admin-layout-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
   grid-template-areas:
-    "flow status"
+    "flow flow"
     "table table"
-    "services activity";
+    "services collaborators"
+    "activity activity";
 }
 
 .admin-panel {
@@ -350,10 +351,9 @@
 
 .admin-panel-flow {
   grid-area: flow;
-}
-
-.admin-panel-status {
-  grid-area: status;
+  min-height: 470px;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-panel-table {
@@ -362,6 +362,16 @@
 
 .admin-panel-services {
   grid-area: services;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-panel-collaborators {
+  grid-area: collaborators;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-panel-activity {
@@ -418,9 +428,40 @@
   font-weight: 700;
 }
 
+/* GRAFICOS */
+
+.admin-chart-center {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding-top: 0.4rem;
+}
+
+.admin-chart-center > div {
+  width: 100%;
+  min-height: 100%;
+}
+
+.admin-panel-flow .apexcharts-canvas,
+.admin-panel-services .apexcharts-canvas,
+.admin-panel-collaborators .apexcharts-canvas {
+  margin: auto 0;
+}
+
+.apexcharts-tooltip {
+  border-radius: 14px !important;
+  border: 1px solid #e4ecff !important;
+  box-shadow: 0 12px 24px rgba(43, 73, 136, 0.12) !important;
+}
+
+/* AGENDA */
+
 .admin-agenda-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
   margin-bottom: 0.95rem;
 }
@@ -490,9 +531,14 @@
   color: #2154b6;
 }
 
-.admin-status-pendente {
-  background: rgba(249, 238, 124, 0.68);
-  color: #8b7300;
+.admin-status-finalizado {
+  background: rgba(18, 183, 106, 0.18);
+  color: #067647;
+}
+
+.admin-status-entregue {
+  background: rgba(124, 58, 237, 0.14);
+  color: #5b21b6;
 }
 
 .admin-status-cancelado {
@@ -500,57 +546,11 @@
   color: #a14b67;
 }
 
-.admin-status-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 0.3rem;
-}
-
-.admin-status-legend div {
-  display: flex;
-  align-items: center;
-  gap: 0.62rem;
-  padding: 0.78rem 0.88rem;
-  border-radius: 17px;
-  background: #f8fbff;
-  border: 1px solid #e7efff;
-}
-
-.admin-status-legend small {
-  flex: 1;
-  color: var(--text-soft);
-  font-size: 0.84rem;
-  font-weight: 800;
-}
-
-.admin-status-legend strong {
-  color: var(--text-main);
-  font-size: 0.96rem;
-  font-weight: 900;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.dot-0 {
-  background: #3370eb;
-}
-
-.dot-1 {
-  background: #f5d94e;
-}
-
-.dot-2 {
-  background: #ef7a9b;
-}
+/* ATIVIDADES */
 
 .admin-activity-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -594,11 +594,7 @@
   font-weight: 800;
 }
 
-.apexcharts-tooltip {
-  border-radius: 14px !important;
-  border: 1px solid #e4ecff !important;
-  box-shadow: 0 12px 24px rgba(43, 73, 136, 0.12) !important;
-}
+/* RESPONSIVO */
 
 @media (max-width: 1220px) and (min-width: 981px) {
   .admin-sidebar {
@@ -639,380 +635,6 @@
   }
 }
 
-@media (max-width: 980px) {
-  .admin-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-sidebar-track {
-    position: static;
-  }
-
-  .admin-sidebar {
-    width: 100%;
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  .admin-card-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .admin-layout-grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "flow"
-      "status"
-      "table"
-      "services"
-      "activity";
-  }
-}
-
-@media (max-width: 760px) {
-  .admin-page {
-    padding: 0.9rem;
-  }
-
-  .admin-topbar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .admin-actions {
-    width: 100%;
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .admin-period-filter {
-    width: 100%;
-  }
-
-  .admin-period-filter button {
-    flex: 1;
-    padding-inline: 0.52rem;
-  }
-
-  .admin-logout-btn {
-    justify-content: center;
-  }
-
-  .admin-card-grid,
-  .admin-sidebar-mini-grid,
-  .admin-agenda-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-panel,
-  .admin-sidebar {
-    padding: 1rem;
-    border-radius: 24px;
-  }
-
-  .admin-panel-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .admin-panel-header button {
-    width: 100%;
-  }
-
-  .admin-panel-flow,
-.admin-panel-services {
-  display: flex;
-  flex-direction: column;
-}
-
-.admin-panel-flow .apexcharts-canvas,
-.admin-panel-services .apexcharts-canvas {
-  margin: auto 0;
-}
-
-.admin-panel-flow > div:not(.admin-panel-header),
-.admin-panel-services > div:not(.admin-panel-header) {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-.admin-panel-flow .apexcharts-svg,
-.admin-panel-services .apexcharts-svg {
-  display: block;
-}
-}
-
-.admin-panel-flow,
-.admin-panel-services {
-  display: flex;
-  flex-direction: column;
-}
-
-.admin-panel-flow {
-  min-height: 390px;
-}
-
-.admin-panel-services {
-  min-height: 430px;
-}
-
-.admin-chart-center {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  padding-top: 0.4rem;
-}
-
-.admin-chart-center > div {
-  width: 100%;
-  min-height: 100%;
-}
-
-/* AJUSTES MOBILE - ADMINISTRAÇÃO */
-
-@media (max-width: 760px) {
-  .admin-page {
-    padding: 1rem;
-    background:
-      radial-gradient(circle at top left, rgba(249, 238, 124, 0.18), transparent 28%),
-      linear-gradient(180deg, #f7fbff 0%, #eef5ff 100%);
-  }
-
-  .admin-shell {
-    display: block;
-  }
-
-  /* Some a navegação lateral no celular */
-  .admin-sidebar-track {
-    display: none;
-  }
-
-  .admin-content {
-    width: 100%;
-  }
-
-  /* Topo */
-  .admin-topbar {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .admin-page-label {
-    font-size: 0.76rem;
-  }
-
-  .admin-topbar h1 {
-    margin-top: 0.5rem;
-    font-size: 2rem;
-    line-height: 1.1;
-  }
-
-  .admin-actions {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .admin-period-filter {
-    width: 100%;
-    overflow-x: auto;
-    display: flex;
-    gap: 0.45rem;
-    padding: 0.42rem;
-  }
-
-  .admin-period-filter button {
-    flex: 1;
-    min-width: 90px;
-    white-space: nowrap;
-    padding: 0.72rem 0.65rem;
-  }
-
-  .admin-logout-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Cards principais */
-  .admin-card-grid {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
-    margin-bottom: 1rem;
-  }
-
-  .admin-main-card {
-    min-height: 112px;
-    padding: 1rem;
-    border-radius: 22px;
-  }
-
-  .admin-main-card strong {
-    font-size: 1.9rem;
-  }
-
-  /* Ordem dos blocos no celular */
-  .admin-layout-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "table"
-      "flow"
-      "status"
-      "services"
-      "activity";
-    gap: 1rem;
-  }
-
-  .admin-panel-table {
-    grid-area: table;
-  }
-
-  .admin-panel-flow {
-    grid-area: flow;
-  }
-
-  .admin-panel-status {
-    grid-area: status;
-  }
-
-  .admin-panel-services {
-    grid-area: services;
-  }
-
-  .admin-panel-activity {
-    grid-area: activity;
-  }
-
-  .admin-panel {
-    padding: 1rem;
-    border-radius: 24px;
-  }
-
-  .admin-panel-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-
-  .admin-panel-header h2 {
-    font-size: 1.08rem;
-  }
-
-  .admin-panel-header button {
-    width: 100%;
-    text-align: center;
-  }
-
-  /* Resumo da agenda */
-  .admin-agenda-summary {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-  }
-
-  .admin-agenda-summary div {
-    padding: 0.85rem;
-  }
-
-  /* Tabela com rolagem horizontal */
-  .admin-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.25rem;
-  }
-
-  .admin-table {
-    min-width: 680px;
-  }
-
-  .admin-table th,
-  .admin-table td {
-    padding: 0.8rem 0.65rem;
-    font-size: 0.84rem;
-  }
-
-  .admin-status {
-    min-width: 96px;
-    font-size: 0.72rem;
-  }
-
-  /* Gráficos */
-  .admin-panel-flow,
-  .admin-panel-services {
-    min-height: auto;
-  }
-
-  .admin-chart-center {
-    min-height: 260px;
-    padding-top: 0;
-  }
-
-  .admin-chart-center > div {
-    width: 100%;
-  }
-
-  .admin-panel-status .apexcharts-canvas {
-    margin: 0 auto;
-  }
-
-  /* Legenda do status */
-  .admin-status-legend {
-    gap: 0.6rem;
-  }
-
-  .admin-status-legend div {
-    padding: 0.75rem;
-    border-radius: 16px;
-  }
-
-  /* Atividades */
-  .admin-activity-list {
-    gap: 0.65rem;
-  }
-
-  .admin-activity-item {
-    padding: 0.78rem;
-    border-radius: 16px;
-  }
-}
-
-@media (max-width: 430px) {
-  .admin-page {
-    padding: 0.75rem;
-  }
-
-  .admin-topbar h1 {
-    font-size: 1.75rem;
-  }
-
-  .admin-period-filter button {
-    min-width: 82px;
-    font-size: 0.82rem;
-  }
-
-  .admin-main-card {
-    border-radius: 20px;
-  }
-
-  .admin-panel {
-    padding: 0.9rem;
-    border-radius: 20px;
-  }
-
-  .admin-table {
-    min-width: 640px;
-  }
-}
-
-/* RESPONSIVIDADE TABLET/CELULAR - ADMINISTRAÇÃO */
-
 @media (max-width: 1180px) {
   .admin-page {
     padding: 1rem;
@@ -1023,7 +645,6 @@
     max-width: 100%;
   }
 
-  /* No tablet e celular a navegação lateral some */
   .admin-sidebar-track {
     display: none;
   }
@@ -1079,44 +700,19 @@
   }
 
   .admin-layout-grid {
-    display: grid;
     grid-template-columns: 1fr;
     grid-template-areas:
       "table"
       "flow"
-      "status"
       "services"
+      "collaborators"
       "activity";
     gap: 1rem;
   }
 
-  .admin-panel-table {
-    grid-area: table;
-  }
-
-  .admin-panel-flow {
-    grid-area: flow;
-  }
-
-  .admin-panel-status {
-    grid-area: status;
-  }
-
-  .admin-panel-services {
-    grid-area: services;
-  }
-
-  .admin-panel-activity {
-    grid-area: activity;
-  }
-
-  .admin-panel {
-    border-radius: 24px;
-    padding: 1rem;
-  }
-
   .admin-panel-flow,
-  .admin-panel-services {
+  .admin-panel-services,
+  .admin-panel-collaborators {
     min-height: auto;
   }
 
@@ -1125,29 +721,8 @@
     padding-top: 0;
   }
 
-  .admin-chart-center > div {
-    width: 100%;
-  }
-
   .admin-agenda-summary {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .admin-status-legend {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.7rem;
-  }
-
-  .admin-status-legend div {
-    min-height: 82px;
-    align-items: flex-start;
-  }
-
-  .admin-activity-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1173,10 +748,6 @@
   }
 
   .admin-agenda-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-status-legend {
     grid-template-columns: 1fr;
   }
 

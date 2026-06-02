@@ -240,4 +240,305 @@
     white-space: nowrap;
     text-align: center;
   }
+
+  .navbar-notification-btn {
+    left: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+
+  .navbar-notification-icon {
+    width: 23px;
+    height: 23px;
+  }
+
+  .navbar-notification-badge {
+    min-width: 19px;
+    height: 19px;
+    font-size: 0.64rem;
+  }
+}
+
+/* NOTIFICAÇÕES NA NAVBAR */
+
+.navbar-notification-btn {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 35;
+}
+
+.navbar-notification-btn:hover {
+  transform: translateY(calc(-50% - 1px));
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.navbar-notification-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  display: block;
+}
+
+.navbar-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #f9ee7c;
+  color: #17386f;
+  border: 2px solid var(--petnet-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* NOTIFICAÇÕES NA NAVBAR */
+
+.navbar-notification-btn {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 35;
+}
+
+.navbar-notification-btn:hover {
+  transform: translateY(calc(-50% - 1px));
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.navbar-notification-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  display: block;
+}
+
+.navbar-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #f9ee7c;
+  color: #17386f;
+  border: 2px solid var(--petnet-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* MODAL DE NOTIFICAÇÕES NA NAVBAR */
+
+.navbar-notification-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 6rem 1.2rem 1.2rem;
+}
+
+.navbar-notification-modal {
+  width: min(420px, calc(100vw - 2.4rem));
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #dce7ff;
+  border-radius: 1.35rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  padding: 1.15rem;
+  animation: navbarNotifFade 0.2s ease;
+}
+
+@keyframes navbarNotifFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.navbar-notification-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.navbar-notification-top span {
+  display: inline-flex;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #3370eb;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.navbar-notification-top h2 {
+  margin: 0.5rem 0 0;
+  color: #17386f;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.navbar-notification-close {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border: none;
+  border-radius: 999px;
+  background: #edf3ff;
+  color: #3370eb;
+  font-size: 1.45rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.navbar-notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.navbar-notification-item {
+  border: 1px solid #dce7ff;
+  border-left: 5px solid #3370eb;
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 0.85rem;
+}
+
+.navbar-notification-item.lida {
+  opacity: 0.65;
+  border-left-color: #cbd5e1;
+}
+
+.navbar-notification-item strong {
+  display: block;
+  color: #17386f;
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+}
+
+.navbar-notification-item p {
+  margin: 0;
+  color: #667085;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.navbar-notification-item button {
+  margin-top: 0.7rem;
+  min-height: 34px;
+  padding: 0 0.8rem;
+  border: none;
+  border-radius: 0.7rem;
+  background: #eef4ff;
+  color: #3370eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.navbar-notification-item button:hover {
+  background: #dfeaff;
+}
+
+.navbar-notification-empty {
+  border: 1px dashed #c8dcff;
+  background: #f8fbff;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.navbar-notification-empty strong {
+  display: block;
+  color: #17386f;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.navbar-notification-empty p {
+  margin: 0;
+  color: #667085;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .navbar-notification-btn {
+    left: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+
+  .navbar-notification-icon {
+    width: 23px;
+    height: 23px;
+  }
+
+  .navbar-notification-badge {
+    min-width: 19px;
+    height: 19px;
+    font-size: 0.64rem;
+  }
+
+  .navbar-notification-overlay {
+    padding: 5.3rem 0.8rem 0.8rem;
+  }
+
+  .navbar-notification-modal {
+    width: calc(100vw - 1.6rem);
+    max-height: calc(100vh - 6rem);
+    border-radius: 1.15rem;
+  }
 }

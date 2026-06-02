@@ -114,10 +114,9 @@ const App = () => (
             </ProtectedRoute>
           }
         />
-
         <Route path="/colaborador" element={<Colaborador />} />
 
-        <Route path="/colaborador/agenda" element={<Status />} />
+        <Route path="/colaborador/agenda" element={<Colaborador />} />
       </Routes>
     </main>
 

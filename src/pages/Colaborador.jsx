@@ -1,110 +1,144 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Cat, Dog } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Dog,
+  Cat,
+  Eye,
+  GripVertical,
+  Info,
+  PackageCheck,
+  PawPrint,
+  Scissors,
+  Timer,
+  UserRound,
+} from "lucide-react";
 import "../styles/colaborador.css";
 import scheduleService from "../services/scheduleService";
 
 const ScheduleStatus = {
-  SCHEDULED: "SCHEDULED",
   CONFIRMED: "CONFIRMED",
-  CANCELED: "CANCELED",
   FINISHED: "FINISHED",
 };
 
-const statusConfig = {
-  SCHEDULED: { label: "Agendado", className: "status-cinza", dot: "gray" },
-  CONFIRMED: { label: "Confirmado", className: "status-azul", dot: "blue" },
-  CANCELED: { label: "Cancelado", className: "status-vermelho", dot: "red" },
-  FINISHED: { label: "Finalizado", className: "status-verde", dot: "green" },
+const statusMap = {
+  [ScheduleStatus.CONFIRMED]: {
+    label: "CONFIRMADOS",
+    subtitle: "Atendimentos prontos para execução",
+    className: "confirmed",
+  },
+  [ScheduleStatus.FINISHED]: {
+    label: "FINALIZADOS",
+    subtitle: "Atendimentos concluídos pelo colaborador",
+    className: "finished",
+  },
 };
 
-// Transforma o objeto da API no formato que o componente usa
+const speciesMap = {
+  dog: "Cachorro",
+  cat: "Gato",
+};
+
+const sizeMap = {
+  S: "Pequeno",
+  M: "Médio",
+  L: "Grande",
+  XL: "Gigante",
+};
+
 function normalizar(item) {
   return {
     ...item,
     pet: item.pet?.name || "—",
     tutor: item.pet?.tutor?.name || "—",
-    especie: item.pet?.species || "—",
-    porte: item.pet?.size || "—",
+    especie: speciesMap[item.pet?.species] || "—",
     tipo: item.pet?.species === "cat" ? "cat" : "dog",
-    servicosNomes: item.services?.map((s) => s.name) || [],
+    porte: sizeMap[item.pet?.size] || "—",
+    servico: item.services?.map((s) => s.name).join(", ") || "—",
     colaborador: item.collaborator?.name || "—",
     status: item.status_code || item.status,
     duration: item.duration_code || item.duration,
   };
 }
 
-const PetIcon = ({ tipo, large = false }) => {
+const PetIcon = ({ tipo }) => {
   const Icon = tipo === "cat" ? Cat : Dog;
+
   return (
-    <div className={`pet-icon ${large ? "large" : ""}`}>
-      <Icon size={large ? 34 : 24} strokeWidth={2.4} />
+    <div className="colab-pet-icon">
+      <Icon size={24} strokeWidth={2.4} />
     </div>
   );
 };
 
 const Colaborador = () => {
-  const hoje = new Date().toISOString().split("T")[0];
+  const hoje = new Date();
+  const hojeFormatado = hoje.toISOString().split("T")[0];
 
   const [agendamentos, setAgendamentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [selecionado, setSelecionado] = useState(null);
-  const [filtro, setFiltro] = useState("");
-  const [dataAtual, setDataAtual] = useState(hoje);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [draggedAppointment, setDraggedAppointment] = useState(null);
+  const [dropAtivo, setDropAtivo] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const [diaSelecionado, setDiaSelecionado] = useState(hojeFormatado);
 
-  const inputDataRef = useRef(null);
-
-  // Carrega agendamentos sempre que a data mudar
   useEffect(() => {
-    if (!dataAtual) return;
+    if (!diaSelecionado) return;
+
     setCarregando(true);
-    setSelecionado(null);
     setMensagem("");
 
-    const [ano, mes, dia] = dataAtual.split("-").map(Number);
+    const [ano, mes, dia] = diaSelecionado.split("-").map(Number);
     const inicioDia = new Date(ano, mes - 1, dia).toISOString();
     const fimDia = new Date(ano, mes - 1, dia, 23, 59, 59).toISOString();
 
-    scheduleService.listar(inicioDia, fimDia)
+    scheduleService
+      .listar(inicioDia, fimDia)
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : [];
         setAgendamentos(data.map(normalizar));
       })
       .catch((err) => console.error("Erro ao carregar agendamentos:", err))
       .finally(() => setCarregando(false));
-  }, [dataAtual]);
+  }, [diaSelecionado]);
 
-  const agendamentosFiltrados = useMemo(() => {
+  const agendamentosVisiveis = useMemo(() => {
     return agendamentos
-      .filter((item) => {
-        const texto = `
-          ${item.tutor} ${item.pet} ${item.colaborador}
-          ${item.status} ${item.servicosNomes.join(" ")} ${item.observation}
-        `.toLowerCase();
-        return texto.includes(filtro.toLowerCase());
-      })
+      .filter(
+        (item) =>
+          item.status === ScheduleStatus.CONFIRMED ||
+          item.status === ScheduleStatus.FINISHED
+      )
       .sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
-  }, [agendamentos, filtro]);
+  }, [agendamentos]);
 
-  const resumo = useMemo(() => ({
-    total: agendamentos.length,
-    agendados: agendamentos.filter((i) => i.status === ScheduleStatus.SCHEDULED).length,
-    confirmados: agendamentos.filter((i) => i.status === ScheduleStatus.CONFIRMED).length,
-    cancelados: agendamentos.filter((i) => i.status === ScheduleStatus.CANCELED).length,
-    finalizados: agendamentos.filter((i) => i.status === ScheduleStatus.FINISHED).length,
-  }), [agendamentos]);
+  const confirmados = useMemo(() => {
+    return agendamentosVisiveis.filter(
+      (item) => item.status === ScheduleStatus.CONFIRMED
+    );
+  }, [agendamentosVisiveis]);
 
-  function formatarData(data) {
-    const date = new Date(`${data}T00:00:00`);
-    const texto = date.toLocaleDateString("pt-BR", {
-      weekday: "long", day: "2-digit", month: "long", year: "numeric",
-    });
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
-  }
+  const finalizados = useMemo(() => {
+    return agendamentosVisiveis.filter(
+      (item) => item.status === ScheduleStatus.FINISHED
+    );
+  }, [agendamentosVisiveis]);
 
   function formatarHorario(dateTime) {
     return new Date(dateTime).toLocaleTimeString("pt-BR", {
-      hour: "2-digit", minute: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function formatarData(dateTime) {
+    return new Date(dateTime).toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
     });
   }
 
@@ -118,290 +152,345 @@ const Colaborador = () => {
       TWO_HALF_HOURS: "2h30",
       THREE_HOURS: "3 horas",
     };
-    return duracoes[duration] || duration;
+
+    return duracoes[duration] || duration || "—";
   }
 
-  function alterarData(dias) {
-    const novaData = new Date(`${dataAtual}T00:00:00`);
-    novaData.setDate(novaData.getDate() + dias);
-    setDataAtual(novaData.toISOString().split("T")[0]);
+  function getAgendamentosPorStatus(status) {
+    return agendamentosVisiveis.filter((item) => item.status === status);
   }
 
-  function abrirCalendario() {
-    if (inputDataRef.current?.showPicker) {
-      inputDataRef.current.showPicker();
-    } else {
-      inputDataRef.current?.click();
+  function handleDragStart(item) {
+    if (item.status !== ScheduleStatus.CONFIRMED) return;
+    setDraggedAppointment(item);
+    setMensagem("");
+  }
+
+  function handleDragEnd() {
+    setDraggedAppointment(null);
+    setDropAtivo(false);
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+
+    if (draggedAppointment?.status === ScheduleStatus.CONFIRMED) {
+      setDropAtivo(true);
     }
   }
 
-  async function alterarStatus(novoStatus) {
-    if (!selecionado) {
-      alert("Selecione um agendamento primeiro.");
-      return;
-    }
+  function handleDragLeave() {
+    setDropAtivo(false);
+  }
+
+  async function finalizarAgendamento(item) {
+    if (!item || item.status !== ScheduleStatus.CONFIRMED) return;
 
     try {
-      await scheduleService.atualizar(selecionado.id, { status: novoStatus });
+      await scheduleService.atualizar(item.id, {
+        status: ScheduleStatus.FINISHED,
+      });
 
-      const atualizado = { ...selecionado, status: novoStatus };
+      const atualizado = {
+        ...item,
+        status: ScheduleStatus.FINISHED,
+      };
+
       setAgendamentos((prev) =>
-        prev.map((item) => (item.id === selecionado.id ? atualizado : item))
+        prev.map((agendamento) =>
+          agendamento.id === item.id ? atualizado : agendamento
+        )
       );
-      setSelecionado(atualizado);
-      setMensagem(
-        `Status de ${atualizado.pet} alterado para ${statusConfig[novoStatus].label}.`
-      );
+
+      if (selectedAppointment?.id === item.id) {
+        setSelectedAppointment(atualizado);
+      }
+
+      setMensagem(`${item.pet} foi movido para finalizados.`);
     } catch (err) {
-      alert(err.response?.data?.error || "Erro ao atualizar status.");
+      alert(err.response?.data?.error || "Erro ao finalizar agendamento.");
+    } finally {
+      setDraggedAppointment(null);
+      setDropAtivo(false);
     }
   }
 
-  function getStatusClass(status) {
-    return statusConfig[status]?.className || "status-cinza";
-  }
+  function handleDrop(event) {
+    event.preventDefault();
 
-  function getStatusLabel(status) {
-    return statusConfig[status]?.label || status;
+    if (!draggedAppointment) return;
+
+    finalizarAgendamento(draggedAppointment);
   }
 
   return (
-    <div className="colaborador-page">
-      <div className="colaborador-shell">
-        <header className="colaborador-topbar">
-          <div>
-            <span className="colab-badge">Controle de status</span>
-            <h1>Status dos agendamentos</h1>
-            <p>
-              Acompanhe os atendimentos cadastrados e atualize o status para
-              exibição na agenda do colaborador.
-            </p>
-          </div>
+    <div className="colab-container">
+      <section className="colab-hero">
+        <div>
+          <span className="colab-badge">
+            <PawPrint size={16} />
+            Agenda do colaborador
+          </span>
 
-          <div className="date-control">
-            <button className="date-btn" onClick={() => alterarData(-1)}>‹</button>
+          <h1>Meus atendimentos</h1>
 
-            <div className="date-display" onClick={abrirCalendario}>
-              <span>{formatarData(dataAtual)}</span>
-              <input
-                ref={inputDataRef}
-                type="date"
-                value={dataAtual}
-                onChange={(e) => setDataAtual(e.target.value)}
-                className="calendar-hidden"
-              />
+          <p>
+            Visualize os atendimentos confirmados do dia e arraste para
+            finalizados quando o serviço for concluído.
+          </p>
+        </div>
+
+        <div className="colab-date-box">
+          <label>
+            <CalendarDays size={16} />
+            Selecionar dia
+          </label>
+
+          <input
+            type="date"
+            value={diaSelecionado}
+            onChange={(e) => setDiaSelecionado(e.target.value)}
+          />
+        </div>
+      </section>
+
+      {mensagem && (
+        <div className="colab-feedback">
+          <CheckCircle2 size={18} />
+          <span>{mensagem}</span>
+        </div>
+      )}
+
+      {carregando ? (
+        <div className="colab-loading">
+          <PawPrint size={30} />
+          <p>Carregando agendamentos...</p>
+        </div>
+      ) : (
+        <>
+          <section className="colab-summary">
+            <div className="colab-summary-card total">
+              <small>Total visível</small>
+              <strong>{agendamentosVisiveis.length}</strong>
             </div>
 
-            <button className="date-btn" onClick={() => alterarData(1)}>›</button>
-          </div>
-        </header>
+            <div className="colab-summary-card confirmed">
+              <small>Confirmados</small>
+              <strong>{confirmados.length}</strong>
+            </div>
 
-        {mensagem && <div className="status-feedback">{mensagem}</div>}
+            <div className="colab-summary-card finished">
+              <small>Finalizados</small>
+              <strong>{finalizados.length}</strong>
+            </div>
+          </section>
 
-        {carregando ? (
-          <p style={{ textAlign: "center", padding: "2rem" }}>Carregando agendamentos...</p>
-        ) : (
-          <>
-            <section className="colaborador-stats">
-              <div className="stat-card">
-                <small>Total do dia</small>
-                <strong>{resumo.total}</strong>
-              </div>
-              <div className="stat-card">
-                <small>Agendados</small>
-                <strong>{resumo.agendados}</strong>
-              </div>
-              <div className="stat-card">
-                <small>Confirmados</small>
-                <strong>{resumo.confirmados}</strong>
-              </div>
-              <div className="stat-card">
-                <small>Finalizados</small>
-                <strong>{resumo.finalizados}</strong>
-              </div>
-            </section>
+          <section className="colab-board">
+            {Object.keys(statusMap).map((statusKey) => {
+              const agendamentosPorStatus = getAgendamentosPorStatus(statusKey);
+              const statusInfo = statusMap[statusKey];
+              const isFinalizados = statusKey === ScheduleStatus.FINISHED;
 
-            <section className="agenda-layout">
-              <aside className="fila-card">
-                <div className="card-header">
-                  <div>
-                    <h3>Agendamentos</h3>
-                    <p>Selecione um atendimento para alterar o status</p>
-                  </div>
-                  <span className="badge">{agendamentosFiltrados.length}</span>
-                </div>
-
-                <div className="search-box">
-                  <input
-                    type="text"
-                    placeholder="Buscar por tutor, pet, serviço ou status"
-                    value={filtro}
-                    onChange={(e) => setFiltro(e.target.value)}
-                  />
-                </div>
-
-                <div className="fila-list">
-                  {agendamentosFiltrados.length > 0 ? (
-                    agendamentosFiltrados.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`fila-item ${selecionado?.id === item.id ? "selecionado" : ""}`}
-                        onClick={() => { setSelecionado(item); setMensagem(""); }}
-                      >
-                        <PetIcon tipo={item.tipo} />
-                        <div className="info">
-                          <h4>{item.pet}</h4>
-                          <p>{item.tutor}</p>
-                          <small>{item.servicosNomes.join(", ")}</small>
-                        </div>
-                        <div className="fila-actions">
-                          <span className="hora">{formatarHorario(item.date_time)}</span>
-                          <small className={getStatusClass(item.status)}>
-                            {getStatusLabel(item.status)}
-                          </small>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="empty-state">
-                      <strong>Nenhum agendamento encontrado</strong>
-                      <p>Não existem atendimentos para esta data ou o filtro não encontrou resultados.</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="drag-help">
-                  <strong>Fluxo atualizado</strong>
-                  <span>O agendamento é criado na tela de agendamentos.</span>
-                </div>
-              </aside>
-
-              <section className="agenda-card">
-                <div className="card-header agenda-card-header">
-                  <div>
-                    <h3>Agenda do dia</h3>
-                    <p>Visualização dos atendimentos por horário e status</p>
-                  </div>
-                </div>
-
-                <div className="agenda-body agenda-body-dinamica">
-                  {agendamentosFiltrados.length > 0 ? (
-                    agendamentosFiltrados.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`agenda-item ${getStatusClass(item.status)} ${selecionado?.id === item.id ? "selecionado" : ""}`}
-                        onClick={() => { setSelecionado(item); setMensagem(""); }}
-                      >
-                        <div className="agenda-time">
-                          <strong>{formatarHorario(item.date_time)}</strong>
-                          <span>{formatarDuracao(item.duration)}</span>
-                        </div>
-                        <div className="agenda-info">
-                          <strong>{item.pet}</strong>
-                          <p>{item.servicosNomes.join(", ")}</p>
-                          <small>{item.tutor}</small>
-                        </div>
-                        <div className="agenda-colaborador">
-                          <span>{item.colaborador}</span>
-                          <small>{getStatusLabel(item.status)}</small>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="agenda-empty agenda-empty-large">
-                      <strong>Agenda vazia</strong>
-                      <span>Nenhum atendimento encontrado para esta data</span>
-                      <small>Os agendamentos criados aparecerão aqui para controle de status.</small>
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              <aside
-                className={`detalhes-card detalhes-card-compacto ${selecionado ? "detalhes-aberto" : ""
+              return (
+                <article
+                  key={statusKey}
+                  className={`colab-column ${statusInfo.className} ${
+                    isFinalizados && dropAtivo ? "drop-active" : ""
                   }`}
-              >
-                <button
-                  type="button"
-                  className="fechar-detalhes-mobile"
-                  onClick={() => setSelecionado(null)}
-                  aria-label="Fechar detalhes"
+                  onDragOver={isFinalizados ? handleDragOver : undefined}
+                  onDragLeave={isFinalizados ? handleDragLeave : undefined}
+                  onDrop={isFinalizados ? handleDrop : undefined}
                 >
-                  ×
-                </button>
-                <div className="card-header">
-                  <div>
-                    <h3>Alterar status</h3>
-                    <p>Selecione o atendimento e atualize a situação</p>
-                  </div>
-                </div>
+                  <div className="colab-column-header">
+                    <div>
+                      <h2>{statusInfo.label}</h2>
+                      <p>{statusInfo.subtitle}</p>
+                    </div>
 
-                <div className="pet-info pet-info-compacta">
-                  <PetIcon tipo={selecionado?.tipo || "dog"} large />
-                  <div>
-                    <h2>{selecionado?.pet || "Selecione um pet"}</h2>
-                    <p>{selecionado?.tutor || "Nenhum atendimento selecionado"}</p>
-                    <small>{selecionado?.servicosNomes?.join(", ") || "---"}</small>
+                    <span>{agendamentosPorStatus.length}</span>
                   </div>
-                </div>
 
-                <div className="status-atual-box">
-                  <span>Status atual</span>
-                  <strong className={selecionado?.status ? getStatusClass(selecionado.status) : ""}>
-                    {selecionado?.status ? getStatusLabel(selecionado.status) : "---"}
-                  </strong>
-                </div>
+                  {isFinalizados && (
+                    <div className="colab-drop-hint">
+                      <PackageCheck size={18} />
+                      <span>Solte aqui para marcar como finalizado</span>
+                    </div>
+                  )}
 
-                <div className="actions-box actions-box-principal">
-                  <div className="actions">
-                    <button className="btn-custom gray" onClick={() => alterarStatus(ScheduleStatus.SCHEDULED)}>
-                      <span>○</span> Agendado
-                    </button>
-                    <button className="btn-custom blue" onClick={() => alterarStatus(ScheduleStatus.CONFIRMED)}>
-                      <span>✓</span> Confirmar
-                    </button>
-                    <button className="btn-custom green" onClick={() => alterarStatus(ScheduleStatus.FINISHED)}>
-                      <span>✓</span> Finalizar
-                    </button>
-                    <button className="btn-custom red" onClick={() => alterarStatus(ScheduleStatus.CANCELED)}>
-                      <span>×</span> Cancelar
-                    </button>
-                  </div>
-                </div>
+                  <div className="colab-card-list">
+                    {agendamentosPorStatus.length > 0 ? (
+                      agendamentosPorStatus.map((item) => (
+                        <div
+                          key={item.id}
+                          className={`colab-appointment-card ${
+                            item.status === ScheduleStatus.CONFIRMED
+                              ? "draggable"
+                              : ""
+                          }`}
+                          draggable={item.status === ScheduleStatus.CONFIRMED}
+                          onDragStart={() => handleDragStart(item)}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <div className="colab-card-top">
+                            <PetIcon tipo={item.tipo} />
 
-                <div className="info-box info-box-resumido">
-                  <div className="info-row">
-                    <span>Horário</span>
-                    <strong>{selecionado?.date_time ? formatarHorario(selecionado.date_time) : "---"}</strong>
-                  </div>
-                  <div className="info-row">
-                    <span>Duração</span>
-                    <strong>{selecionado?.duration ? formatarDuracao(selecionado.duration) : "---"}</strong>
-                  </div>
-                  <div className="info-row">
-                    <span>Colaborador</span>
-                    <strong>{selecionado?.colaborador || "---"}</strong>
-                  </div>
-                  <div className="info-row">
-                    <span>Observação</span>
-                    <strong>{selecionado?.observation || "---"}</strong>
-                  </div>
-                </div>
+                            <div className="colab-card-info">
+                              <h3>{item.pet}</h3>
+                              <p>{item.servico}</p>
+                            </div>
 
-                <div className="status-box status-box-compacto">
-                  <h3>Legenda</h3>
-                  <div className="status-grid">
-                    <div><span className="dot gray"></span> Agendado</div>
-                    <div><span className="dot blue"></span> Confirmado</div>
-                    <div><span className="dot green"></span> Finalizado</div>
-                    <div><span className="dot red"></span> Cancelado</div>
+                            {item.status === ScheduleStatus.CONFIRMED && (
+                              <GripVertical
+                                className="colab-drag-icon"
+                                size={22}
+                              />
+                            )}
+                          </div>
+
+                          <div className="colab-card-meta">
+                            <span>
+                              <Clock size={14} />
+                              {formatarHorario(item.date_time)}
+                            </span>
+
+                            <span>
+                              <Timer size={14} />
+                              {formatarDuracao(item.duration)}
+                            </span>
+                          </div>
+
+                          <div className="colab-card-owner">
+                            <span>Tutor</span>
+                            <strong>{item.tutor}</strong>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="colab-details-btn"
+                            onClick={() => setSelectedAppointment(item)}
+                          >
+                            <Eye size={16} />
+                            Ver detalhes
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="colab-empty">
+                        <Info size={28} />
+                        <strong>Nenhum atendimento</strong>
+                        <p>Não há agendamentos nesta coluna.</p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </aside>
-            </section>
-          </>
-        )}
-      </div>
+                </article>
+              );
+            })}
+          </section>
+        </>
+      )}
+
+      {selectedAppointment && (
+        <div
+          className="colab-modal-overlay"
+          onClick={() => setSelectedAppointment(null)}
+        >
+          <div
+            className="colab-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="colab-modal-header">
+              <div>
+                <span
+                  className={`colab-modal-status ${
+                    selectedAppointment.status === ScheduleStatus.FINISHED
+                      ? "finished"
+                      : "confirmed"
+                  }`}
+                >
+                  {statusMap[selectedAppointment.status]?.label || "STATUS"}
+                </span>
+
+                <h2>{selectedAppointment.pet}</h2>
+                <p>{selectedAppointment.servico}</p>
+              </div>
+
+              <button
+                type="button"
+                className="colab-modal-x"
+                onClick={() => setSelectedAppointment(null)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="colab-info-grid">
+              <div>
+                <UserRound size={17} />
+                <span>Tutor</span>
+                <strong>{selectedAppointment.tutor}</strong>
+              </div>
+
+              <div>
+                <Dog size={17} />
+                <span>Espécie</span>
+                <strong>{selectedAppointment.especie}</strong>
+              </div>
+
+              <div>
+                <PawPrint size={17} />
+                <span>Porte</span>
+                <strong>{selectedAppointment.porte}</strong>
+              </div>
+
+              <div>
+                <Clock size={17} />
+                <span>Horário</span>
+                <strong>{formatarHorario(selectedAppointment.date_time)}</strong>
+              </div>
+
+              <div>
+                <CalendarDays size={17} />
+                <span>Data</span>
+                <strong>{formatarData(selectedAppointment.date_time)}</strong>
+              </div>
+
+              <div>
+                <Timer size={17} />
+                <span>Duração</span>
+                <strong>{formatarDuracao(selectedAppointment.duration)}</strong>
+              </div>
+
+              <div>
+                <Scissors size={17} />
+                <span>Serviço</span>
+                <strong>{selectedAppointment.servico}</strong>
+              </div>
+
+              <div>
+                <UserRound size={17} />
+                <span>Colaborador</span>
+                <strong>{selectedAppointment.colaborador}</strong>
+              </div>
+            </div>
+
+            <div className="colab-observation">
+              <span>Observação</span>
+              <p>{selectedAppointment.observation || "Sem observações."}</p>
+            </div>
+
+            {selectedAppointment.status === ScheduleStatus.CONFIRMED && (
+              <button
+                type="button"
+                className="colab-finish-btn"
+                onClick={() => finalizarAgendamento(selectedAppointment)}
+              >
+                <CheckCircle2 size={18} />
+                Marcar como finalizado
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
