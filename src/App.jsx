@@ -22,6 +22,7 @@ import ScrollToTopButton from "./components/ScrollToTopButton";
 import ScrollToTop from "./components/ScrollToTop";
 import NovoUsuario from "./pages/NovoUsuario";
 import Logs from "./pages/Logs";
+import LogsMock from "./pages/LogsMock";
 import MeusAgendamentos from "./pages/MeusAgendamentos";
 
 const App = () => (
@@ -42,6 +43,7 @@ const App = () => (
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin/usuarios/novo" element={<NovoUsuario />} />
         <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
+        <Route path="/logsmock" element={<LogsMock />} />
 
         <Route
           path="/admin"

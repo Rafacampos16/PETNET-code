@@ -101,27 +101,35 @@ function Logs() {
   }
 
   function formatarDataHora(dataHora) {
-    if (!dataHora) return "Não informado";
-    const dataTratada = String(dataHora).replace(" ", "T");
-    const data = new Date(dataTratada);
-    if (Number.isNaN(data.getTime())) return dataHora;
-    return data.toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
+  if (!dataHora) return "Não informado";
 
-  function formatarHora(dataHora) {
-    if (!dataHora) return "--:--";
-    const dataTratada = String(dataHora).replace(" ", "T");
-    const data = new Date(dataTratada);
-    if (Number.isNaN(data.getTime()))
-      return String(dataHora).split(" ")[1]?.slice(0, 5) || "--:--";
-    return data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-  }
+  const data = new Date(dataHora);
+
+  if (Number.isNaN(data.getTime())) return dataHora;
+
+  return data.toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatarHora(dataHora) {
+  if (!dataHora) return "--:--";
+
+  const data = new Date(dataHora);
+
+  if (Number.isNaN(data.getTime())) return "--:--";
+
+  return data.toLocaleTimeString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
   function formatarCpf(cpf) {
     const cpfLimpo = String(cpf || "").replace(/\D/g, "");
