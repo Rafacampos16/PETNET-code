@@ -8,6 +8,8 @@ import IconLogoutHover from "../assets/icons/logout-h.png";
 
 const periodos = ["Hoje", "Mensal", "Anual"];
 
+const chartColors = ["#3370EB", "#F2A900", "#20B68A", "#6D65F6"];
+
 const dadosPorPeriodo = {
   Hoje: {
     cards: [
@@ -147,10 +149,10 @@ export default function Administracao() {
         strokeDashArray: 4,
         xaxis: { lines: { show: false } },
         padding: {
-          top: 18,
-          right: 18,
+          top: 16,
+          right: 16,
           bottom: 8,
-          left: 12,
+          left: 10,
         },
       },
       xaxis: {
@@ -173,36 +175,43 @@ export default function Administracao() {
   const servicosOptions = useMemo(
     () => ({
       chart: {
-        type: "bar",
-        toolbar: { show: false },
+        type: "donut",
         fontFamily: "inherit",
       },
+      labels: dados.servicosLabels,
+      colors: chartColors,
+      legend: { show: false },
+      stroke: { width: 0 },
+      dataLabels: { enabled: false },
       plotOptions: {
-        bar: {
-          horizontal: true,
-          borderRadius: 10,
-          barHeight: "62%",
-          distributed: true,
+        pie: {
+          donut: {
+            size: "72%",
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                color: "#7180A0",
+                fontSize: "12px",
+                fontWeight: 800,
+              },
+              value: {
+                show: true,
+                color: "#17386F",
+                fontSize: "24px",
+                fontWeight: 900,
+              },
+              total: {
+                show: true,
+                label: "Total",
+                color: "#7180A0",
+                fontSize: "12px",
+                fontWeight: 800,
+              },
+            },
+          },
         },
       },
-      colors: ["#3370EB", "#6D7CF6", "#2EC4B6", "#F5B942"],
-      dataLabels: { enabled: false },
-      grid: {
-        borderColor: "#E6EEFF",
-        strokeDashArray: 4,
-        xaxis: { lines: { show: true } },
-        yaxis: { lines: { show: false } },
-      },
-      xaxis: {
-        categories: dados.servicosLabels,
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
-      },
-      yaxis: {
-        labels: { style: { colors: "#30456F", fontWeight: 800 } },
-      },
-      legend: { show: false },
       tooltip: {
         theme: "light",
         y: { formatter: (value) => `${value} atendimentos` },
@@ -226,7 +235,7 @@ export default function Administracao() {
           distributed: true,
         },
       },
-      colors: ["#3370EB", "#12B76A", "#7C3AED", "#F5B942", "#2EC4B6", "#EF7A9B"],
+      colors: chartColors,
       dataLabels: { enabled: false },
       grid: {
         borderColor: "#E6EEFF",
@@ -365,8 +374,33 @@ export default function Administracao() {
                     options={fluxoOptions}
                     series={[{ name: "Agendamentos", data: dados.fluxo }]}
                     type="area"
-                    height={390}
+                    height={330}
                   />
+                </div>
+              </section>
+
+              <section className="admin-panel admin-panel-services">
+                <div className="admin-panel-header">
+                  <h2>Serviços mais buscados</h2>
+                </div>
+
+                <div className="admin-donut-wrapper">
+                  <Chart
+                    options={servicosOptions}
+                    series={dados.servicos}
+                    type="donut"
+                    height={270}
+                  />
+
+                  <div className="admin-donut-legend">
+                    {dados.servicosLabels.map((label, index) => (
+                      <div key={label}>
+                        <span className={`dot dot-${index}`} />
+                        <small>{label}</small>
+                        <strong>{dados.servicos[index]}</strong>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 
@@ -430,21 +464,6 @@ export default function Administracao() {
                       ))}
                     </tbody>
                   </table>
-                </div>
-              </section>
-
-              <section className="admin-panel admin-panel-services">
-                <div className="admin-panel-header">
-                  <h2>Serviços mais buscados</h2>
-                </div>
-
-                <div className="admin-chart-center">
-                  <Chart
-                    options={servicosOptions}
-                    series={[{ name: "Total", data: dados.servicos }]}
-                    type="bar"
-                    height={320}
-                  />
                 </div>
               </section>
 

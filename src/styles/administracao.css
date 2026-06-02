@@ -330,13 +330,12 @@
 
 .admin-layout-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
   gap: 1rem;
   grid-template-areas:
-    "flow flow"
+    "flow services"
     "table table"
-    "services collaborators"
-    "activity activity";
+    "collaborators activity";
 }
 
 .admin-panel {
@@ -351,20 +350,20 @@
 
 .admin-panel-flow {
   grid-area: flow;
-  min-height: 470px;
+  min-height: 390px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-panel-services {
+  grid-area: services;
+  min-height: 390px;
   display: flex;
   flex-direction: column;
 }
 
 .admin-panel-table {
   grid-area: table;
-}
-
-.admin-panel-services {
-  grid-area: services;
-  min-height: 430px;
-  display: flex;
-  flex-direction: column;
 }
 
 .admin-panel-collaborators {
@@ -376,6 +375,7 @@
 
 .admin-panel-activity {
   grid-area: activity;
+  min-height: 430px;
 }
 
 .admin-panel-header {
@@ -445,10 +445,78 @@
   min-height: 100%;
 }
 
+.admin-chart-flow {
+  min-height: 300px;
+}
+
 .admin-panel-flow .apexcharts-canvas,
-.admin-panel-services .apexcharts-canvas,
 .admin-panel-collaborators .apexcharts-canvas {
   margin: auto 0;
+}
+
+.admin-donut-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.admin-donut-wrapper .apexcharts-canvas {
+  margin: 0 auto;
+}
+
+.admin-donut-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.admin-donut-legend div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 15px;
+  background: #f8fbff;
+  border: 1px solid #e7efff;
+}
+
+.admin-donut-legend small {
+  flex: 1;
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.admin-donut-legend strong {
+  color: var(--text-main);
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  border-radius: 50%;
+}
+
+.dot-0 {
+  background: #3370eb;
+}
+
+.dot-1 {
+  background: #f2a900;
+}
+
+.dot-2 {
+  background: #20b68a;
+}
+
+.dot-3 {
+  background: #6d65f6;
 }
 
 .apexcharts-tooltip {
@@ -526,6 +594,7 @@
   font-weight: 900;
 }
 
+
 .admin-status-confirmado {
   background: rgba(51, 112, 235, 0.12);
   color: #2154b6;
@@ -549,8 +618,8 @@
 /* ATIVIDADES */
 
 .admin-activity-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
@@ -712,7 +781,8 @@
 
   .admin-panel-flow,
   .admin-panel-services,
-  .admin-panel-collaborators {
+  .admin-panel-collaborators,
+  .admin-panel-activity {
     min-height: auto;
   }
 
@@ -751,7 +821,7 @@
     grid-template-columns: 1fr;
   }
 
-  .admin-activity-list {
+  .admin-donut-legend {
     grid-template-columns: 1fr;
   }
 
