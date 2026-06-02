@@ -1,10 +1,10 @@
 import axios from "axios";
 const api = axios.create({
- baseURL: "https://api.netcao.com.br/api",
-   withCredentials: true
- });
+  baseURL: "http://localhost:3000/api",
+  withCredentials: true
+});
 
-  export default api;
+export default api;
 
 
 //  import axios from "axios";

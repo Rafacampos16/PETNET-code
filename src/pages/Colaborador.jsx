@@ -18,12 +18,12 @@ import "../styles/colaborador.css";
 import scheduleService from "../services/scheduleService";
 
 const ScheduleStatus = {
-  SCHEDULED: "SCHEDULED",
+  CONFIRMED: "CONFIRMED",
   FINISHED: "FINISHED",
 };
 
 const statusMap = {
-  [ScheduleStatus.SCHEDULED]: {
+  [ScheduleStatus.CONFIRMED]: {
     label: "CONFIRMADOS",
     subtitle: "Atendimentos prontos para execução",
     className: "confirmed",
@@ -108,7 +108,7 @@ const Colaborador = () => {
     return agendamentos
       .filter(
         (item) =>
-          item.status === ScheduleStatus.SCHEDULED ||
+          item.status === ScheduleStatus.CONFIRMED ||
           item.status === ScheduleStatus.FINISHED
       )
       .sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
@@ -116,7 +116,7 @@ const Colaborador = () => {
 
   const confirmados = useMemo(() => {
     return agendamentosVisiveis.filter(
-      (item) => item.status === ScheduleStatus.SCHEDULED
+      (item) => item.status === ScheduleStatus.CONFIRMED
     );
   }, [agendamentosVisiveis]);
 
@@ -161,7 +161,7 @@ const Colaborador = () => {
   }
 
   function handleDragStart(event, item) {
-    if (item.status !== ScheduleStatus.SCHEDULED) return;
+    if (item.status !== ScheduleStatus.CONFIRMED) return;
 
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", String(item.id));
@@ -179,17 +179,17 @@ const Colaborador = () => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
 
-    if (draggedAppointment?.status === ScheduleStatus.SCHEDULED) {
+    if (draggedAppointment?.status === ScheduleStatus.CONFIRMED) {
       setDropAtivo(true);
     }
   }
 
   function handleDragLeave() {
-  setDropAtivo(false);
-}
+    setDropAtivo(false);
+  }
 
   async function finalizarAgendamento(item) {
-    if (!item || item.status !== ScheduleStatus.SCHEDULED) return;
+    if (!item || item.status !== ScheduleStatus.CONFIRMED) return;
 
     try {
       await scheduleService.atualizar(item.id, {
@@ -326,11 +326,11 @@ const Colaborador = () => {
                       agendamentosPorStatus.map((item) => (
                         <div
                           key={item.id}
-                          className={`colab-appointment-card ${item.status === ScheduleStatus.SCHEDULED
+                          className={`colab-appointment-card ${item.status === ScheduleStatus.CONFIRMED
                               ? "draggable"
                               : ""
                             }`}
-                          draggable={item.status === ScheduleStatus.SCHEDULED}
+                          draggable={item.status === ScheduleStatus.CONFIRMED}
                           onDragStart={(e) => handleDragStart(e, item)}
                           onDragEnd={handleDragEnd}
                         >
@@ -342,7 +342,7 @@ const Colaborador = () => {
                               <p>{item.servico}</p>
                             </div>
 
-                            {item.status === ScheduleStatus.SCHEDULED && (
+                            {item.status === ScheduleStatus.CONFIRMED && (
                               <GripVertical className="colab-drag-icon" size={22} />
                             )}
                           </div>
@@ -477,7 +477,7 @@ const Colaborador = () => {
               <p>{selectedAppointment.observation || "Sem observações."}</p>
             </div>
 
-            {selectedAppointment.status === ScheduleStatus.SCHEDULED && (
+            {selectedAppointment.status === ScheduleStatus.CONFIRMED && (
               <button
                 type="button"
                 className="colab-finish-btn"

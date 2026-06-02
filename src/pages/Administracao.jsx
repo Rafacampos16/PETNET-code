@@ -1,95 +1,36 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import "../styles/administracao.css";
-
 import IconLogoutHover from "../assets/icons/logout-h.png";
+import dashboardService from "../services/dashboardService";
+
+const chartColors = ["#3370EB", "#F2A900", "#20B68A", "#6D65F6"];
 
 const periodos = ["Hoje", "Mensal", "Anual"];
 
-const dadosPorPeriodo = {
-  Hoje: {
-    cards: [
-      { titulo: "Agendamentos", valor: "18", detalhe: "total do dia", tipo: "azul" },
-      { titulo: "Cancelados", valor: "2", detalhe: "atendimentos cancelados", tipo: "amarelo" },
-      { titulo: "Finalizados", valor: "7", detalhe: "serviços concluídos", tipo: "verde" },
-      { titulo: "Entregues", valor: "4", detalhe: "pets entregues ao cliente", tipo: "roxo" },
-    ],
-    fluxo: [2, 5, 3, 4, 3, 1],
-    fluxoLabels: ["08h", "10h", "12h", "14h", "16h", "18h"],
-    servicos: [8, 5, 3, 2],
-    servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    colaboradoresPets: [6, 5, 4, 3],
-    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João"],
-    agendaResumo: {
-      atendimentos: 18,
-      confirmados: 9,
-      cancelados: 2,
-      finalizados: 7,
-      entregues: 4,
-    },
-  },
-
-  Mensal: {
-    cards: [
-      { titulo: "Agendamentos", valor: "214", detalhe: "total do mês", tipo: "azul" },
-      { titulo: "Cancelados", valor: "8", detalhe: "cancelados no mês", tipo: "amarelo" },
-      { titulo: "Finalizados", valor: "176", detalhe: "finalizados no mês", tipo: "verde" },
-      { titulo: "Entregues", valor: "132", detalhe: "entregues no mês", tipo: "roxo" },
-    ],
-    fluxo: [48, 52, 56, 58],
-    fluxoLabels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
-    servicos: [92, 61, 34, 27],
-    servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    colaboradoresPets: [54, 48, 43, 37, 32],
-    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João", "Beatriz"],
-    agendaResumo: {
-      atendimentos: 214,
-      confirmados: 30,
-      cancelados: 8,
-      finalizados: 176,
-      entregues: 132,
-    },
-  },
-
-  Anual: {
-    cards: [
-      { titulo: "Agendamentos", valor: "864", detalhe: "total no ano", tipo: "azul" },
-      { titulo: "Cancelados", valor: "36", detalhe: "cancelados no ano", tipo: "amarelo" },
-      { titulo: "Finalizados", valor: "702", detalhe: "finalizados no ano", tipo: "verde" },
-      { titulo: "Entregues", valor: "511", detalhe: "entregues no ano", tipo: "roxo" },
-    ],
-    fluxo: [96, 118, 132, 145, 181, 192],
-    fluxoLabels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-    servicos: [364, 245, 146, 109],
-    servicosLabels: ["Banho", "Tosa", "Consulta", "Vacina"],
-    colaboradoresPets: [184, 160, 142, 118, 96, 82],
-    colaboradoresLabels: ["Ana", "Carlos", "Mariana", "João", "Beatriz", "Lucas"],
-    agendaResumo: {
-      atendimentos: 864,
-      confirmados: 126,
-      cancelados: 36,
-      finalizados: 702,
-      entregues: 511,
-    },
-  },
+const periodoMap = {
+  Hoje: "Diario",
+  Mensal: "Mensal",
+  Anual: "Anual",
 };
 
-const agendaHoje = [
-  { horario: "09:00", pet: "Thor", tutor: "Mariana Costa", servico: "Banho", status: "Confirmado" },
-  { horario: "10:30", pet: "Luna", tutor: "Carlos Souza", servico: "Tosa", status: "Finalizado" },
-  { horario: "11:15", pet: "Mel", tutor: "Fernanda Lima", servico: "Consulta", status: "Confirmado" },
-  { horario: "14:00", pet: "Nina", tutor: "Patrícia Alves", servico: "Vacina", status: "Cancelado" },
-  { horario: "15:20", pet: "Bob", tutor: "Rafael Martins", servico: "Banho e tosa", status: "Entregue" },
-];
-
-const atividadesRecentes = [
-  { titulo: "Novo agendamento", texto: "Thor foi agendado para banho.", hora: "há 5 min" },
-  { titulo: "Status finalizado", texto: "Luna teve o atendimento finalizado.", hora: "há 18 min" },
-  { titulo: "Serviço confirmado", texto: "Consulta da Mel confirmada pela tutora.", hora: "há 32 min" },
-  { titulo: "Entrega registrada", texto: "Bob foi entregue ao cliente.", hora: "há 1 h" },
-];
+const emptyPeriodo = {
+  cards: [
+    { titulo: "Total Agendamentos", valor: "0", detalhe: "no período", tipo: "azul" },
+    { titulo: "Cancelamento", valor: "0", detalhe: "cancelados", tipo: "amarelo" },
+    { titulo: "Finalizados", valor: "0", detalhe: "agendamentos", tipo: "verde" },
+    { titulo: "Entregues", valor: "0", detalhe: "pets enviados", tipo: "roxo" },
+  ],
+  fluxo: [],
+  fluxoLabels: [],
+  servicos: [],
+  servicosLabels: [],
+  statusPorColaborador: [],
+  agendaHoje: [],
+  atividadesRecentes: [],
+};
 
 const menu = [
   { nome: "Dashboard", rota: "/admin" },
@@ -101,12 +42,38 @@ const menu = [
 ];
 
 function getStatusClass(status) {
-  const normalizado = status.toLowerCase();
+  const normalizado = String(status || "").toLowerCase();
 
   if (normalizado === "confirmado") return "admin-status admin-status-confirmado";
   if (normalizado === "finalizado") return "admin-status admin-status-finalizado";
   if (normalizado === "entregue") return "admin-status admin-status-entregue";
+  if (normalizado === "cancelado") return "admin-status admin-status-cancelado";
   return "admin-status admin-status-cancelado";
+}
+
+function parseValor(valor) {
+  const num = Number(valor);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function mergePeriodo(periodo = {}) {
+  return {
+    ...emptyPeriodo,
+    ...periodo,
+    cards: periodo.cards || emptyPeriodo.cards,
+    fluxo: periodo.fluxo || [],
+    fluxoLabels: periodo.fluxoLabels || [],
+    servicos: periodo.servicos || [],
+    servicosLabels: periodo.servicosLabels || [],
+    statusPorColaborador: periodo.statusPorColaborador || [],
+    agendaHoje: periodo.agendaHoje || [],
+    atividadesRecentes: periodo.atividadesRecentes || [],
+  };
+}
+
+function getCardValue(cards, titulo) {
+  const card = (cards || []).find((item) => item.titulo === titulo);
+  return card?.valor ?? "0";
 }
 
 export default function Administracao() {
@@ -115,8 +82,75 @@ export default function Administracao() {
 
   const [hoverLogout, setHoverLogout] = useState(false);
   const [periodoAtivo, setPeriodoAtivo] = useState("Hoje");
+  const [dashboardData, setDashboardData] = useState({
+    Diario: mergePeriodo(),
+    Mensal: mergePeriodo(),
+    Anual: mergePeriodo(),
+  });
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
 
-  const dados = useMemo(() => dadosPorPeriodo[periodoAtivo], [periodoAtivo]);
+  useEffect(() => {
+    let mounted = true;
+
+    async function carregarDashboard() {
+      try {
+        setLoading(true);
+        setErro("");
+
+        const response = await dashboardService.buscarDashboard();
+        const data = response.data || {};
+
+        if (!mounted) return;
+
+        setDashboardData({
+          Diario: mergePeriodo(data.Diario),
+          Mensal: mergePeriodo(data.Mensal),
+          Anual: mergePeriodo(data.Anual),
+        });
+      } catch (error) {
+        if (!mounted) return;
+        setErro("Não foi possível carregar os dados do dashboard.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    carregarDashboard();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const dados = useMemo(() => {
+    const chave = periodoMap[periodoAtivo] || "Diario";
+    return dashboardData[chave] || mergePeriodo();
+  }, [dashboardData, periodoAtivo]);
+
+  const agendaResumo = useMemo(
+    () => ({
+      atendimentos: getCardValue(dados.cards, "Total Agendamentos"),
+      cancelados: getCardValue(dados.cards, "Cancelamento"),
+      finalizados: getCardValue(dados.cards, "Finalizados"),
+      entregues: getCardValue(dados.cards, "Entregues"),
+      confirmados: "0",
+    }),
+    [dados.cards]
+  );
+
+  const colaboradoresData = useMemo(() => {
+    const labels = (dados.statusPorColaborador || []).map((item) => item.nome);
+    const values = (dados.statusPorColaborador || []).map((item) =>
+      parseValor(item.agendados) +
+      parseValor(item.confirmados) +
+      parseValor(item.cancelados) +
+      parseValor(item.finalizados) +
+      parseValor(item.entregues)
+    );
+
+    return { labels, values };
+  }, [dados.statusPorColaborador]);
 
   const fluxoOptions = useMemo(
     () => ({
@@ -154,7 +188,7 @@ export default function Administracao() {
         },
       },
       xaxis: {
-        categories: dados.fluxoLabels,
+        categories: dados.fluxoLabels || [],
         axisBorder: { show: false },
         axisTicks: { show: false },
         labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
@@ -167,48 +201,62 @@ export default function Administracao() {
         y: { formatter: (value) => `${value} agendamentos` },
       },
     }),
-    [dados]
+    [dados.fluxoLabels]
   );
 
   const servicosOptions = useMemo(
     () => ({
       chart: {
-        type: "bar",
-        toolbar: { show: false },
+        type: "donut",
         fontFamily: "inherit",
       },
+      labels: dados.servicosLabels || [],
+      colors: chartColors,
+      legend: { show: false },
+      stroke: { width: 0 },
+      dataLabels: { enabled: false },
+
       plotOptions: {
-        bar: {
-          horizontal: true,
-          borderRadius: 10,
-          barHeight: "62%",
-          distributed: true,
+        pie: {
+          donut: {
+            size: "72%",
+            labels: {
+              show: true,
+
+              name: {
+                show: true,
+                color: "#7180A0",
+                fontSize: "12px",
+                fontWeight: 800,
+              },
+
+              value: {
+                show: true,
+                color: "#17386F",
+                fontSize: "24px",
+                fontWeight: 900,
+              },
+
+              total: {
+                show: true,
+                label: "Total",
+                color: "#7180A0",
+                fontSize: "12px",
+                fontWeight: 800,
+              },
+            },
+          },
         },
       },
-      colors: ["#3370EB", "#6D7CF6", "#2EC4B6", "#F5B942"],
-      dataLabels: { enabled: false },
-      grid: {
-        borderColor: "#E6EEFF",
-        strokeDashArray: 4,
-        xaxis: { lines: { show: true } },
-        yaxis: { lines: { show: false } },
-      },
-      xaxis: {
-        categories: dados.servicosLabels,
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
-      },
-      yaxis: {
-        labels: { style: { colors: "#30456F", fontWeight: 800 } },
-      },
-      legend: { show: false },
+
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} atendimentos` },
+        y: {
+          formatter: (value) => `${value} atendimentos`,
+        },
       },
     }),
-    [dados]
+    [dados.servicosLabels]
   );
 
   const colaboradoresOptions = useMemo(
@@ -235,7 +283,7 @@ export default function Administracao() {
         yaxis: { lines: { show: false } },
       },
       xaxis: {
-        categories: dados.colaboradoresLabels,
+        categories: colaboradoresData.labels,
         axisBorder: { show: false },
         axisTicks: { show: false },
         labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
@@ -249,12 +297,25 @@ export default function Administracao() {
         y: { formatter: (value) => `${value} pets atendidos` },
       },
     }),
-    [dados]
+    [colaboradoresData.labels]
   );
 
   function handleLogout() {
     localStorage.removeItem("isAdmin");
     navigate("/conta");
+  }
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="admin-page">
+          <section className="admin-shell">
+            <div style={{ padding: 24 }}>Carregando dashboard...</div>
+          </section>
+        </main>
+      </>
+    );
   }
 
   return (
@@ -292,13 +353,13 @@ export default function Administracao() {
               <div className="admin-sidebar-mini-grid">
                 <div>
                   <span>Hoje</span>
-                  <strong>{dados.agendaResumo.atendimentos}</strong>
+                  <strong>{agendaResumo.atendimentos}</strong>
                   <small>atendimentos</small>
                 </div>
 
                 <div>
                   <span>Cancelados</span>
-                  <strong>{dados.agendaResumo.cancelados}</strong>
+                  <strong>{agendaResumo.cancelados}</strong>
                   <small>na agenda</small>
                 </div>
               </div>
@@ -334,7 +395,7 @@ export default function Administracao() {
                   type="button"
                 >
                   <img
-                    src={hoverLogout ? IconLogoutHover : IconLogoutHover}
+                    src={IconLogoutHover}
                     alt=""
                     className="admin-logout-icon"
                   />
@@ -343,14 +404,23 @@ export default function Administracao() {
               </div>
             </div>
 
+            {erro ? <div style={{ marginBottom: 16 }}>{erro}</div> : null}
+
             <section className="admin-card-grid">
-              {dados.cards.map((card) => (
-                <article key={card.titulo} className={`admin-main-card ${card.tipo}`}>
-                  <span>{card.titulo}</span>
-                  <strong>{card.valor}</strong>
-                  <small>{card.detalhe}</small>
-                </article>
-              ))}
+              {dados.cards.map((card) => {
+                const cardTipo = card.titulo === "Cancelamento" ? "amarelo" : card.tipo;
+
+                return (
+                  <article
+                    key={card.titulo}
+                    className={`admin-main-card ${cardTipo}`}
+                  >
+                    <span>{card.titulo}</span>
+                    <strong>{card.valor}</strong>
+                    <small>{card.detalhe}</small>
+                  </article>
+                );
+              })}
             </section>
 
             <section className="admin-layout-grid">
@@ -363,7 +433,7 @@ export default function Administracao() {
                 <div className="admin-chart-center admin-chart-flow">
                   <Chart
                     options={fluxoOptions}
-                    series={[{ name: "Agendamentos", data: dados.fluxo }]}
+                    series={[{ name: "Agendamentos", data: dados.fluxo || [] }]}
                     type="area"
                     height={390}
                   />
@@ -385,51 +455,59 @@ export default function Administracao() {
                 <div className="admin-agenda-summary">
                   <div>
                     <span>Total</span>
-                    <strong>{dados.agendaResumo.atendimentos}</strong>
+                    <strong>{agendaResumo.atendimentos}</strong>
                   </div>
 
                   <div>
                     <span>Confirmados</span>
-                    <strong>{dados.agendaResumo.confirmados}</strong>
+                    <strong>{agendaResumo.confirmados}</strong>
                   </div>
 
                   <div>
                     <span>Finalizados</span>
-                    <strong>{dados.agendaResumo.finalizados}</strong>
+                    <strong>{agendaResumo.finalizados}</strong>
                   </div>
 
                   <div>
                     <span>Entregues</span>
-                    <strong>{dados.agendaResumo.entregues}</strong>
+                    <strong>{agendaResumo.entregues}</strong>
                   </div>
                 </div>
 
                 <div className="admin-table-wrapper">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Horário</th>
-                        <th>Pet</th>
-                        <th>Tutor</th>
-                        <th>Serviço</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {agendaHoje.map((item, index) => (
-                        <tr key={`${item.pet}-${index}`}>
-                          <td>{item.horario}</td>
-                          <td>{item.pet}</td>
-                          <td>{item.tutor}</td>
-                          <td>{item.servico}</td>
-                          <td>
-                            <span className={getStatusClass(item.status)}>{item.status}</span>
-                          </td>
+                  {(dados.agendaHoje || []).length > 0 ? (
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Horário</th>
+                          <th>Pet</th>
+                          <th>Tutor</th>
+                          <th>Serviço</th>
+                          <th>Status</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+
+                      <tbody>
+                        {dados.agendaHoje.map((item, index) => (
+                          <tr key={`${item.pet || "pet"}-${index}`}>
+                            <td>{item.horario}</td>
+                            <td>{item.pet}</td>
+                            <td>{item.tutor}</td>
+                            <td>{item.servico}</td>
+                            <td>
+                              <span className={getStatusClass(item.status)}>
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div style={{ padding: 20 }}>
+                      Nenhum agendamento carregado para este período.
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -438,13 +516,23 @@ export default function Administracao() {
                   <h2>Serviços mais buscados</h2>
                 </div>
 
-                <div className="admin-chart-center">
+                <div className="admin-donut-wrapper">
                   <Chart
                     options={servicosOptions}
-                    series={[{ name: "Total", data: dados.servicos }]}
-                    type="bar"
-                    height={320}
+                    series={dados.servicos || []}
+                    type="donut"
+                    height={270}
                   />
+
+                  <div className="admin-donut-legend">
+                    {(dados.servicosLabels || []).map((label, index) => (
+                      <div key={label}>
+                        <span className={`dot dot-${index}`} />
+                        <small>{label}</small>
+                        <strong>{dados.servicos[index]}</strong>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 
@@ -456,7 +544,7 @@ export default function Administracao() {
                 <div className="admin-chart-center">
                   <Chart
                     options={colaboradoresOptions}
-                    series={[{ name: "Pets", data: dados.colaboradoresPets }]}
+                    series={[{ name: "Pets", data: colaboradoresData.values }]}
                     type="bar"
                     height={320}
                   />
@@ -469,17 +557,23 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-activity-list">
-                  {atividadesRecentes.map((item, index) => (
-                    <div className="admin-activity-item" key={`${item.titulo}-${index}`}>
-                      <div className="admin-activity-dot" />
+                  {(dados.atividadesRecentes || []).length > 0 ? (
+                    dados.atividadesRecentes.map((item, index) => (
+                      <div className="admin-activity-item" key={`${item.titulo || "item"}-${index}`}>
+                        <div className="admin-activity-dot" />
 
-                      <div>
-                        <strong>{item.titulo}</strong>
-                        <p>{item.texto}</p>
-                        <small>{item.hora}</small>
+                        <div>
+                          <strong>{item.titulo}</strong>
+                          <p>{item.texto}</p>
+                          <small>{item.hora}</small>
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div style={{ padding: 20 }}>
+                      Nenhuma atividade recente disponível.
                     </div>
-                  ))}
+                  )}
                 </div>
               </section>
             </section>
