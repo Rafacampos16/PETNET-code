@@ -181,10 +181,10 @@ export default function Administracao() {
         strokeDashArray: 4,
         xaxis: { lines: { show: false } },
         padding: {
-          top: 16,
-          right: 16,
+          top: 18,
+          right: 18,
           bottom: 8,
-          left: 10,
+          left: 12,
         },
       },
       xaxis: {
@@ -215,24 +215,28 @@ export default function Administracao() {
       legend: { show: false },
       stroke: { width: 0 },
       dataLabels: { enabled: false },
+
       plotOptions: {
         pie: {
           donut: {
             size: "72%",
             labels: {
               show: true,
+
               name: {
                 show: true,
                 color: "#7180A0",
                 fontSize: "12px",
                 fontWeight: 800,
               },
+
               value: {
                 show: true,
                 color: "#17386F",
                 fontSize: "24px",
                 fontWeight: 900,
               },
+
               total: {
                 show: true,
                 label: "Total",
@@ -244,6 +248,7 @@ export default function Administracao() {
           },
         },
       },
+
       tooltip: {
         theme: "light",
         y: {
@@ -269,7 +274,7 @@ export default function Administracao() {
           distributed: true,
         },
       },
-      colors: chartColors,
+      colors: ["#3370EB", "#12B76A", "#7C3AED", "#F5B942", "#2EC4B6", "#EF7A9B"],
       dataLabels: { enabled: false },
       grid: {
         borderColor: "#E6EEFF",
@@ -430,33 +435,8 @@ export default function Administracao() {
                     options={fluxoOptions}
                     series={[{ name: "Agendamentos", data: dados.fluxo || [] }]}
                     type="area"
-                    height={330}
+                    height={390}
                   />
-                </div>
-              </section>
-
-              <section className="admin-panel admin-panel-services">
-                <div className="admin-panel-header">
-                  <h2>Serviços mais buscados</h2>
-                </div>
-
-                <div className="admin-donut-wrapper">
-                  <Chart
-                    options={servicosOptions}
-                    series={dados.servicos}
-                    type="donut"
-                    height={270}
-                  />
-
-                  <div className="admin-donut-legend">
-                    {dados.servicosLabels.map((label, index) => (
-                      <div key={label}>
-                        <span className={`dot dot-${index}`} />
-                        <small>{label}</small>
-                        <strong>{dados.servicos[index]}</strong>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </section>
 
