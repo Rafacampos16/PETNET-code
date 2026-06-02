@@ -1,90 +1,90 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "../styles/meusAgendamentos.css";
 
 import AgendaClienteIcon from "../assets/icons/agendaCliente.png";
 import PetsIcon from "../assets/icons/paw-cat.png";
 import PataIcon from "../assets/icons/pata-h.png";
-import ContaIcon from "../assets/icons/conta.png";
 
-const agendamentosMock = [
-  {
-    id: 1,
-    servico: "Banho e Tosa",
-    pet: "Luna",
-    data: "2026-06-03",
-    horario: "14:30",
-    status: "CONFIRMADO",
-    observacoes: "Pet com sensibilidade na patinha esquerda.",
-    endereco: "Av. Cassiano Ricardo, 123 - São José dos Campos",
-  },
-  {
-    id: 2,
-    servico: "Consulta Veterinária",
-    pet: "Thor",
-    data: "2026-06-08",
-    horario: "10:00",
-    status: "AGENDADO",
-    observacoes: "Levar carteira de vacinação.",
-    endereco: "Av. Cassiano Ricardo, 123 - São José dos Campos",
-  },
-  {
-    id: 3,
-    servico: "Tosa Higiênica",
-    pet: "Mel",
-    data: "2026-05-20",
-    horario: "16:00",
-    status: "FINALIZADO",
-    observacoes: "Atendimento finalizado com sucesso.",
-    endereco: "Av. Cassiano Ricardo, 123 - São José dos Campos",
-  },
-];
+import scheduleService from "../services/scheduleService";
 
 const statusLabels = {
   TODOS: "Todos",
-  AGENDADO: "Agendados",
-  CONFIRMADO: "Confirmados",
-  FINALIZADO: "Finalizados",
-  CANCELADO: "Cancelados",
+  Agendado: "Agendados",
+  Confirmado: "Confirmados",
+  Finalizado: "Finalizados",
+  Cancelado: "Cancelados",
 };
 
-const statusText = {
-  AGENDADO: "Agendado",
-  CONFIRMADO: "Confirmado",
-  FINALIZADO: "Finalizado",
-  CANCELADO: "Cancelado",
-};
+function normalizar(item) {
+  return {
+    ...item,
+    petNome: item.pet?.name || "—",
+    servico: item.services?.map((s) => s.name).join(", ") || "—",
+    colaborador: item.collaborator?.name || "—",
+  };
+}
 
 const MeusAgendamentos = () => {
+  const hoje = new Date();
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString();
+  const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0, 23, 59, 59).toISOString();
+
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
   const [statusSelecionado, setStatusSelecionado] = useState("TODOS");
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState(null);
 
+  useEffect(() => {
+    setCarregando(true);
+    setErro(null);
+
+    scheduleService
+      .listar(inicioMes, fimMes)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        setAgendamentos(data.map(normalizar));
+      })
+      .catch(() => setErro("Não foi possível carregar os agendamentos."))
+      .finally(() => setCarregando(false));
+  }, []);
+
   const agendamentosFiltrados = useMemo(() => {
-    if (statusSelecionado === "TODOS") {
-      return agendamentosMock;
-    }
+    if (statusSelecionado === "TODOS") return agendamentos;
+    return agendamentos.filter((a) => a.status === statusSelecionado);
+  }, [agendamentos, statusSelecionado]);
 
-    return agendamentosMock.filter(
-      (agendamento) => agendamento.status === statusSelecionado
-    );
-  }, [statusSelecionado]);
-
-  const formatarData = (data) => {
-    const [ano, mes, dia] = data.split("-");
-    return `${dia}/${mes}/${ano}`;
+  const getDia = (dateTime) => {
+    return new Date(dateTime).toLocaleDateString("pt-BR", { day: "2-digit" });
   };
 
-  const getDia = (data) => {
-    return data.split("-")[2];
+  const getMes = (dateTime) => {
+    return new Date(dateTime).toLocaleString("pt-BR", { month: "short" });
   };
 
-  const getMes = (data) => {
-    return new Date(`${data}T00:00:00`).toLocaleString("pt-BR", {
-      month: "short",
+  const formatarData = (dateTime) => {
+    return new Date(dateTime).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const formatarHorario = (dateTime) => {
+    return new Date(dateTime).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getStatusClass = (status) => {
-    return `agenda-status agenda-status-${status.toLowerCase()}`;
+    const map = {
+      Agendado: "agendado",
+      Confirmado: "confirmado",
+      Finalizado: "finalizado",
+      Cancelado: "cancelado",
+    };
+    return `agenda-status agenda-status-${map[status] || "agendado"}`;
   };
 
   return (
@@ -92,12 +92,8 @@ const MeusAgendamentos = () => {
       <div className="meus-agendamentos-container">
         <div className="meus-agendamentos-hero">
           <div className="hero-text-area">
-            <span className="meus-agendamentos-tag">
-              Área do cliente
-            </span>
-
+            <span className="meus-agendamentos-tag">Área do cliente</span>
             <h1>Meus Agendamentos</h1>
-
             <p>
               Veja os próximos cuidados do seu pet, acompanhe horários marcados
               e consulte os detalhes quando precisar.
@@ -132,14 +128,27 @@ const MeusAgendamentos = () => {
           </div>
         </div>
 
-        {agendamentosFiltrados.length === 0 ? (
+        {carregando ? (
+          <div className="agenda-empty-card">
+            <div className="agenda-empty-icon">
+              <img src={AgendaClienteIcon} alt="Carregando" />
+            </div>
+            <h2>Carregando agendamentos...</h2>
+          </div>
+        ) : erro ? (
+          <div className="agenda-empty-card">
+            <div className="agenda-empty-icon">
+              <img src={AgendaClienteIcon} alt="Erro" />
+            </div>
+            <h2>Algo deu errado</h2>
+            <p>{erro}</p>
+          </div>
+        ) : agendamentosFiltrados.length === 0 ? (
           <div className="agenda-empty-card">
             <div className="agenda-empty-icon">
               <img src={AgendaClienteIcon} alt="Agenda" />
             </div>
-
             <h2>Nenhum agendamento encontrado</h2>
-
             <p>
               Quando um horário for marcado para o seu pet, ele aparecerá aqui
               para você acompanhar com calma.
@@ -151,12 +160,12 @@ const MeusAgendamentos = () => {
               <article key={agendamento.id} className="agenda-client-card">
                 <div className="card-top-row">
                   <div className="agenda-client-date">
-                    <strong>{getDia(agendamento.data)}</strong>
-                    <span>{getMes(agendamento.data)}</span>
+                    <strong>{getDia(agendamento.date_time)}</strong>
+                    <span>{getMes(agendamento.date_time)}</span>
                   </div>
 
                   <span className={getStatusClass(agendamento.status)}>
-                    {statusText[agendamento.status]}
+                    {agendamento.status}
                   </span>
                 </div>
 
@@ -169,12 +178,12 @@ const MeusAgendamentos = () => {
                 <div className="agenda-card-info">
                   <div>
                     <span>Pet</span>
-                    <strong>{agendamento.pet}</strong>
+                    <strong>{agendamento.petNome}</strong>
                   </div>
 
                   <div>
                     <span>Horário</span>
-                    <strong>{agendamento.horario}</strong>
+                    <strong>{formatarHorario(agendamento.date_time)}</strong>
                   </div>
                 </div>
 
@@ -191,8 +200,14 @@ const MeusAgendamentos = () => {
         )}
 
         {agendamentoSelecionado && (
-          <div className="agenda-modal-overlay">
-            <div className="agenda-modal">
+          <div
+            className="agenda-modal-overlay"
+            onClick={() => setAgendamentoSelecionado(null)}
+          >
+            <div
+              className="agenda-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
                 className="agenda-modal-close"
@@ -208,42 +223,46 @@ const MeusAgendamentos = () => {
                 </div>
 
                 <span className={getStatusClass(agendamentoSelecionado.status)}>
-                  {statusText[agendamentoSelecionado.status]}
+                  {agendamentoSelecionado.status}
                 </span>
               </div>
 
               <h2>{agendamentoSelecionado.servico}</h2>
 
               <p className="agenda-modal-subtitle">
-                Detalhes do agendamento de {agendamentoSelecionado.pet}
+                Detalhes do agendamento de {agendamentoSelecionado.petNome}
               </p>
 
               <div className="agenda-modal-info">
                 <div>
                   <span>Pet</span>
-                  <strong>{agendamentoSelecionado.pet}</strong>
+                  <strong>{agendamentoSelecionado.petNome}</strong>
                 </div>
 
                 <div>
                   <span>Data</span>
-                  <strong>{formatarData(agendamentoSelecionado.data)}</strong>
+                  <strong>{formatarData(agendamentoSelecionado.date_time)}</strong>
                 </div>
 
                 <div>
                   <span>Horário</span>
-                  <strong>{agendamentoSelecionado.horario}</strong>
+                  <strong>{formatarHorario(agendamentoSelecionado.date_time)}</strong>
                 </div>
 
                 <div>
-                  <span>Endereço</span>
-                  <strong>{agendamentoSelecionado.endereco}</strong>
+                  <span>Duração</span>
+                  <strong>{agendamentoSelecionado.duration}</strong>
+                </div>
+
+                <div>
+                  <span>Colaborador</span>
+                  <strong>{agendamentoSelecionado.colaborador}</strong>
                 </div>
 
                 <div className="full-info">
                   <span>Observações</span>
                   <strong>
-                    {agendamentoSelecionado.observacoes ||
-                      "Nenhuma observação cadastrada."}
+                    {agendamentoSelecionado.observation || "Nenhuma observação cadastrada."}
                   </strong>
                 </div>
               </div>
