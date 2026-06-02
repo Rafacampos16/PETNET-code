@@ -120,27 +120,32 @@ export default function MinhaConta() {
     return label;
   }
 
-  function preencherDadosPetNaTela(pet) {
-    if (!pet) return;
+ function preencherDadosPetNaTela(pet, contatos = [], enderecos = []) {
+  if (!pet) return;
 
-    setDados((prev) => ({
-      ...prev,
-      nome: formEditar.nome,
-      email: formEditar.email,
-
-      telefone: contatosTratados[0]?.number || "",
-      contatos: contatosTratados,
-
-      tipo: enderecosTratados[0]?.type || "",
-      endereco: enderecosTratados[0]?.address || "",
-      numero: enderecosTratados[0]?.number || "",
-      complemento: enderecosTratados[0]?.complement || "",
-      bairro: enderecosTratados[0]?.neighborhood || "",
-      cep: enderecosTratados[0]?.cep || "",
-      localizacao: enderecosTratados[0]?.locaticion || "",
-      enderecos: enderecosTratados,
-    }));
-  }
+  setDados((prev) => ({
+    ...prev,
+    nomePet: pet.name || "",
+    especiePet: pet.species || "",
+    racaPet: pet.breed || "",
+    portePet: pet.size || "",
+    pesoPet: pet.weight || "",
+    nascimentoPet: pet.birth_date
+      ? new Date(pet.birth_date).toLocaleDateString("pt-BR")
+      : "",
+    sexoPet: pet.sex || "",
+    telefone: contatos[0]?.number || "",
+    contatos,
+    tipo: enderecos[0]?.type || "",
+    endereco: enderecos[0]?.address || "",
+    numero: enderecos[0]?.number || "",
+    complemento: enderecos[0]?.complement || "",
+    bairro: enderecos[0]?.neighborhood || "",
+    cep: enderecos[0]?.cep || "",
+    localizacao: enderecos[0]?.locaticion || "",
+    enderecos,
+  }));
+}
 
   // 🔁 NOVA FUNÇÃO: Formata status para exibição
   function formatarStatus(status) {
@@ -491,88 +496,82 @@ export default function MinhaConta() {
 
     try {
       if (abaEditar === "pessoal" || abaEditar === "endereco") {
-        const contatosTratados = (formEditar.contatos || [])
-          .filter((contato) => contato.name?.trim() || contato.number?.trim())
-          .map((contato, index) => ({
-            name: contato.name?.trim() || `Contato ${index + 1}`,
-            number: contato.number?.replace(/\D/g, ""),
-          }));
+  const contatosTratados = (formEditar.contatos || [])
+    .filter((contato) => contato.name?.trim() || contato.number?.trim())
+    .map((contato, index) => ({
+      name: contato.name?.trim() || `Contato ${index + 1}`,
+      number: contato.number?.replace(/\D/g, ""),
+    }));
 
-        const enderecosTratados = (formEditar.enderecos || [])
-          .filter(
-            (endereco) =>
-              endereco.type?.trim() ||
-              endereco.cep?.trim() ||
-              endereco.address?.trim() ||
-              endereco.number?.trim()
-          )
-          .map((endereco, index) => ({
-            type: endereco.type?.trim() || `Endereço ${index + 1}`,
-            cep: endereco.cep?.replace(/\D/g, ""),
-            address: endereco.address || "",
-            number: endereco.number || "",
-            neighborhood: endereco.neighborhood || "",
-            complement: endereco.complement || "",
-            locaticion: endereco.locaticion || "",
-          }));
+  const enderecosTratados = (formEditar.enderecos || [])
+    .filter(
+      (endereco) =>
+        endereco.type?.trim() ||
+        endereco.cep?.trim() ||
+        endereco.address?.trim() ||
+        endereco.number?.trim()
+    )
+    .map((endereco, index) => ({
+      type: endereco.type?.trim() || `Endereço ${index + 1}`,
+      cep: endereco.cep?.replace(/\D/g, ""),
+      address: endereco.address || "",
+      number: endereco.number || "",
+      neighborhood: endereco.neighborhood || "",
+      complement: endereco.complement || "",
+      locaticion: endereco.locaticion || "",
+    }));
 
-        const body = {
-          name: formEditar.nome,
-          email: formEditar.email,
+  const body = {
+    name: formEditar.nome,
+    email: formEditar.email,
+    contact: contatosTratados[0] || {
+      name: formEditar.nome,
+      number: formEditar.telefone,
+    },
+    address: enderecosTratados[0] || {
+      type: formEditar.tipo,
+      cep: formEditar.cep?.replace(/\D/g, ""),
+      address: formEditar.endereco,
+      number: formEditar.numero,
+      neighborhood: formEditar.bairro,
+      complement: formEditar.complemento || "",
+      locaticion: formEditar.localizacao || "",
+    },
+    contacts: contatosTratados,
+    addresses: enderecosTratados,
+  };
 
-          contact: contatosTratados[0] || {
-            name: formEditar.nome,
-            number: formEditar.telefone,
-          },
+  await userService.updateUser(cpf, body);
 
-          address: enderecosTratados[0] || {
-            type: formEditar.tipo,
-            cep: formEditar.cep?.replace(/\D/g, ""),
-            address: formEditar.endereco,
-            number: formEditar.numero,
-            neighborhood: formEditar.bairro,
-            complement: formEditar.complemento || "",
-            locaticion: formEditar.localizacao || "",
-          },
+  const resUser = await userService.showUser(cpf);
+  const userAtualizado = resUser.data;
 
-          contacts: contatosTratados,
-          addresses: enderecosTratados,
-        };
+  setDados({
+    nome: userAtualizado.name,
+    email: userAtualizado.email,
+    telefone: userAtualizado.contacts?.[0]?.number || "",
+    contatos: userAtualizado.contacts || [],
+    endereco: userAtualizado.addresses?.[0]?.address || "",
+    bairro: userAtualizado.addresses?.[0]?.neighborhood || "",
+    cep: userAtualizado.addresses?.[0]?.cep || "",
+    complemento: userAtualizado.addresses?.[0]?.complement || "",
+    localizacao: userAtualizado.addresses?.[0]?.locaticion || "",
+    tipo: userAtualizado.addresses?.[0]?.type || "",
+    numero: userAtualizado.addresses?.[0]?.number || "",
+    enderecos: userAtualizado.addresses || [],
+    nomePet: dados?.nomePet || "",
+    especiePet: dados?.especiePet || "",
+    racaPet: dados?.racaPet || "",
+    portePet: dados?.portePet || "",
+    pesoPet: dados?.pesoPet || "",
+    nascimentoPet: dados?.nascimentoPet || "",
+    sexoPet: dados?.sexoPet || "",
+  });
 
-        await userService.updateUser(cpf, body);
-
-        const contatosUsuario = user.contacts || [];
-        const enderecosUsuario = user.addresses || [];
-
-        setDados({
-          nome: user.name,
-          email: user.email,
-
-          telefone: contatosUsuario?.[0]?.number || "",
-          contatos: contatosUsuario,
-
-          endereco: enderecosUsuario?.[0]?.address || "",
-          bairro: enderecosUsuario?.[0]?.neighborhood || "",
-          cep: enderecosUsuario?.[0]?.cep || "",
-          complemento: enderecosUsuario?.[0]?.complement || "",
-          localizacao: enderecosUsuario?.[0]?.locaticion || "",
-          tipo: enderecosUsuario?.[0]?.type || "",
-          numero: enderecosUsuario?.[0]?.number || "",
-          enderecos: enderecosUsuario,
-
-          nomePet: "",
-          especiePet: "",
-          racaPet: "",
-          portePet: "",
-          pesoPet: "",
-          nascimentoPet: "",
-          sexoPet: "",
-        });
-
-        setModalEditar(false);
-        alert("Dados atualizados com sucesso!");
-        return;
-      }
+  setModalEditar(false);
+  alert("Dados atualizados com sucesso!");
+  return;
+}
 
       if (abaEditar === "pet") {
         if (!formEditar.nomePet?.trim()) {
@@ -648,15 +647,33 @@ export default function MinhaConta() {
     }
   }
 
-  const handleSavePassword = () => {
+  async function handleSavePassword() {
+  if (newPassword !== confirmPassword) {
+    alert("As senhas não são iguais");
+    return;
+  }
+
+  try {
+    const cpf = localStorage.getItem("userCpf");
+
+    await userService.updateUser(cpf, {
+      password: newPassword,
+    });
+
     alert("Senha alterada com sucesso!");
+
     setNewPassword("");
     setConfirmPassword("");
     setShowOld(false);
     setShowNew(false);
     setShowConfirm(false);
+
     setOpenModalSenha(false);
-  };
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.error || "Erro ao alterar senha.");
+  }
+}
 
   const validatePassword = (password) => {
     const minChar = password.length >= 8;

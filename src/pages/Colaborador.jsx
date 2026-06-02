@@ -160,8 +160,12 @@ const Colaborador = () => {
     return agendamentosVisiveis.filter((item) => item.status === status);
   }
 
-  function handleDragStart(item) {
+  function handleDragStart(event, item) {
     if (item.status !== ScheduleStatus.CONFIRMED) return;
+
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", String(item.id));
+
     setDraggedAppointment(item);
     setMensagem("");
   }
@@ -173,6 +177,7 @@ const Colaborador = () => {
 
   function handleDragOver(event) {
     event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
 
     if (draggedAppointment?.status === ScheduleStatus.CONFIRMED) {
       setDropAtivo(true);
@@ -294,9 +299,8 @@ const Colaborador = () => {
               return (
                 <article
                   key={statusKey}
-                  className={`colab-column ${statusInfo.className} ${
-                    isFinalizados && dropAtivo ? "drop-active" : ""
-                  }`}
+                  className={`colab-column ${statusInfo.className} ${isFinalizados && dropAtivo ? "drop-active" : ""
+                    }`}
                   onDragOver={isFinalizados ? handleDragOver : undefined}
                   onDragLeave={isFinalizados ? handleDragLeave : undefined}
                   onDrop={isFinalizados ? handleDrop : undefined}
@@ -322,13 +326,12 @@ const Colaborador = () => {
                       agendamentosPorStatus.map((item) => (
                         <div
                           key={item.id}
-                          className={`colab-appointment-card ${
-                            item.status === ScheduleStatus.CONFIRMED
+                          className={`colab-appointment-card ${item.status === ScheduleStatus.CONFIRMED
                               ? "draggable"
                               : ""
-                          }`}
+                            }`}
                           draggable={item.status === ScheduleStatus.CONFIRMED}
-                          onDragStart={() => handleDragStart(item)}
+                          onDragStart={(e) => handleDragStart(e, item)}
                           onDragEnd={handleDragEnd}
                         >
                           <div className="colab-card-top">
@@ -340,10 +343,7 @@ const Colaborador = () => {
                             </div>
 
                             {item.status === ScheduleStatus.CONFIRMED && (
-                              <GripVertical
-                                className="colab-drag-icon"
-                                size={22}
-                              />
+                              <GripVertical className="colab-drag-icon" size={22} />
                             )}
                           </div>
 
@@ -401,11 +401,10 @@ const Colaborador = () => {
             <div className="colab-modal-header">
               <div>
                 <span
-                  className={`colab-modal-status ${
-                    selectedAppointment.status === ScheduleStatus.FINISHED
+                  className={`colab-modal-status ${selectedAppointment.status === ScheduleStatus.FINISHED
                       ? "finished"
                       : "confirmed"
-                  }`}
+                    }`}
                 >
                   {statusMap[selectedAppointment.status]?.label || "STATUS"}
                 </span>
