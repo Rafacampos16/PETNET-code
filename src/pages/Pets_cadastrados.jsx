@@ -72,42 +72,42 @@ const Pets_cadastrados = () => {
     const isAdmin = localStorage.getItem("isAdmin") === "true";
 
     const carregar = async () => {
-      try {
-        let dados = [];
+  try {
+    let dados = [];
+    let allUsers = [];
 
-        // Carrega todos os usuários para mapear CPF -> Nome
-        const usersRes = await userService.listUsers();
-        const allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
-        setUsers(allUsers);
+    if (isAdmin) {
+      dados = await petService.listar();
 
-        if (isAdmin) {
-          dados = await petService.listar();
-        } else {
-          dados = await petService.listar_meus_pets();
-        }
+      const usersRes = await userService.listUsers();
+      allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
 
-        if (Array.isArray(dados) && dados.length > 0) {
-          const petsFormatados = dados.map((pet) => {
-            // Encontra o dono pelo CPF
-            const dono = allUsers.find(u => u.cpf === pet.user_cpf);
+      setUsers(allUsers);
+    } else {
+      dados = await petService.listar_meus_pets();
+    }
 
-            return {
-              id: pet.id,
-              name: pet.name,
-              species: pet.species,
-              breed: pet.breed,
-              size: traduzirPorte(pet.size),
-              weight: `${pet.weight} kg`,
-              birth_date: formatarData(pet.birth_date),
-              sex: pet.sex || "",
-              observations: pet.observations,
-              user_cpf: pet.user_cpf,
-              owner_name: dono?.name || "Não informado",
-              photo: pet.picture_blob || "",
-            };
-          });
+    if (Array.isArray(dados) && dados.length > 0) {
+      const petsFormatados = dados.map((pet) => {
+        const dono = allUsers.find((u) => u.cpf === pet.user_cpf);
 
-          setPets(petsFormatados);
+        return {
+          id: pet.id,
+          name: pet.name,
+          species: pet.species,
+          breed: pet.breed,
+          size: traduzirPorte(pet.size),
+          weight: `${pet.weight} kg`,
+          birth_date: formatarData(pet.birth_date),
+          sex: pet.sex || "",
+          observations: pet.observations,
+          user_cpf: pet.user_cpf,
+           owner_name: dono?.name || localStorage.getItem("userName") || "Não informado",
+          photo: pet.picture_blob || "",
+        };
+      });
+
+      setPets(petsFormatados);
         } else {
           setPets([]);
         }
