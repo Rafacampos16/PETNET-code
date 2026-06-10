@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: petnet-frontend-prod
+    container_name: netcao-frontend
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080" # ← Bloqueia acesso externo, só permite localhost/Traefik via rede docker
@@ -16,10 +16,10 @@ services:
       - .env.prod
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.petnet-frontend.rule=Host(`netcao.com.br`) || Host(`www.netcao.com.br`)"
-      - "traefik.http.routers.petnet-frontend.entrypoints=websecure"
-      - "traefik.http.routers.petnet-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.petnet-frontend.loadbalancer.server.port=8080" # ← Nginx agora escuta na 8080
+      - "traefik.http.routers.netcao-frontend.rule=Host(`netcao.com.br`) || Host(`www.netcao.com.br`)"
+      - "traefik.http.routers.netcao-frontend.entrypoints=websecure"
+      - "traefik.http.routers.netcao-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.netcao-frontend.loadbalancer.server.port=8080" # ← Nginx agora escuta na 8080
     networks:
       - internal
 
