@@ -1,23 +1,12 @@
 import axios from "axios";
- 
+
 const apiLogs = axios.create({
-  baseURL: "http://localhost:8080/",
-    headers: {
-  Authorization: "seu-token-estatico-aqui",
-},
+  baseURL: import.meta.env.VITE_API_LOGS_BASE_URL,
+  headers: {
+    Authorization: import.meta.env.VITE_API_LOGS_TOKEN,
+  },
 
 });
- 
-export default apiLogs;
- 
-// import axios from "axios";
-// const apiLogs = axios.create({
-//   baseURL: "/api-logs",
-//     headers: {
-//    Authorization: "seu-token-estatico-aqui",
- // },
 
-// });
-// export default apiLogs;
-// alterar quando for para produção, para o endereço do backend de logs, e configurar o proxy no package.json
- 
+export default apiLogs;
+
