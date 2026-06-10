@@ -1,10 +1,10 @@
 import axios from "axios";
  
 const apiLogs = axios.create({
-  baseURL: "http://localhost:8080/",
-    headers: {
-  Authorization: "seu-token-estatico-aqui",
-},
+  baseURL: import.meta.env.API_LOGS_BASE_URL,
+  headers: {
+    Authorization: import.meta.env.API_LOGS_TOKEN,
+  },
 
 });
  
