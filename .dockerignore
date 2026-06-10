@@ -3,6 +3,7 @@ dist
 .git
 .env
 .env.*
+!.env.prod
 .vscode
 Dockerfile*
 docker-compose*
