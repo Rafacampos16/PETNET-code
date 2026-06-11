@@ -183,21 +183,15 @@ function Pets() {
       novosErros.name = true;
       faltando.push("Nome");
     }
+
     if (!form.species.trim()) {
       novosErros.species = true;
       faltando.push("Espécie");
     }
+
     if (!form.size.trim()) {
       novosErros.size = true;
       faltando.push("Porte");
-    }
-    if (!form.weight) {
-      novosErros.weight = true;
-      faltando.push("Peso");
-    }
-    if (!form.sex.trim()) {
-      novosErros.sex = true;
-      faltando.push("Sexo");
     }
 
     return { novosErros, faltando };
@@ -242,11 +236,11 @@ function Pets() {
         species: speciesMap[form.species],
         breed: form.breed.trim() || "SRD",
         size: sizeMap[form.size],
-        weight: Number(form.weight),
+        weight: form.weight ? Number(form.weight) : null,
         birth_date: form.birth_date
           ? new Date(form.birth_date).toISOString()
           : null,
-        sex: sexMap[form.sex],
+        sex: form.sex ? sexMap[form.sex] : null,
         user_cpf: cpfResponsavel,
         observations: form.observations,
       };
@@ -496,7 +490,7 @@ function Pets() {
                       </div>
 
                       <div>
-                        <label>PESO</label>
+                        <label>PESO <span className="campo-opcional">(opcional)</span></label>
                         <input
                           type="number"
                           name="weight"
@@ -505,7 +499,6 @@ function Pets() {
                           min="0"
                           step="0.5"
                           value={form.weight}
-                          className={erros.weight ? "input-erro" : ""}
                         />
                       </div>
                     </div>
@@ -526,12 +519,11 @@ function Pets() {
                       </div>
 
                       <div>
-                        <label>SEXO</label>
+                        <label>SEXO <span className="campo-opcional">(opcional)</span></label>
                         <select
                           name="sex"
                           onChange={handleChange}
                           value={form.sex}
-                          className={erros.sex ? "input-erro" : ""}
                         >
                           <option value="">Selecione</option>
                           <option value="FEMEA">Fêmea</option>
