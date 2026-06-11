@@ -9,17 +9,17 @@ import react from '@vitejs/plugin-react'
 
 
 
-//  export default defineConfig({
-//    plugins: [react()],
-//    server: {
-//      proxy: {
-//        '/api': {
-//          target: 'https://api.netcao.com.br',
-//         changeOrigin: true,
-//          secure: false,
-//       }
-//      }
-//   }
-// })
+ //export default defineConfig({
+  // plugins: [react()],
+  // server: {
+   //  proxy: {
+    //   '/api': {
+    //     target: 'https://api.netcao.com.br',
+    //    changeOrigin: true,
+   //      secure: false,
+   //   }
+ //    }
+//  }
+//})
 
 //alterar quando for para produção, para o endereço do backend, e retirar o proxy do package.json

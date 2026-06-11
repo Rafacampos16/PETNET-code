@@ -43,6 +43,7 @@ export default function App() {
       localStorage.setItem("userCpf", user.cpf);
       localStorage.setItem("userName", user.name);
       localStorage.setItem("userType", user.type);
+      localStorage.setItem("loginTime", Date.now().toString());
 
       if (user.type === "Gerente") {
         localStorage.setItem("isAdmin", "true");

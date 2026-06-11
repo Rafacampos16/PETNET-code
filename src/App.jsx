@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -25,107 +31,165 @@ import Logs from "./pages/Logs";
 import LogsMock from "./pages/LogsMock";
 import MeusAgendamentos from "./pages/MeusAgendamentos";
 
-const App = () => (
-  <Router>
-    <GlobalStyles />
-    <ScrollToTop />
-    <Header />
+const App = () => {
+  return (
+    <Router>
+      <GlobalStyles />
+      <ScrollToTop />
+      <Header />
 
-    <main style={{ marginTop: "4.5rem" }}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/servicos" element={<Servicos />} />
-        <Route path="/pets" element={<Pets />} />
-        <Route path="/conta" element={<Conta />} />
-        <Route path="/criarconta" element={<Criarconta />} />
-        <Route path="/minhaconta" element={<Minhaconta />} />
-        <Route path="/meus-pets" element={<PetsCadastrados />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/admin/usuarios/novo" element={<NovoUsuario />} />
-        <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
-        <Route path="/logsmock" element={<LogsMock />} />
+      <main style={{ marginTop: "4.5rem" }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/servicos" element={<Servicos />} />
+          <Route path="/pets" element={<Pets />} />
+          <Route path="/conta" element={<Conta />} />
+          <Route path="/criarconta" element={<Criarconta />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <Administracao />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/minhaconta"
+            element={
+              <ProtectedRoute>
+                <Minhaconta />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/agendamentos"
-          element={
-            <ProtectedRoute>
-              <Agendamentos />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/meus-pets"
+            element={
+              <ProtectedRoute>
+                <PetsCadastrados />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/clientes"
-          element={
-            <ProtectedRoute>
-              <Clientes />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/meus-agendamentos"
+            element={
+              <ProtectedRoute>
+                <MeusAgendamentos />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/pets"
-          element={
-            <ProtectedRoute>
-              <PetsCadastrados />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Administracao />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/status"
-          element={
-            <ProtectedRoute>
-              <Status />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin/agendamentos"
+            element={
+              <ProtectedRoute>
+                <Agendamentos />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/colaborador"
-          element={
-            <ProtectedRoute>
-              <Colaborador />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin/clientes"
+            element={
+              <ProtectedRoute>
+                <Clientes />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/servicos"
-          element={
-            <ProtectedRoute>
-              <AdminServicos />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin/pets"
+            element={
+              <ProtectedRoute>
+                <PetsCadastrados />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/logs"
-          element={
-            <ProtectedRoute allowedRoles={["dev"]}>
-              <Logs />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/colaborador" element={<Colaborador />} />
+          <Route
+            path="/admin/status"
+            element={
+              <ProtectedRoute>
+                <Status />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/colaborador/agenda" element={<Colaborador />} />
-      </Routes>
-    </main>
+          <Route
+            path="/admin/colaborador"
+            element={
+              <ProtectedRoute>
+                <Colaborador />
+              </ProtectedRoute>
+            }
+          />
 
-    <ScrollToTopButton />
+          <Route
+            path="/admin/servicos"
+            element={
+              <ProtectedRoute>
+                <AdminServicos />
+              </ProtectedRoute>
+            }
+          />
 
-    <Footer />
-  </Router>
-);
+          <Route
+            path="/admin/usuarios/novo"
+            element={
+              <ProtectedRoute>
+                <NovoUsuario />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/logs"
+            element={
+              <ProtectedRoute>
+                <Logs />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/logsmock"
+            element={
+              <ProtectedRoute>
+                <LogsMock />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/colaborador"
+            element={
+              <ProtectedRoute>
+                <Colaborador />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/colaborador/agenda"
+            element={
+              <ProtectedRoute>
+                <Colaborador />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      <ScrollToTopButton />
+      <Footer />
+    </Router>
+  );
+};
 
 export default App;
