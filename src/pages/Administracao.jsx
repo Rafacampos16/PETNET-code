@@ -5,6 +5,18 @@ import Chart from "react-apexcharts";
 import "../styles/administracao.css";
 import IconLogoutHover from "../assets/icons/logout-h.png";
 import dashboardService from "../services/dashboardService";
+import {
+  CalendarX,
+  ClipboardList,
+  Clock3,
+  Sparkles,
+  TrendingUp,
+  Scissors,
+  UsersRound,
+  PawPrint,
+  CalendarDays,
+  Bath,
+} from "lucide-react";
 
 const chartColors = ["#3370EB", "#F2A900", "#20B68A", "#6D65F6"];
 
@@ -54,6 +66,10 @@ function getStatusClass(status) {
 function parseValor(valor) {
   const num = Number(valor);
   return Number.isFinite(num) ? num : 0;
+}
+
+function temDadosNoGrafico(lista = []) {
+  return Array.isArray(lista) && lista.some((item) => parseValor(item) > 0);
 }
 
 function mergePeriodo(periodo = {}) {
@@ -151,6 +167,21 @@ export default function Administracao() {
 
     return { labels, values };
   }, [dados.statusPorColaborador]);
+
+  const temFluxoData = useMemo(
+    () => temDadosNoGrafico(dados.fluxo),
+    [dados.fluxo]
+  );
+
+  const temServicosData = useMemo(
+    () => temDadosNoGrafico(dados.servicos),
+    [dados.servicos]
+  );
+
+  const temColaboradoresData = useMemo(
+    () => temDadosNoGrafico(colaboradoresData.values),
+    [colaboradoresData.values]
+  );
 
   const fluxoOptions = useMemo(
     () => ({
@@ -309,9 +340,46 @@ export default function Administracao() {
     return (
       <>
         <Header />
+
         <main className="admin-page">
-          <section className="admin-shell">
-            <div style={{ padding: 24 }}>Carregando dashboard...</div>
+          <section className="admin-loading-shell">
+            <div className="admin-loading-card">
+              <div className="admin-loading-brand">
+                <span>PETNET</span>
+                <strong>Administração</strong>
+              </div>
+
+              <div className="admin-loading-pet-animation" aria-hidden="true">
+                <div className="admin-loading-paw-main">
+                  <PawPrint size={36} strokeWidth={2.5} />
+                </div>
+
+                <div className="admin-loading-orbit admin-loading-orbit-calendar">
+                  <CalendarDays size={18} strokeWidth={2.5} />
+                </div>
+
+                <div className="admin-loading-orbit admin-loading-orbit-bath">
+                  <Bath size={18} strokeWidth={2.5} />
+                </div>
+
+                <div className="admin-loading-orbit admin-loading-orbit-scissors">
+                  <Scissors size={18} strokeWidth={2.5} />
+                </div>
+              </div>
+
+              <h1>Carregando dashboard</h1>
+
+              <p>
+                Estamos buscando os dados mais recentes de agendamentos, serviços
+                e atividades do pet shop.
+              </p>
+
+              <div className="admin-loading-skeleton">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
           </section>
         </main>
       </>
@@ -344,25 +412,20 @@ export default function Administracao() {
                 ))}
               </nav>
 
-              <div className="admin-sidebar-card">
+              <div className="admin-sidebar-card admin-sidebar-next-card">
                 <span>Próximo atendimento</span>
-                <strong>09:00</strong>
-                <small>Thor • Banho</small>
-              </div>
 
-              <div className="admin-sidebar-mini-grid">
-                <div>
-                  <span>Hoje</span>
-                  <strong>{agendaResumo.atendimentos}</strong>
-                  <small>atendimentos</small>
+                <div className="admin-next-time">
+                  <strong>09:00</strong>
                 </div>
 
-                <div>
-                  <span>Cancelados</span>
-                  <strong>{agendaResumo.cancelados}</strong>
-                  <small>na agenda</small>
+                <div className="admin-next-details">
+                  <small>Thor</small>
+                  <small>Banho</small>
                 </div>
               </div>
+
+
             </aside>
           </div>
 
@@ -431,12 +494,29 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-chart-center admin-chart-flow">
-                  <Chart
-                    options={fluxoOptions}
-                    series={[{ name: "Agendamentos", data: dados.fluxo || [] }]}
-                    type="area"
-                    height={390}
-                  />
+                  {temFluxoData ? (
+                    <Chart
+                      options={fluxoOptions}
+                      series={[{ name: "Agendamentos", data: dados.fluxo || [] }]}
+                      type="area"
+                      height={390}
+                    />
+                  ) : (
+                    <div className="admin-empty-chart admin-empty-chart-flow">
+                      <div className="admin-empty-icon admin-empty-icon-blue">
+                        <TrendingUp size={30} strokeWidth={2.4} />
+                      </div>
+
+                      <span className="admin-empty-kicker">Fluxo ainda vazio</span>
+
+                      <strong>Nenhum agendamento no período</strong>
+
+                      <p>
+                        Assim que novos agendamentos forem registrados, a evolução dos horários
+                        aparecerá neste gráfico.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -504,8 +584,26 @@ export default function Administracao() {
                       </tbody>
                     </table>
                   ) : (
-                    <div style={{ padding: 20 }}>
-                      Nenhum agendamento carregado para este período.
+                    <div className="admin-empty-state admin-empty-state-agenda">
+                      <div className="admin-empty-state-icon">
+                        <CalendarX size={30} strokeWidth={2.4} />
+                      </div>
+
+                      <strong>Nenhum agendamento para exibir</strong>
+
+                      <p>
+                        Ainda não há horários registrados neste período. Quando novos agendamentos
+                        forem criados, eles aparecerão nesta tabela.
+                      </p>
+
+                      <button
+                        type="button"
+                        className="admin-empty-state-button"
+                        onClick={() => navigate("/admin/agendamentos")}
+                      >
+                        <Clock3 size={17} strokeWidth={2.5} />
+                        Abrir agenda
+                      </button>
                     </div>
                   )}
                 </div>
@@ -517,22 +615,41 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-donut-wrapper">
-                  <Chart
-                    options={servicosOptions}
-                    series={dados.servicos || []}
-                    type="donut"
-                    height={270}
-                  />
+                  {temServicosData ? (
+                    <>
+                      <Chart
+                        options={servicosOptions}
+                        series={dados.servicos || []}
+                        type="donut"
+                        height={270}
+                      />
 
-                  <div className="admin-donut-legend">
-                    {(dados.servicosLabels || []).map((label, index) => (
-                      <div key={label}>
-                        <span className={`dot dot-${index}`} />
-                        <small>{label}</small>
-                        <strong>{dados.servicos[index]}</strong>
+                      <div className="admin-donut-legend">
+                        {(dados.servicosLabels || []).map((label, index) => (
+                          <div key={label}>
+                            <span className={`dot dot-${index}`} />
+                            <small>{label}</small>
+                            <strong>{dados.servicos[index]}</strong>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  ) : (
+                    <div className="admin-empty-chart admin-empty-chart-donut">
+                      <div className="admin-empty-icon admin-empty-icon-yellow">
+                        <Scissors size={30} strokeWidth={2.4} />
+                      </div>
+
+                      <span className="admin-empty-kicker">Serviços em espera</span>
+
+                      <strong>Nenhum serviço buscado ainda</strong>
+
+                      <p>
+                        Quando houver agendamentos, os serviços mais procurados serão organizados
+                        neste painel.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -542,12 +659,29 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-chart-center">
-                  <Chart
-                    options={colaboradoresOptions}
-                    series={[{ name: "Pets", data: colaboradoresData.values }]}
-                    type="bar"
-                    height={320}
-                  />
+                  {temColaboradoresData ? (
+                    <Chart
+                      options={colaboradoresOptions}
+                      series={[{ name: "Pets", data: colaboradoresData.values }]}
+                      type="bar"
+                      height={320}
+                    />
+                  ) : (
+                    <div className="admin-empty-chart admin-empty-chart-collaborators">
+                      <div className="admin-empty-icon admin-empty-icon-green">
+                        <UsersRound size={30} strokeWidth={2.4} />
+                      </div>
+
+                      <span className="admin-empty-kicker">Equipe sem registros</span>
+
+                      <strong>Nenhum atendimento por colaborador</strong>
+
+                      <p>
+                        Quando os atendimentos forem concluídos, a distribuição por colaborador
+                        aparecerá aqui.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -570,8 +704,22 @@ export default function Administracao() {
                       </div>
                     ))
                   ) : (
-                    <div style={{ padding: 20 }}>
-                      Nenhuma atividade recente disponível.
+                    <div className="admin-empty-state admin-empty-state-activity">
+                      <div className="admin-empty-state-icon">
+                        <ClipboardList size={30} strokeWidth={2.4} />
+                      </div>
+
+                      <strong>Nenhuma atividade recente</strong>
+
+                      <p>
+                        As últimas movimentações do sistema aparecerão aqui assim que houver
+                        confirmações, finalizações, entregas ou cancelamentos.
+                      </p>
+
+                      <span className="admin-empty-state-chip">
+                        <Sparkles size={15} strokeWidth={2.5} />
+                        Aguardando movimentações
+                      </span>
                     </div>
                   )}
                 </div>
