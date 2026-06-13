@@ -13,11 +13,28 @@
 
 .agendamento-page {
   min-height: 100vh;
-  padding: 2rem;
+
+  /* 72px da sidebar fechada + espaço de segurança */
+  padding: 2rem 2rem 2rem 6.5rem;
+
   background:
-    radial-gradient(circle at top left, rgba(255, 217, 102, 0.16), transparent 24%),
-    radial-gradient(circle at right top, rgba(79, 140, 255, 0.14), transparent 26%),
-    linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+    radial-gradient(
+      circle at top left,
+      rgba(255, 217, 102, 0.16),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at right top,
+      rgba(79, 140, 255, 0.14),
+      transparent 26%
+    ),
+    linear-gradient(
+      180deg,
+      #f8fbff 0%,
+      #eef4ff 100%
+    );
+
+  transition: padding-left 0.25s ease;
 }
 
 .agendamento-page * {
@@ -788,6 +805,10 @@
 /* AJUSTE TABLET - AGENDAMENTOS */
 
 @media (max-width: 1180px) {
+  .agendamento-page {
+    padding-left: 1rem;
+  }
+  
   .agendamento-grid {
     grid-template-columns: 1fr;
   }

@@ -3,30 +3,56 @@
   top: 0;
   left: 0;
   width: 100%;
+  max-width: 100vw;
   z-index: 50;
   height: 5rem;
   background-color: var(--petnet-blue);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow-x: visibile;
 }
 
 .header .container {
+  width: 100%;
   height: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  overflow: visible;
 }
 
 .header-content {
   position: relative;
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   padding: 0 1.2rem;
+  box-sizing: border-box;
+  overflow-x: visible;
 }
+
+.header {
+  z-index: 1000;
+}
+
+.navbar-account-wrapper {
+  z-index: 1100;
+}
+
+.navbar-account-dropdown {
+  z-index: 1200;
+}
+
+.admin-header-content {
+  justify-content: space-between;
+}
+
+/* TÍTULO CENTRAL */
 
 .logo-center {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   color: #ffffff;
   font-size: 1.45rem;
   font-weight: 900;
@@ -36,18 +62,29 @@
   white-space: nowrap;
 }
 
+.logo-center.admin-logo {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100vw - 450px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* MENU DESKTOP PADRÃO */
+
 .header-right {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: 0.85rem;
   margin-left: auto;
   z-index: 30;
 }
 
-.header-right.admin-nav {
-  margin-left: auto;
-  gap: 0.72rem;
+.header-right.collaborator-nav {
+  gap: 1rem;
 }
 
 .menu-item {
@@ -55,7 +92,9 @@
   align-items: center;
   gap: 0.45rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
   white-space: nowrap;
 }
 
@@ -78,7 +117,84 @@
   transition: 0.3s ease;
 }
 
-/* HAMBURGUER */
+/* CONTA COM NOME */
+
+.navbar-account {
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+  min-height: 46px;
+  max-width: 230px;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  z-index: 35;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.navbar-account:hover {
+  background: rgba(255, 255, 255, 0.19);
+  transform: translateY(calc(-50% - 1px));
+}
+
+.navbar-account-inline {
+  position: relative;
+  top: auto;
+  right: auto;
+  transform: none;
+  min-height: 44px;
+  margin-left: 0.15rem;
+}
+
+.navbar-account-inline:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-account-text {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.navbar-account-text small {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.navbar-account-text strong {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.navbar-account-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.navbar-account:hover .navbar-account-arrow {
+  transform: translateY(2px);
+}
+
+/* HAMBÚRGUER */
 
 .hamburger {
   display: none;
@@ -123,7 +239,9 @@
   right: -100%;
   width: min(82vw, 280px);
   height: calc(100vh - 5rem);
+  max-width: 100vw;
   padding: 1.2rem;
+  box-sizing: border-box;
   background: linear-gradient(180deg, #3370eb 0%, #255fd4 100%);
   box-shadow: -10px 0 28px rgba(0, 0, 0, 0.22);
   display: flex;
@@ -154,7 +272,59 @@
   color: var(--petnet-yellow);
 }
 
-/* TABLET: vira menu mais cedo */
+/* NOTIFICAÇÕES */
+
+.navbar-notification-btn {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 35;
+}
+
+.navbar-notification-btn:hover {
+  transform: translateY(calc(-50% - 1px));
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.navbar-notification-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  display: block;
+}
+
+.navbar-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #f9ee7c;
+  color: #17386f;
+  border: 2px solid var(--petnet-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* TABLET */
+
 @media (max-width: 1180px) {
   .header-right {
     display: none;
@@ -165,14 +335,35 @@
   }
 
   .logo-center {
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 1.35rem;
+  }
+
+  .logo-center.admin-logo {
+    max-width: calc(100vw - 420px);
+    font-size: 1.28rem;
+  }
+
+  /*
+    Na administração o menu lateral já existe.
+    Por isso não exibimos o hambúrguer da navbar.
+  */
+  .admin-header-content .hamburger {
+    display: none;
+  }
+
+  .navbar-account {
+    right: 1rem;
+    max-width: 190px;
+  }
+
+  .navbar-account-text strong {
+    max-width: 90px;
   }
 }
 
 /* CELULAR */
-@media (max-width: 600px) {
+
+@media (max-width: 700px) {
   .header {
     height: 4.5rem;
   }
@@ -185,6 +376,12 @@
     font-size: 1.15rem;
   }
 
+  .logo-center.admin-logo {
+    max-width: calc(100vw - 235px);
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
   .hamburger {
     right: 1rem;
   }
@@ -195,7 +392,7 @@
 
   .mobile-menu {
     top: 4.5rem;
-    width: min(86vw, 260px);
+    width: min(82vw, 250px);
     height: calc(100vh - 4.5rem);
     padding: 1rem;
   }
@@ -203,42 +400,6 @@
   .mobile-menu span {
     font-size: 0.96rem;
     padding: 0.9rem;
-  }
-}
-
-/* CORREÇÃO OVERFLOW MOBILE - HEADER/NAVBAR */
-
-.header {
-  max-width: 100vw;
-  overflow-x: clip;
-}
-
-.header-content {
-  max-width: 100%;
-  overflow-x: clip;
-}
-
-.mobile-menu {
-  max-width: 100vw;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  .mobile-menu {
-    width: min(82vw, 250px);
-    right: -100%;
-  }
-
-  .mobile-menu.show {
-    right: 0;
-  }
-
-  .logo-center {
-    max-width: calc(100vw - 5.5rem);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
   }
 
   .navbar-notification-btn {
@@ -258,108 +419,55 @@
     height: 19px;
     font-size: 0.64rem;
   }
+
+  .navbar-account {
+    right: 0.65rem;
+    min-height: 40px;
+    max-width: 135px;
+    padding: 0.4rem 0.55rem;
+    border-radius: 13px;
+    gap: 0.35rem;
+  }
+
+  .navbar-account svg:first-child {
+    width: 19px;
+    height: 19px;
+  }
+
+  .navbar-account-text {
+    display: block;
+    text-align: left;
+  }
+
+  .navbar-account-text small {
+    display: none;
+  }
+
+  .navbar-account-text strong {
+    display: block;
+    max-width: 64px;
+    font-size: 0.8rem;
+  }
+
+  .navbar-account-arrow {
+    width: 16px;
+    height: 16px;
+  }
 }
 
-/* NOTIFICAÇÕES NA NAVBAR */
+@media (max-width: 430px) {
+  .logo-center.admin-logo {
+    max-width: 115px;
+    font-size: 0.86rem;
+  }
 
-.navbar-notification-btn {
-  position: absolute;
-  left: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s ease;
-  z-index: 35;
-}
+  .navbar-account {
+    max-width: 112px;
+  }
 
-.navbar-notification-btn:hover {
-  transform: translateY(calc(-50% - 1px));
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.navbar-notification-icon {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
-  display: block;
-}
-
-.navbar-notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  min-width: 21px;
-  height: 21px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #f9ee7c;
-  color: #17386f;
-  border: 2px solid var(--petnet-blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-/* NOTIFICAÇÕES NA NAVBAR */
-
-.navbar-notification-btn {
-  position: absolute;
-  left: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s ease;
-  z-index: 35;
-}
-
-.navbar-notification-btn:hover {
-  transform: translateY(calc(-50% - 1px));
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.navbar-notification-icon {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
-  display: block;
-}
-
-.navbar-notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  min-width: 21px;
-  height: 21px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #f9ee7c;
-  color: #17386f;
-  border: 2px solid var(--petnet-blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 900;
-  line-height: 1;
+  .navbar-account-text strong {
+    max-width: 48px;
+  }
 }
 
 /* MODAL DE NOTIFICAÇÕES NA NAVBAR */
@@ -514,24 +622,6 @@
 }
 
 @media (max-width: 600px) {
-  .navbar-notification-btn {
-    left: 1rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 13px;
-  }
-
-  .navbar-notification-icon {
-    width: 23px;
-    height: 23px;
-  }
-
-  .navbar-notification-badge {
-    min-width: 19px;
-    height: 19px;
-    font-size: 0.64rem;
-  }
-
   .navbar-notification-overlay {
     padding: 5.3rem 0.8rem 0.8rem;
   }
@@ -540,5 +630,505 @@
     width: calc(100vw - 1.6rem);
     max-height: calc(100vh - 6rem);
     border-radius: 1.15rem;
+  }
+}
+
+.navbar-login-text {
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.navbar-account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 60;
+}
+
+.navbar-account-wrapper-admin {
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+}
+
+.navbar-account-wrapper-admin .navbar-account {
+  position: relative;
+  top: auto;
+  right: auto;
+  transform: none;
+}
+
+.navbar-account-wrapper-admin .navbar-account:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-account-arrow {
+  transition: transform 0.22s ease;
+}
+
+.navbar-account-arrow.open {
+  transform: rotate(180deg);
+}
+
+.navbar-account-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 205px;
+  padding: 8px;
+  border: 1px solid #dce7ff;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.2);
+  animation: accountDropdownFade 0.18s ease;
+  z-index: 500;
+}
+
+.navbar-account-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 22px;
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border-top: 1px solid #dce7ff;
+  border-left: 1px solid #dce7ff;
+  transform: rotate(45deg);
+}
+
+.navbar-account-dropdown button {
+  position: relative;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  color: #17386f;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 1;
+}
+
+.navbar-account-dropdown button:hover {
+  background: #eef4ff;
+  color: #3370eb;
+}
+
+.navbar-account-dropdown-divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: #e5ecff;
+}
+
+.navbar-account-dropdown .navbar-account-logout {
+  color: #dc2626;
+}
+
+.navbar-account-dropdown .navbar-account-logout:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+@keyframes accountDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .navbar-account-wrapper-admin {
+    right: 0.65rem;
+  }
+
+  .navbar-account-dropdown {
+    width: 185px;
+    right: 0;
+  }
+}
+
+.navbar-account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1100;
+}
+
+.navbar-account-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 205px;
+  padding: 8px;
+  border: 1px solid #dce7ff;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.2);
+  z-index: 1200;
+}
+
+/* CONTA DO ADMIN SEMPRE À DIREITA */
+
+.navbar-account-wrapper-admin {
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  left: auto;
+  transform: translateY(-50%);
+  z-index: 1100;
+}
+
+.navbar-account-wrapper-admin .navbar-account {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  transform: none;
+  margin: 0;
+}
+
+.navbar-account-wrapper-admin .navbar-account:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-account-wrapper-admin .navbar-account-dropdown {
+  top: calc(100% + 12px);
+  right: 0;
+  left: auto;
+}
+
+.navbar-account {
+  min-height: 46px;
+  max-width: 230px;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (max-width: 700px) {
+  .navbar-account-wrapper-admin {
+    right: 0.65rem;
+  }
+}
+
+/* =====================================================
+   CORREÇÃO FINAL DA NAVBAR E MENU MOBILE
+===================================================== */
+
+.header {
+  overflow: visible;
+  z-index: 1000;
+}
+
+.header .container,
+.header-content {
+  overflow: visible;
+}
+
+.hamburger {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.mobile-menu-backdrop {
+  display: none;
+}
+
+/* MENU LATERAL MOBILE */
+
+.mobile-menu {
+  position: fixed;
+  top: 5rem;
+  right: -100%;
+  width: min(82vw, 300px);
+  height: calc(100dvh - 5rem);
+  padding: 18px;
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  background: linear-gradient(
+    180deg,
+    #3370eb 0%,
+    #2862d5 100%
+  );
+
+  box-shadow: -14px 0 35px rgba(15, 23, 42, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+
+  transition: right 0.28s ease;
+  z-index: 1200;
+}
+
+.mobile-menu.show {
+  right: 0;
+}
+
+.mobile-menu-header {
+  padding: 8px 12px 14px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-menu button {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.mobile-menu button:hover,
+.mobile-menu button.active {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--petnet-yellow);
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  margin: 10px 5px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-menu .mobile-menu-logout {
+  color: #fff5f5;
+}
+
+.mobile-menu .mobile-menu-logout:hover {
+  background: rgba(255, 115, 115, 0.18);
+  color: #ffffff;
+}
+
+.mobile-menu-notification {
+  justify-content: space-between !important;
+}
+
+.mobile-menu-notification span {
+  width: auto;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--petnet-yellow);
+  color: #17386f;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+/* CONTA */
+
+.navbar-account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1100;
+}
+
+.navbar-account-wrapper-admin {
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  left: auto;
+  transform: translateY(-50%);
+}
+
+.navbar-account-wrapper-admin .navbar-account {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  transform: none;
+}
+
+.navbar-account-wrapper-admin .navbar-account:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-account-dropdown {
+  z-index: 1300;
+}
+
+/* TABLET E CELULAR */
+
+@media (max-width: 1180px) {
+  .header-right {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  /*
+    Na área administrativa, o hambúrguer fica à esquerda.
+    Nas páginas públicas, ele continua à direita.
+  */
+  .admin-header-content .hamburger {
+    display: flex;
+    left: 1.2rem;
+    right: auto;
+  }
+
+  /*
+    No tablet administrativo, o sino sai da esquerda para
+    não disputar espaço com o hambúrguer.
+    Ele continua disponível dentro do menu.
+  */
+  .admin-header-content .navbar-notification-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .header {
+    height: 4.5rem;
+  }
+
+  .header-content {
+    padding: 0 0.8rem;
+  }
+
+  .logo-center {
+    font-size: 1.1rem;
+  }
+
+  .logo-center.admin-logo {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: calc(100vw - 125px);
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hamburger {
+    right: 1rem;
+  }
+
+  .admin-header-content .hamburger {
+    left: 0.85rem;
+    right: auto;
+  }
+
+  .bar {
+    width: 25px;
+  }
+
+  .navbar-notification-btn {
+    left: 0.8rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  /* CONTA DO ADMIN VIRA APENAS ÍCONE */
+
+  .navbar-account-wrapper-admin {
+    right: 0.8rem;
+  }
+
+  .navbar-account-wrapper-admin .navbar-account {
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    height: 42px;
+    min-height: 42px;
+    padding: 0;
+    border-radius: 13px;
+    justify-content: center;
+  }
+
+  .navbar-account-wrapper-admin .navbar-account-text,
+  .navbar-account-wrapper-admin .navbar-account-arrow {
+    display: none;
+  }
+
+  .navbar-account-wrapper-admin .navbar-account svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .navbar-account-wrapper-admin .navbar-account-dropdown {
+    right: 0;
+    width: 190px;
+  }
+
+  .mobile-menu {
+    top: 4.5rem;
+    height: calc(100dvh - 4.5rem);
+    width: min(84vw, 290px);
+  }
+
+  .mobile-menu-backdrop {
+    position: fixed;
+    inset: 4.5rem 0 0;
+    display: block;
+    border: none;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(2px);
+    z-index: 1150;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo-center.admin-logo {
+    max-width: calc(100vw - 118px);
+    font-size: 0.85rem;
+  }
+
+  .mobile-menu {
+    width: 82vw;
+    padding: 15px;
   }
 }

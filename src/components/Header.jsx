@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ChevronDown,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 
 import PataIcon from "../assets/icons/pata.png";
+import PataIconHover from "../assets/icons/pata-h.png";
+
 import PetsIcon from "../assets/icons/pets.png";
-import ContaIcon from "../assets/icons/conta.png";
+import PetsIconHover from "../assets/icons/pets-h.png";
 
 import HomeIcon from "../assets/icons/home.png";
 import HomeIconHover from "../assets/icons/home-h.png";
-import PetsIconHover from "../assets/icons/pets-h.png";
-import PataIconHover from "../assets/icons/pata-h.png";
-import ContaIconHover from "../assets/icons/conta-h.png";
+
+import AdminIcon from "../assets/icons/admin.png";
+import AdminIconHover from "../assets/icons/admin-hover.png";
 
 import AgendamentoIcon from "../assets/icons/agendamento.png";
 import AgendamentoIconHover from "../assets/icons/agendamento-h.png";
@@ -19,9 +26,6 @@ import ClienteIconHover from "../assets/icons/clientes-h.png";
 
 import PetsAdmIcon from "../assets/icons/petsadm.png";
 import PetsAdmIconHover from "../assets/icons/petsadm-h.png";
-
-import AdminIcon from "../assets/icons/admin.png";
-import AdminIconHover from "../assets/icons/admin-hover.png";
 
 import ColaboradorIcon from "../assets/icons/status.png";
 import ColaboradorIconHover from "../assets/icons/status-h.png";
@@ -52,39 +56,134 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isAdminPage = location.pathname.startsWith("/admin");
-  const isColaboradorPage = location.pathname.startsWith("/colaborador");
+  const contaDropdownRef = useRef(null);
 
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
-  const isUser = localStorage.getItem("isUser") === "true";
-  const isColaborador = localStorage.getItem("isColaborador") === "true";
-  const isDev = localStorage.getItem("isDev") === "true";
+  const isAdmin =
+    localStorage.getItem("isAdmin") === "true";
 
-  const [petsHover, setPetsHover] = useState(false);
-  const [pataHover, setPataHover] = useState(false);
-  const [contaHover, setContaHover] = useState(false);
-  const [homeHover, setHomeHover] = useState(false);
-  const [agendaClienteHover, setAgendaClienteHover] = useState(false);
+  const isUser =
+    localStorage.getItem("isUser") === "true";
 
-  const [admPetsHover, setAdmPetsHover] = useState(false);
-  const [admClientsHover, setAdmClientsHover] = useState(false);
-  const [admAgendHover, setAdmAgendHover] = useState(false);
-  const [adminHover, setAdminHover] = useState(false);
-  const [admServicosHover, setAdmServicosHover] = useState(false);
-  const [admColaboradorHover, setAdmColaboradorHover] = useState(false);
+  const isColaborador =
+    localStorage.getItem("isColaborador") === "true";
 
-  const [colabAgendaHover, setColabAgendaHover] = useState(false);
-  const [colabHomeHover, setColabHomeHover] = useState(false);
-  const [colabContaHover, setColabContaHover] = useState(false);
+  const isDev =
+    localStorage.getItem("isDev") === "true";
 
-  const [logHover, setLogHover] = useState(false);
+  const isLogged =
+    isAdmin || isUser || isColaborador || isDev;
+
+  /*
+    O header administrativo só aparece dentro das rotas
+    administrativas.
+
+    Ao entrar na Home, o título volta a ser PETNET e o menu
+    administrativo não fica misturado com o menu público.
+  */
+  const isAdminPage =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/logs") ||
+    ((isAdmin || isDev) &&
+      location.pathname.startsWith("/minhaconta"));
+
+  const isColaboradorPage =
+    location.pathname.startsWith("/colaborador") ||
+    (isColaborador &&
+      location.pathname.startsWith("/minhaconta"));
+
+  const [hoveredItem, setHoveredItem] = useState("");
+
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [contaDropdownOpen, setContaDropdownOpen] =
+    useState(false);
+
   const [sinoHover, setSinoHover] = useState(false);
-  const [modalNotificacoes, setModalNotificacoes] = useState(false);
+
+  const [modalNotificacoes, setModalNotificacoes] =
+    useState(false);
+
   const [notificacoes, setNotificacoes] = useState([]);
 
-  const isLogged = isAdmin || isUser || isColaborador || isDev;
+  function obterNomeUsuario() {
+    const nomesDiretos = [
+      localStorage.getItem("nomeUsuario"),
+      localStorage.getItem("userName"),
+      localStorage.getItem("username"),
+      localStorage.getItem("nome"),
+    ];
+
+    for (let i = 0; i < nomesDiretos.length; i++) {
+      const nome = nomesDiretos[i];
+
+      if (nome && nome.trim()) {
+        return nome
+          .replace(/^"|"$/g, "")
+          .trim()
+          .split(" ")[0];
+      }
+    }
+
+    const usuariosSalvos = [
+      localStorage.getItem("usuario"),
+      localStorage.getItem("user"),
+      localStorage.getItem("userData"),
+      localStorage.getItem("usuarioLogado"),
+    ];
+
+    for (let i = 0; i < usuariosSalvos.length; i++) {
+      const usuarioSalvo = usuariosSalvos[i];
+
+      if (!usuarioSalvo) {
+        continue;
+      }
+
+      try {
+        const usuario = JSON.parse(usuarioSalvo);
+
+        const nome =
+          usuario?.name ||
+          usuario?.nome ||
+          usuario?.fullName ||
+          usuario?.firstName ||
+          usuario?.user_name ||
+          usuario?.username;
+
+        if (nome && nome.trim()) {
+          return nome.trim().split(" ")[0];
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return "Conta";
+  }
+
+  const nomeUsuario = obterNomeUsuario();
+
+  function carregarNotificacoes() {
+    const lista = listarNotificacoes();
+
+    setNotificacoes(
+      Array.isArray(lista) ? lista : []
+    );
+  }
+
+  function abrirModalNotificacoes() {
+    carregarNotificacoes();
+    setMenuOpen(false);
+    setModalNotificacoes(true);
+  }
+
+  function marcarComoLida(id) {
+    marcarNotificacaoComoLida(id);
+    carregarNotificacoes();
+  }
+
+  const totalNaoLidas = notificacoes.filter(
+    (notificacao) => !notificacao.lida
+  ).length;
 
   useEffect(() => {
     if (!isLogged) {
@@ -94,31 +193,74 @@ const Header = () => {
 
     carregarNotificacoes();
 
-    window.addEventListener("storage", carregarNotificacoes);
-    window.addEventListener("focus", carregarNotificacoes);
+    window.addEventListener(
+      "storage",
+      carregarNotificacoes
+    );
+
+    window.addEventListener(
+      "focus",
+      carregarNotificacoes
+    );
 
     return () => {
-      window.removeEventListener("storage", carregarNotificacoes);
-      window.removeEventListener("focus", carregarNotificacoes);
+      window.removeEventListener(
+        "storage",
+        carregarNotificacoes
+      );
+
+      window.removeEventListener(
+        "focus",
+        carregarNotificacoes
+      );
     };
   }, [isLogged, location.pathname]);
 
-  function carregarNotificacoes() {
-    const lista = listarNotificacoes();
-    setNotificacoes(lista);
-  }
+  useEffect(() => {
+    setMenuOpen(false);
+    setContaDropdownOpen(false);
+  }, [location.pathname]);
 
-  function abrirModalNotificacoes() {
-    carregarNotificacoes();
-    setModalNotificacoes(true);
-  }
+  useEffect(() => {
+    function fecharAoClicarFora(event) {
+      if (
+        contaDropdownRef.current &&
+        !contaDropdownRef.current.contains(event.target)
+      ) {
+        setContaDropdownOpen(false);
+      }
+    }
 
-  function marcarComoLida(id) {
-    marcarNotificacaoComoLida(id);
-    carregarNotificacoes();
-  }
+    function fecharComEscape(event) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setContaDropdownOpen(false);
+        setModalNotificacoes(false);
+      }
+    }
 
-  const totalNaoLidas = notificacoes.filter((notificacao) => !notificacao.lida).length;
+    document.addEventListener(
+      "mousedown",
+      fecharAoClicarFora
+    );
+
+    document.addEventListener(
+      "keydown",
+      fecharComEscape
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        fecharAoClicarFora
+      );
+
+      document.removeEventListener(
+        "keydown",
+        fecharComEscape
+      );
+    };
+  }, []);
 
   const handleLogoClick = () => {
     if (isAdminPage) {
@@ -127,51 +269,421 @@ const Header = () => {
     }
 
     if (isColaboradorPage) {
-      navigate("/colaborador");
+      navigate("/colaborador/agenda");
       return;
     }
 
     navigate("/");
   };
 
+  const navegar = (rota) => {
+    setMenuOpen(false);
+    setContaDropdownOpen(false);
+    navigate(rota);
+  };
+
   const handleContaClick = () => {
-    if (isAdmin || isColaborador || isUser || isDev) {
-      navigate("/minhaconta");
-    } else {
-      navigate("/conta");
+    if (!isLogged) {
+      navegar("/conta");
+      return;
     }
+
+    setContaDropdownOpen(
+      (estadoAtual) => !estadoAtual
+    );
+  };
+
+  const handleLogout = () => {
+    const chavesDeLogin = [
+      "isAdmin",
+      "isUser",
+      "isColaborador",
+      "isDev",
+      "token",
+      "accessToken",
+      "access_token",
+      "authToken",
+      "refreshToken",
+      "refresh_token",
+      "nomeUsuario",
+      "userName",
+      "username",
+      "nome",
+      "usuario",
+      "user",
+      "userData",
+      "usuarioLogado",
+      "userCpf",
+      "cpf",
+      "userRole",
+      "role",
+    ];
+
+    for (let i = 0; i < chavesDeLogin.length; i++) {
+      localStorage.removeItem(chavesDeLogin[i]);
+    }
+
+    setMenuOpen(false);
+    setContaDropdownOpen(false);
+    setModalNotificacoes(false);
+
+    navigate("/conta", {
+      replace: true,
+    });
+  };
+
+  const menuPublico = [
+    {
+      id: "home",
+      label: "Home",
+      rota: "/",
+      icon: HomeIcon,
+      hoverIcon: HomeIconHover,
+    },
+    {
+      id: "servicos",
+      label: "Serviços",
+      rota: "/servicos",
+      icon: PetsIcon,
+      hoverIcon: PetsIconHover,
+    },
+    {
+      id: "pets",
+      label: "Pets",
+      rota: "/pets",
+      icon: PataIcon,
+      hoverIcon: PataIconHover,
+    },
+  ];
+
+  if (isUser) {
+    menuPublico.push({
+      id: "agenda-cliente",
+      label: "Agenda",
+      rota: "/meus-agendamentos",
+      icon: AgendaClienteIcon,
+      hoverIcon: AgendaClienteIconHover,
+    });
+  }
+
+  if (isAdmin || isDev) {
+    menuPublico.push({
+      id: "gerencia",
+      label: "Gerência",
+      rota: "/admin",
+      icon: AdminIcon,
+      hoverIcon: AdminIconHover,
+    });
+  }
+
+  if (isDev) {
+    menuPublico.push({
+      id: "logs-publico",
+      label: "Logs",
+      rota: "/logs",
+      icon: logIcon,
+      hoverIcon: logHoverIcon,
+    });
+  }
+
+  if (isColaborador) {
+    menuPublico.push({
+      id: "agenda-colaborador-publica",
+      label: "Agenda",
+      rota: "/colaborador/agenda",
+      icon: AgendaColaboradorIcon,
+      hoverIcon: AgendaColaboradorIconHover,
+    });
+  }
+
+  const menuColaborador = [
+    {
+      id: "home-colaborador",
+      label: "Home",
+      rota: "/",
+      icon: HomeIcon,
+      hoverIcon: HomeIconHover,
+    },
+    {
+      id: "agenda-colaborador",
+      label: "Agenda",
+      rota: "/colaborador/agenda",
+      icon: AgendaColaboradorIcon,
+      hoverIcon: AgendaColaboradorIconHover,
+    },
+  ];
+
+  const menuAdminMobile = [
+    {
+      id: "home-admin",
+      label: "Home",
+      rota: "/",
+      icon: HomeIcon,
+      hoverIcon: HomeIconHover,
+    },
+    {
+      id: "administracao",
+      label: "Administração",
+      rota: "/admin",
+      icon: AdminIcon,
+      hoverIcon: AdminIconHover,
+    },
+    {
+      id: "agendar",
+      label: "Agendar",
+      rota: "/admin/agendamentos",
+      icon: AgendamentoIcon,
+      hoverIcon: AgendamentoIconHover,
+    },
+    {
+      id: "servicos-admin",
+      label: "Serviços",
+      rota: "/admin/servicos",
+      icon: CriarServicoIcon,
+      hoverIcon: CriarServicoIconHover,
+    },
+    {
+      id: "clientes-admin",
+      label: "Clientes",
+      rota: "/admin/clientes",
+      icon: ClienteIcon,
+      hoverIcon: ClienteIconHover,
+    },
+    {
+      id: "pets-admin",
+      label: "Pets",
+      rota: "/admin/pets",
+      icon: PetsAdmIcon,
+      hoverIcon: PetsAdmIconHover,
+    },
+    {
+      id: "status-admin",
+      label: "Status",
+      rota: "/admin/status",
+      icon: ColaboradorIcon,
+      hoverIcon: ColaboradorIconHover,
+    },
+    {
+      id: "logs-admin",
+      label: "Logs",
+      rota: "/logs",
+      icon: logIcon,
+      hoverIcon: logHoverIcon,
+    },
+  ];
+
+  const menuDesktop = isColaboradorPage
+    ? menuColaborador
+    : menuPublico;
+
+  const menuMobile = isAdminPage
+    ? menuAdminMobile
+    : isColaboradorPage
+      ? menuColaborador
+      : menuPublico;
+
+  const renderizarItemDesktop = (item) => {
+    const estaHover = hoveredItem === item.id;
+
+    return (
+      <div
+        key={item.id}
+        className="menu-item"
+        onMouseEnter={() =>
+          setHoveredItem(item.id)
+        }
+        onMouseLeave={() =>
+          setHoveredItem("")
+        }
+        onClick={() => navegar(item.rota)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            navegar(item.rota);
+          }
+        }}
+      >
+        <img
+          src={
+            estaHover
+              ? item.hoverIcon
+              : item.icon
+          }
+          alt={item.label}
+          className="icon-link"
+        />
+
+        <span
+          style={{
+            color: estaHover
+              ? "var(--petnet-yellow)"
+              : "#ffffff",
+          }}
+        >
+          {item.label}
+        </span>
+      </div>
+    );
+  };
+
+  const renderizarDropdownConta = () => {
+    if (!isLogged || !contaDropdownOpen) {
+      return null;
+    }
+
+    return (
+      <div className="navbar-account-dropdown">
+        <button
+          type="button"
+          onClick={() => navegar("/minhaconta")}
+        >
+          <UserRound size={18} />
+          Minha conta
+        </button>
+
+        <div className="navbar-account-dropdown-divider" />
+
+        <button
+          type="button"
+          className="navbar-account-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={18} />
+          Sair da conta
+        </button>
+      </div>
+    );
+  };
+
+  const renderizarConta = ({
+    admin = false,
+  } = {}) => {
+    return (
+      <div
+        className={`navbar-account-wrapper ${
+          admin
+            ? "navbar-account-wrapper-admin"
+            : ""
+        }`}
+        ref={contaDropdownRef}
+      >
+        <button
+          type="button"
+          className={`navbar-account ${
+            admin
+              ? ""
+              : "navbar-account-inline"
+          }`}
+          onClick={handleContaClick}
+          aria-expanded={
+            isLogged
+              ? contaDropdownOpen
+              : undefined
+          }
+          aria-label={
+            isLogged
+              ? "Abrir opções da conta"
+              : "Fazer login"
+          }
+        >
+          <UserRound
+            size={21}
+            strokeWidth={2.6}
+          />
+
+          {isLogged ? (
+            <>
+              <span className="navbar-account-text">
+                <small>Olá,</small>
+                <strong>{nomeUsuario}</strong>
+              </span>
+
+              <ChevronDown
+                size={18}
+                strokeWidth={3}
+                className={`navbar-account-arrow ${
+                  contaDropdownOpen
+                    ? "open"
+                    : ""
+                }`}
+              />
+            </>
+          ) : (
+            <span className="navbar-login-text">
+              Faça login
+            </span>
+          )}
+        </button>
+
+        {renderizarDropdownConta()}
+      </div>
+    );
   };
 
   return (
     <header className="header">
       <div className="container">
-        <div className="header-content">
+        <div
+          className={`header-content ${
+            isAdminPage
+              ? "admin-header-content"
+              : ""
+          }`}
+        >
           {isLogged && (
             <button
               type="button"
               className="navbar-notification-btn"
-              onMouseEnter={() => setSinoHover(true)}
-              onMouseLeave={() => setSinoHover(false)}
+              onMouseEnter={() =>
+                setSinoHover(true)
+              }
+              onMouseLeave={() =>
+                setSinoHover(false)
+              }
               onClick={abrirModalNotificacoes}
-              aria-label="Notificações"
+              aria-label="Abrir notificações"
             >
               <img
-                src={sinoHover ? SinoIconHover : SinoIcon}
+                src={
+                  sinoHover
+                    ? SinoIconHover
+                    : SinoIcon
+                }
                 alt="Notificações"
                 className="navbar-notification-icon"
               />
 
               {totalNaoLidas > 0 && (
                 <span className="navbar-notification-badge">
-                  {totalNaoLidas > 9 ? "9+" : totalNaoLidas}
+                  {totalNaoLidas > 9
+                    ? "9+"
+                    : totalNaoLidas}
                 </span>
               )}
             </button>
           )}
+
           <div
-            className="logo-center"
+            className={`logo-center ${
+              isAdminPage
+                ? "admin-logo"
+                : ""
+            }`}
             onClick={handleLogoClick}
-            style={{ cursor: "pointer" }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (
+                event.key === "Enter" ||
+                event.key === " "
+              ) {
+                handleLogoClick();
+              }
+            }}
           >
             {isAdminPage
               ? "ADMINISTRAÇÃO"
@@ -180,632 +692,177 @@ const Header = () => {
                 : "PETNET"}
           </div>
 
-          <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-            <div className={`bar ${menuOpen ? "open" : ""}`}></div>
-            <div className={`bar ${menuOpen ? "open" : ""}`}></div>
-            <div className={`bar ${menuOpen ? "open" : ""}`}></div>
-          </div>
-
-          <div
-            className={`header-right ${isAdminPage || isColaboradorPage ? "admin-nav" : ""
-              }`}
+          <button
+            type="button"
+            className="hamburger"
+            onClick={() =>
+              setMenuOpen(
+                (estadoAtual) => !estadoAtual
+              )
+            }
+            aria-label={
+              menuOpen
+                ? "Fechar menu"
+                : "Abrir menu"
+            }
+            aria-expanded={menuOpen}
           >
-            {isAdminPage && (
-              <>
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setHomeHover(true)}
-                  onMouseLeave={() => setHomeHover(false)}
-                  onClick={() => navigate("/")}
-                >
-                  <img
-                    src={homeHover ? HomeIconHover : HomeIcon}
-                    alt="Home"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: homeHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Home
-                  </span>
-                </div>
+            <span
+              className={`bar ${
+                menuOpen ? "open" : ""
+              }`}
+            />
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdminHover(true)}
-                  onMouseLeave={() => setAdminHover(false)}
-                  onClick={() => navigate("/admin")}
-                >
-                  <img
-                    src={adminHover ? AdminIconHover : AdminIcon}
-                    alt="Administração"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: adminHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Gerência
-                  </span>
-                </div>
+            <span
+              className={`bar ${
+                menuOpen ? "open" : ""
+              }`}
+            />
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdmAgendHover(true)}
-                  onMouseLeave={() => setAdmAgendHover(false)}
-                  onClick={() => navigate("/admin/agendamentos")}
-                >
-                  <img
-                    src={admAgendHover ? AgendamentoIconHover : AgendamentoIcon}
-                    alt="Agendamentos"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: admAgendHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Agendar
-                  </span>
-                </div>
+            <span
+              className={`bar ${
+                menuOpen ? "open" : ""
+              }`}
+            />
+          </button>
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdmServicosHover(true)}
-                  onMouseLeave={() => setAdmServicosHover(false)}
-                  onClick={() => navigate("/admin/servicos")}
-                >
-                  <img
-                    src={
-                      admServicosHover
-                        ? CriarServicoIconHover
-                        : CriarServicoIcon
-                    }
-                    alt="Serviços"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: admServicosHover
-                        ? "var(--petnet-yellow)"
-                        : "white",
-                    }}
-                  >
-                    Serviços
-                  </span>
-                </div>
+          {isAdminPage ? (
+            renderizarConta({
+              admin: true,
+            })
+          ) : (
+            <div
+              className={`header-right ${
+                isColaboradorPage
+                  ? "collaborator-nav"
+                  : ""
+              }`}
+            >
+              {menuDesktop.map(
+                renderizarItemDesktop
+              )}
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdmClientsHover(true)}
-                  onMouseLeave={() => setAdmClientsHover(false)}
-                  onClick={() => navigate("/admin/clientes")}
-                >
-                  <img
-                    src={admClientsHover ? ClienteIconHover : ClienteIcon}
-                    alt="Clientes"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: admClientsHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Clientes
-                  </span>
-                </div>
+              {renderizarConta()}
+            </div>
+          )}
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdmPetsHover(true)}
-                  onMouseLeave={() => setAdmPetsHover(false)}
-                  onClick={() => navigate("/admin/pets")}
-                >
-                  <img
-                    src={admPetsHover ? PetsAdmIconHover : PetsAdmIcon}
-                    alt="Pets"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: admPetsHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Pets
-                  </span>
-                </div>
+          {menuOpen && (
+            <button
+              type="button"
+              className="mobile-menu-backdrop"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Fechar menu"
+            />
+          )}
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setAdmColaboradorHover(true)}
-                  onMouseLeave={() => setAdmColaboradorHover(false)}
-                  onClick={() => navigate("/admin/status")}
-                >
-                  <img
-                    src={
-                      admColaboradorHover
-                        ? ColaboradorIconHover
-                        : ColaboradorIcon
-                    }
-                    alt="Colaborador"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: admColaboradorHover
-                        ? "var(--petnet-yellow)"
-                        : "white",
-                    }}
-                  >
-                    Status
+          <nav
+            className={`mobile-menu ${
+              menuOpen ? "show" : ""
+            }`}
+            aria-hidden={!menuOpen}
+          >
+            <div className="mobile-menu-header">
+              <strong>
+                {isAdminPage
+                  ? "Menu administrativo"
+                  : "Menu"}
+              </strong>
+            </div>
+
+            {isAdminPage && isLogged && (
+              <button
+                type="button"
+                className="mobile-menu-notification"
+                onClick={abrirModalNotificacoes}
+              >
+                Notificações
+
+                {totalNaoLidas > 0 && (
+                  <span>
+                    {totalNaoLidas > 9
+                      ? "9+"
+                      : totalNaoLidas}
                   </span>
-                </div>
-              </>
+                )}
+              </button>
             )}
 
-            {isColaboradorPage && (
-              <>
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setColabHomeHover(true)}
-                  onMouseLeave={() => setColabHomeHover(false)}
-                  onClick={() => navigate("/")}
-                >
-                  <img
-                    src={colabHomeHover ? HomeIconHover : HomeIcon}
-                    alt="Home"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: colabHomeHover
-                        ? "var(--petnet-yellow)"
-                        : "white",
-                    }}
-                  >
-                    Home
-                  </span>
-                </div>
+            {menuMobile.map((item) => (
+              <button
+                type="button"
+                key={item.id}
+                className={
+                  location.pathname === item.rota
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  navegar(item.rota)
+                }
+              >
+                {item.label}
+              </button>
+            ))}
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setColabAgendaHover(true)}
-                  onMouseLeave={() => setColabAgendaHover(false)}
-                  onClick={() => navigate("/colaborador/agenda")}
-                >
-                  <img
-                    src={
-                      colabAgendaHover
-                        ? AgendaColaboradorIconHover
-                        : AgendaColaboradorIcon
-                    }
-                    alt="Agenda"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: colabAgendaHover
-                        ? "var(--petnet-yellow)"
-                        : "white",
-                    }}
-                  >
-                    Agenda
-                  </span>
-                </div>
+            <div className="mobile-menu-divider" />
 
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setColabContaHover(true)}
-                  onMouseLeave={() => setColabContaHover(false)}
-                  onClick={() => navigate("/minhaconta")}
-                >
-                  <img
-                    src={colabContaHover ? ContaIconHover : ContaIcon}
-                    alt="Conta"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: colabContaHover
-                        ? "var(--petnet-yellow)"
-                        : "white",
-                    }}
-                  >
-                    Conta
-                  </span>
-                </div>
-              </>
+            <button
+              type="button"
+              onClick={() =>
+                navegar(
+                  isLogged
+                    ? "/minhaconta"
+                    : "/conta"
+                )
+              }
+            >
+              {isLogged
+                ? "Minha conta"
+                : "Faça login"}
+            </button>
+
+            {isLogged && (
+              <button
+                type="button"
+                className="mobile-menu-logout"
+                onClick={handleLogout}
+              >
+                Sair da conta
+              </button>
             )}
-
-            {!isAdminPage && !isColaboradorPage && (
-              <>
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setHomeHover(true)}
-                  onMouseLeave={() => setHomeHover(false)}
-                  onClick={() => navigate("/")}
-                >
-                  <img
-                    src={homeHover ? HomeIconHover : HomeIcon}
-                    alt="Home"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: homeHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Home
-                  </span>
-                </div>
-
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setPetsHover(true)}
-                  onMouseLeave={() => setPetsHover(false)}
-                  onClick={() => navigate("/servicos")}
-                >
-                  <img
-                    src={petsHover ? PetsIconHover : PetsIcon}
-                    alt="Serviços"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: petsHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Serviços
-                  </span>
-                </div>
-
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setPataHover(true)}
-                  onMouseLeave={() => setPataHover(false)}
-                  onClick={() => navigate("/pets")}
-                >
-                  <img
-                    src={pataHover ? PataIconHover : PataIcon}
-                    alt="Pets"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: pataHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Pets
-                  </span>
-                </div>
-
-                {isUser && (
-                  <div
-                    className="menu-item"
-                    onMouseEnter={() => setAgendaClienteHover(true)}
-                    onMouseLeave={() => setAgendaClienteHover(false)}
-                    onClick={() => navigate("/meus-agendamentos")}
-                  >
-                    <img
-                      src={
-                        agendaClienteHover
-                          ? AgendaClienteIconHover
-                          : AgendaClienteIcon
-                      }
-                      alt="Agenda"
-                      className="icon-link"
-                    />
-                    <span
-                      style={{
-                        color: agendaClienteHover
-                          ? "var(--petnet-yellow)"
-                          : "white",
-                      }}
-                    >
-                      Agenda
-                    </span>
-                  </div>
-                )}
-
-                {(isAdmin || isDev) && (
-                  <div
-                    className="menu-item"
-                    onMouseEnter={() => setAdminHover(true)}
-                    onMouseLeave={() => setAdminHover(false)}
-                    onClick={() => navigate("/admin")}
-                  >
-                    <img
-                      src={adminHover ? AdminIconHover : AdminIcon}
-                      alt="Gerência"
-                      className="icon-link"
-                    />
-                    <span
-                      style={{
-                        color: adminHover ? "var(--petnet-yellow)" : "white",
-                      }}
-                    >
-                      Gerência
-                    </span>
-                  </div>
-                )}
-
-                {isDev && (
-                  <div
-                    className="menu-item"
-                    onMouseEnter={() => setLogHover(true)}
-                    onMouseLeave={() => setLogHover(false)}
-                    onClick={() => navigate("/logs")}
-                  >
-                    <img
-                      src={logHover ? logHoverIcon : logIcon}
-                      alt="Logs"
-                      className="icon-link"
-                    />
-                    <span
-                      style={{
-                        color: logHover ? "var(--petnet-yellow)" : "white",
-                      }}
-                    >
-                      Logs
-                    </span>
-                  </div>
-                )}
-
-                {isColaborador && (
-                  <div
-                    className="menu-item"
-                    onMouseEnter={() => setColabAgendaHover(true)}
-                    onMouseLeave={() => setColabAgendaHover(false)}
-                    onClick={() => navigate("/colaborador/agenda")}
-                  >
-                    <img
-                      src={
-                        colabAgendaHover
-                          ? AgendaColaboradorIconHover
-                          : AgendaColaboradorIcon
-                      }
-                      alt="Agenda"
-                      className="icon-link"
-                    />
-                    <span
-                      style={{
-                        color: colabAgendaHover
-                          ? "var(--petnet-yellow)"
-                          : "white",
-                      }}
-                    >
-                      Agenda
-                    </span>
-                  </div>
-                )}
-
-                <div
-                  className="menu-item"
-                  onMouseEnter={() => setContaHover(true)}
-                  onMouseLeave={() => setContaHover(false)}
-                  onClick={handleContaClick}
-                >
-                  <img
-                    src={contaHover ? ContaIconHover : ContaIcon}
-                    alt="Conta"
-                    className="icon-link"
-                  />
-                  <span
-                    style={{
-                      color: contaHover ? "var(--petnet-yellow)" : "white",
-                    }}
-                  >
-                    Conta
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className={`mobile-menu ${menuOpen ? "show" : ""}`}>
-            {isAdminPage ? (
-              <>
-                <span
-                  onClick={() => {
-                    navigate("/");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Home
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Administração
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin/agendamentos");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Agendamentos
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin/servicos");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Serviços
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin/clientes");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Clientes
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin/pets");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Pets
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/admin/status");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Status
-                </span>
-              </>
-            ) : isColaboradorPage ? (
-              <>
-                <span
-                  onClick={() => {
-                    navigate("/");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Home
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/colaborador/agenda");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Agenda
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/minhaconta");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Conta
-                </span>
-              </>
-            ) : (
-              <>
-                <span
-                  onClick={() => {
-                    navigate("/");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Home
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/servicos");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Serviços
-                </span>
-
-                <span
-                  onClick={() => {
-                    navigate("/pets");
-                    setMenuOpen(false);
-                  }}
-                >
-                  Pets
-                </span>
-
-                {isUser && (
-                  <span
-                    onClick={() => {
-                      navigate("/meus-agendamentos");
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Agenda
-                  </span>
-                )}
-
-                {(isAdmin || isDev) && (
-                  <span
-                    onClick={() => {
-                      navigate("/admin");
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Gerência
-                  </span>
-                )}
-
-                {isDev && (
-                  <span
-                    onClick={() => {
-                      navigate("/logs");
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Logs
-                  </span>
-                )}
-
-                {isColaborador && (
-                  <span
-                    onClick={() => {
-                      navigate("/colaborador/agenda");
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Agenda
-                  </span>
-                )}
-
-                <span
-                  onClick={() => {
-                    handleContaClick();
-                    setMenuOpen(false);
-                  }}
-                >
-                  Conta
-                </span>
-              </>
-            )}
-          </div>
-               </div>
+          </nav>
+        </div>
       </div>
 
       {modalNotificacoes && (
         <div
           className="navbar-notification-overlay"
-          onClick={() => setModalNotificacoes(false)}
+          onClick={() =>
+            setModalNotificacoes(false)
+          }
         >
           <div
             className="navbar-notification-modal"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
             <div className="navbar-notification-top">
               <div>
-                <span>Central de notificações</span>
+                <span>
+                  Central de notificações
+                </span>
+
                 <h2>Notificações</h2>
               </div>
 
               <button
                 type="button"
                 className="navbar-notification-close"
-                onClick={() => setModalNotificacoes(false)}
+                onClick={() =>
+                  setModalNotificacoes(false)
+                }
+                aria-label="Fechar notificações"
               >
                 ×
               </button>
@@ -814,32 +871,51 @@ const Header = () => {
             <div className="navbar-notification-list">
               {notificacoes.length === 0 ? (
                 <div className="navbar-notification-empty">
-                  <strong>Nenhuma notificação por enquanto</strong>
-                  <p>Quando houver novidades, elas aparecerão aqui.</p>
+                  <strong>
+                    Nenhuma notificação por enquanto
+                  </strong>
+
+                  <p>
+                    Quando houver novidades, elas
+                    aparecerão aqui.
+                  </p>
                 </div>
               ) : (
-                notificacoes.map((notificacao) => (
-                  <div
-                    className={`navbar-notification-item ${
-                      notificacao.lida ? "lida" : ""
-                    }`}
-                    key={notificacao.id}
-                  >
-                    <div>
-                      <strong>{notificacao.titulo}</strong>
-                      <p>{notificacao.descricao}</p>
-                    </div>
+                notificacoes.map(
+                  (notificacao) => (
+                    <div
+                      key={notificacao.id}
+                      className={`navbar-notification-item ${
+                        notificacao.lida
+                          ? "lida"
+                          : ""
+                      }`}
+                    >
+                      <div>
+                        <strong>
+                          {notificacao.titulo}
+                        </strong>
 
-                    {!notificacao.lida && (
-                      <button
-                        type="button"
-                        onClick={() => marcarComoLida(notificacao.id)}
-                      >
-                        Marcar como lida
-                      </button>
-                    )}
-                  </div>
-                ))
+                        <p>
+                          {notificacao.descricao}
+                        </p>
+                      </div>
+
+                      {!notificacao.lida && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            marcarComoLida(
+                              notificacao.id
+                            )
+                          }
+                        >
+                          Marcar como lida
+                        </button>
+                      )}
+                    </div>
+                  )
+                )
               )}
             </div>
           </div>
@@ -848,6 +924,5 @@ const Header = () => {
     </header>
   );
 };
-
 
 export default Header;

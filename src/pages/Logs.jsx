@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header";
 import "../styles/logs.css";
 import logService from "../services/logService";
+import AdminSidebar from "../components/AdminSidebar";
 
 function Logs() {
   const [logs, setLogs] = useState([]);
@@ -200,6 +201,7 @@ function formatarHora(dataHora) {
   return (
     <>
       <Header />
+      <AdminSidebar />
 
       <main className="logs-page">
         <section className="logs-hero">

@@ -1,11 +1,25 @@
 .logs-page {
   min-height: calc(100vh - 120px);
-  padding: 34px 5%;
+
+  /* topo, direita, baixo, esquerda */
+  padding: 34px 5% 34px 6.5rem;
+
   background:
-    radial-gradient(circle at top left, rgba(249, 238, 124, 0.35), transparent 28%),
-    radial-gradient(circle at top right, rgba(51, 112, 235, 0.14), transparent 30%),
+    radial-gradient(
+      circle at top left,
+      rgba(249, 238, 124, 0.35),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(51, 112, 235, 0.14),
+      transparent 30%
+    ),
     #f5f7fb;
+
   overflow-x: hidden;
+
+  transition: padding-left 0.25s ease;
 }
 
 .logs-hero {
@@ -485,7 +499,7 @@
 
 @media (max-width: 1180px) {
   .logs-page {
-    padding: 28px 18px;
+    padding: 28px 18px 28px 5.8rem;
   }
 
   .logs-hero {
@@ -551,6 +565,12 @@
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .logs-page {
+    padding: 28px 18px;
   }
 }
 

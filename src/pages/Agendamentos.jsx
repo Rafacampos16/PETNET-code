@@ -5,6 +5,7 @@ import InteractiveCalendar from "../pages/InteractiveCalendar";
 import "../styles/agendamentos.css";
 import Pata from "../assets/icons/pata-h.png";
 import { userService } from "../services/userService";
+import AdminSidebar from "../components/AdminSidebar";
 import petService from "../services/petService";
 import serviceService from "../services/serviceService";
 import scheduleService from "../services/scheduleService";
@@ -304,6 +305,8 @@ const Agendamentos = () => {
   };
 
   return (
+<>
+     <AdminSidebar />
     <div className="agendamento-page">
       <div className="agendamento-header">
         <div>
@@ -663,6 +666,7 @@ const Agendamentos = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

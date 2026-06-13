@@ -5,10 +5,20 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #f4f8ff 0%, #eaf2ff 100%);
-  padding: 2rem;
+
+  background: linear-gradient(
+    180deg,
+    #f4f8ff 0%,
+    #eaf2ff 100%
+  );
+
+  /* topo, direita, baixo, esquerda */
+  padding: 2rem 2rem 2rem 6.5rem;
+
   color: #17386f;
   box-sizing: border-box;
+
+  transition: padding-left 0.25s ease;
 }
 
 .status-admin-page *,
@@ -717,6 +727,10 @@
 /* RESPONSIVO */
 
 @media (max-width: 1180px) {
+   .status-admin-page {
+    padding: 1.5rem 1.2rem 2.5rem 5.8rem;
+  }
+
   .status-admin-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -727,6 +741,12 @@
 
   .status-details-panel {
     position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .status-admin-page {
+    padding: 1.2rem 0.85rem 2.5rem;
   }
 }
 

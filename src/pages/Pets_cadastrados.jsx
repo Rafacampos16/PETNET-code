@@ -8,6 +8,7 @@ import PetImg2 from "../assets/images/gato.png";
 import petService from "../services/petService";
 import { userService } from "../services/userService";
 import LoadingScreen from "../components/LoadingScreen";
+import AdminSidebar from "../components/AdminSidebar";
 
 const ExpandedPetInfo = ({ data }) => {
   return (
@@ -61,6 +62,9 @@ const formatarData = (data) => {
 
 const Pets_cadastrados = () => {
   const navigate = useNavigate();
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const isDev = localStorage.getItem("isDev") === "true";
+  const podeVerMenuAdmin = isAdmin || isDev;
   const [pets, setPets] = useState([]);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -69,45 +73,43 @@ const Pets_cadastrados = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-
     const carregar = async () => {
-  try {
-    let dados = [];
-    let allUsers = [];
+      try {
+        let dados = [];
+        let allUsers = [];
 
-    if (isAdmin) {
-      dados = await petService.listar();
+        if (isAdmin) {
+          dados = await petService.listar();
 
-      const usersRes = await userService.listUsers();
-      allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
+          const usersRes = await userService.listUsers();
+          allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
 
-      setUsers(allUsers);
-    } else {
-      dados = await petService.listar_meus_pets();
-    }
+          setUsers(allUsers);
+        } else {
+          dados = await petService.listar_meus_pets();
+        }
 
-    if (Array.isArray(dados) && dados.length > 0) {
-      const petsFormatados = dados.map((pet) => {
-        const dono = allUsers.find((u) => u.cpf === pet.user_cpf);
+        if (Array.isArray(dados) && dados.length > 0) {
+          const petsFormatados = dados.map((pet) => {
+            const dono = allUsers.find((u) => u.cpf === pet.user_cpf);
 
-        return {
-          id: pet.id,
-          name: pet.name,
-          species: pet.species,
-          breed: pet.breed,
-          size: traduzirPorte(pet.size),
-          weight: `${pet.weight} kg`,
-          birth_date: formatarData(pet.birth_date),
-          sex: pet.sex || "",
-          observations: pet.observations,
-          user_cpf: pet.user_cpf,
-           owner_name: dono?.name || localStorage.getItem("userName") || "Não informado",
-          photo: pet.picture_blob || "",
-        };
-      });
+            return {
+              id: pet.id,
+              name: pet.name,
+              species: pet.species,
+              breed: pet.breed,
+              size: traduzirPorte(pet.size),
+              weight: `${pet.weight} kg`,
+              birth_date: formatarData(pet.birth_date),
+              sex: pet.sex || "",
+              observations: pet.observations,
+              user_cpf: pet.user_cpf,
+              owner_name: dono?.name || localStorage.getItem("userName") || "Não informado",
+              photo: pet.picture_blob || "",
+            };
+          });
 
-      setPets(petsFormatados);
+          setPets(petsFormatados);
         } else {
           setPets([]);
         }
@@ -120,7 +122,7 @@ const Pets_cadastrados = () => {
     };
 
     carregar();
-  }, []);
+  }, [isAdmin]);
 
   const filteredPets = pets.filter((pet) => {
     const termo = search.toLowerCase();
@@ -321,91 +323,100 @@ const Pets_cadastrados = () => {
   }
 
   return (
-    <div className="petsReg-container">
-      <h1 className="petsReg-title">Pets registrados</h1>
+    <>
+      {podeVerMenuAdmin && <AdminSidebar />}
 
-      <div className="pets-toolbar">
-        <div className="pets-search-box">
-          <FiSearch className="pets-search-icon-modern" />
-          <input
-            type="text"
-            placeholder="Buscar por nome do pet, nome do dono, espécie, raça..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pets-search-input-modern"
+      <div
+        className={`petsReg-container ${podeVerMenuAdmin
+            ? "petsReg-container-admin"
+            : "petsReg-container-cliente"
+          }`}
+      >
+        <h1 className="petsReg-title">Pets registrados</h1>
+
+        <div className="pets-toolbar">
+          <div className="pets-search-box">
+            <FiSearch className="pets-search-icon-modern" />
+            <input
+              type="text"
+              placeholder="Buscar por nome do pet, nome do dono, espécie, raça..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pets-search-input-modern"
+            />
+          </div>
+
+          <div className="pets-toolbar-right">
+            <div className="pets-filters">
+              <div className="pets-filter-group">
+                <label>Espécie</label>
+                <select
+                  value={especieFiltro}
+                  onChange={(e) => setEspecieFiltro(e.target.value)}
+                >
+                  <option value="">Todas</option>
+                  {especiesUnicas.map((especie) => (
+                    <option key={especie} value={especie}>
+                      {especie}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pets-filter-group pets-filter-small">
+                <label>Porte</label>
+                <select
+                  value={porteFiltro}
+                  onChange={(e) => setPorteFiltro(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {portesUnicos.map((porte) => (
+                    <option key={porte} value={porte}>
+                      {porte}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="btn-add-pet-table"
+              onClick={() => navigate("/pets?novo=true")}
+            >
+              <FiPlus size={18} />
+              Cadastrar novo pet
+            </button>
+          </div>
+        </div>
+
+        <div className="pets-table-card">
+          <div className="pets-table-top">
+            <div>
+              <h2>Lista de pets</h2>
+              <p>{filteredPets.length} pet(s) encontrado(s)</p>
+            </div>
+          </div>
+
+          <DataTable
+            columns={columns}
+            data={filteredPets}
+            pagination
+            responsive
+            highlightOnHover
+            persistTableHead
+            customStyles={customStyles}
+            expandableRows
+            expandableRowsComponent={ExpandedPetInfo}
+            noDataComponent={
+              <div className="pets-empty-table">
+                Nenhum pet encontrado com os filtros informados.
+              </div>
+            }
           />
         </div>
-
-        <div className="pets-toolbar-right">
-          <div className="pets-filters">
-            <div className="pets-filter-group">
-              <label>Espécie</label>
-              <select
-                value={especieFiltro}
-                onChange={(e) => setEspecieFiltro(e.target.value)}
-              >
-                <option value="">Todas</option>
-                {especiesUnicas.map((especie) => (
-                  <option key={especie} value={especie}>
-                    {especie}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="pets-filter-group pets-filter-small">
-              <label>Porte</label>
-              <select
-                value={porteFiltro}
-                onChange={(e) => setPorteFiltro(e.target.value)}
-              >
-                <option value="">Todos</option>
-                {portesUnicos.map((porte) => (
-                  <option key={porte} value={porte}>
-                    {porte}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="btn-add-pet-table"
-            onClick={() => navigate("/pets?novo=true")}
-          >
-            <FiPlus size={18} />
-            Cadastrar novo pet
-          </button>
-        </div>
       </div>
-
-      <div className="pets-table-card">
-        <div className="pets-table-top">
-          <div>
-            <h2>Lista de pets</h2>
-            <p>{filteredPets.length} pet(s) encontrado(s)</p>
-          </div>
-        </div>
-
-        <DataTable
-          columns={columns}
-          data={filteredPets}
-          pagination
-          responsive
-          highlightOnHover
-          persistTableHead
-          customStyles={customStyles}
-          expandableRows
-          expandableRowsComponent={ExpandedPetInfo}
-          noDataComponent={
-            <div className="pets-empty-table">
-              Nenhum pet encontrado com os filtros informados.
-            </div>
-          }
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

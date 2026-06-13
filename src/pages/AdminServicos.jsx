@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
+import AdminSidebar from "../components/AdminSidebar";
 import "../styles/adminServicos.css";
 import serviceService from "../services/serviceService";
 import banhoIcon from "../assets/icons/banho.png";
@@ -148,7 +149,7 @@ const AdminServicos = () => {
   return (
     <>
       <Header />
-
+      <AdminSidebar />
       <section className="admin-servicos-section">
         <div className="admin-servicos-container">
           <div className="admin-servicos-header">

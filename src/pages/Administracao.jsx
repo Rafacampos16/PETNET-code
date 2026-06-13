@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../components/Header";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
+
+import Header from "../components/Header";
+import AdminSidebar from "../components/AdminSidebar";
+
 import "../styles/administracao.css";
+
 import IconLogoutHover from "../assets/icons/logout-h.png";
 import dashboardService from "../services/dashboardService";
+
 import {
   CalendarX,
   ClipboardList,
@@ -30,10 +35,30 @@ const periodoMap = {
 
 const emptyPeriodo = {
   cards: [
-    { titulo: "Total Agendamentos", valor: "0", detalhe: "no período", tipo: "azul" },
-    { titulo: "Cancelamento", valor: "0", detalhe: "cancelados", tipo: "amarelo" },
-    { titulo: "Finalizados", valor: "0", detalhe: "agendamentos", tipo: "verde" },
-    { titulo: "Entregues", valor: "0", detalhe: "pets enviados", tipo: "roxo" },
+    {
+      titulo: "Total Agendamentos",
+      valor: "0",
+      detalhe: "no período",
+      tipo: "azul",
+    },
+    {
+      titulo: "Cancelamento",
+      valor: "0",
+      detalhe: "cancelados",
+      tipo: "amarelo",
+    },
+    {
+      titulo: "Finalizados",
+      valor: "0",
+      detalhe: "agendamentos",
+      tipo: "verde",
+    },
+    {
+      titulo: "Entregues",
+      valor: "0",
+      detalhe: "pets enviados",
+      tipo: "roxo",
+    },
   ],
   fluxo: [],
   fluxoLabels: [],
@@ -44,32 +69,39 @@ const emptyPeriodo = {
   atividadesRecentes: [],
 };
 
-const menu = [
-  { nome: "Dashboard", rota: "/admin" },
-  { nome: "Agendamentos", rota: "/admin/agendamentos" },
-  { nome: "Serviços", rota: "/admin/servicos" },
-  { nome: "Clientes", rota: "/admin/clientes" },
-  { nome: "Pets", rota: "/admin/pets" },
-  { nome: "Status", rota: "/admin/status" },
-];
-
 function getStatusClass(status) {
   const normalizado = String(status || "").toLowerCase();
 
-  if (normalizado === "confirmado") return "admin-status admin-status-confirmado";
-  if (normalizado === "finalizado") return "admin-status admin-status-finalizado";
-  if (normalizado === "entregue") return "admin-status admin-status-entregue";
-  if (normalizado === "cancelado") return "admin-status admin-status-cancelado";
+  if (normalizado === "confirmado") {
+    return "admin-status admin-status-confirmado";
+  }
+
+  if (normalizado === "finalizado") {
+    return "admin-status admin-status-finalizado";
+  }
+
+  if (normalizado === "entregue") {
+    return "admin-status admin-status-entregue";
+  }
+
+  if (normalizado === "cancelado") {
+    return "admin-status admin-status-cancelado";
+  }
+
   return "admin-status admin-status-cancelado";
 }
 
 function parseValor(valor) {
-  const num = Number(valor);
-  return Number.isFinite(num) ? num : 0;
+  const numero = Number(valor);
+
+  return Number.isFinite(numero) ? numero : 0;
 }
 
 function temDadosNoGrafico(lista = []) {
-  return Array.isArray(lista) && lista.some((item) => parseValor(item) > 0);
+  return (
+    Array.isArray(lista) &&
+    lista.some((item) => parseValor(item) > 0)
+  );
 }
 
 function mergePeriodo(periodo = {}) {
@@ -88,21 +120,24 @@ function mergePeriodo(periodo = {}) {
 }
 
 function getCardValue(cards, titulo) {
-  const card = (cards || []).find((item) => item.titulo === titulo);
+  const card = (cards || []).find(
+    (item) => item.titulo === titulo
+  );
+
   return card?.valor ?? "0";
 }
 
 export default function Administracao() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [hoverLogout, setHoverLogout] = useState(false);
   const [periodoAtivo, setPeriodoAtivo] = useState("Hoje");
+
   const [dashboardData, setDashboardData] = useState({
     Diario: mergePeriodo(),
     Mensal: mergePeriodo(),
     Anual: mergePeriodo(),
   });
+
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
 
@@ -114,10 +149,14 @@ export default function Administracao() {
         setLoading(true);
         setErro("");
 
-        const response = await dashboardService.buscarDashboard();
+        const response =
+          await dashboardService.buscarDashboard();
+
         const data = response.data || {};
 
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
 
         setDashboardData({
           Diario: mergePeriodo(data.Diario),
@@ -125,10 +164,22 @@ export default function Administracao() {
           Anual: mergePeriodo(data.Anual),
         });
       } catch (error) {
-        if (!mounted) return;
-        setErro("Não foi possível carregar os dados do dashboard.");
+        if (!mounted) {
+          return;
+        }
+
+        console.error(
+          "Erro ao carregar dashboard:",
+          error
+        );
+
+        setErro(
+          "Não foi possível carregar os dados do dashboard."
+        );
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -140,32 +191,55 @@ export default function Administracao() {
   }, []);
 
   const dados = useMemo(() => {
-    const chave = periodoMap[periodoAtivo] || "Diario";
+    const chave =
+      periodoMap[periodoAtivo] || "Diario";
+
     return dashboardData[chave] || mergePeriodo();
   }, [dashboardData, periodoAtivo]);
 
   const agendaResumo = useMemo(
     () => ({
-      atendimentos: getCardValue(dados.cards, "Total Agendamentos"),
-      cancelados: getCardValue(dados.cards, "Cancelamento"),
-      finalizados: getCardValue(dados.cards, "Finalizados"),
-      entregues: getCardValue(dados.cards, "Entregues"),
+      atendimentos: getCardValue(
+        dados.cards,
+        "Total Agendamentos"
+      ),
+      cancelados: getCardValue(
+        dados.cards,
+        "Cancelamento"
+      ),
+      finalizados: getCardValue(
+        dados.cards,
+        "Finalizados"
+      ),
+      entregues: getCardValue(
+        dados.cards,
+        "Entregues"
+      ),
       confirmados: "0",
     }),
     [dados.cards]
   );
 
   const colaboradoresData = useMemo(() => {
-    const labels = (dados.statusPorColaborador || []).map((item) => item.nome);
-    const values = (dados.statusPorColaborador || []).map((item) =>
-      parseValor(item.agendados) +
-      parseValor(item.confirmados) +
-      parseValor(item.cancelados) +
-      parseValor(item.finalizados) +
-      parseValor(item.entregues)
+    const labels = (
+      dados.statusPorColaborador || []
+    ).map((item) => item.nome);
+
+    const values = (
+      dados.statusPorColaborador || []
+    ).map(
+      (item) =>
+        parseValor(item.agendados) +
+        parseValor(item.confirmados) +
+        parseValor(item.cancelados) +
+        parseValor(item.finalizados) +
+        parseValor(item.entregues)
     );
 
-    return { labels, values };
+    return {
+      labels,
+      values,
+    };
   }, [dados.statusPorColaborador]);
 
   const temFluxoData = useMemo(
@@ -179,7 +253,10 @@ export default function Administracao() {
   );
 
   const temColaboradoresData = useMemo(
-    () => temDadosNoGrafico(colaboradoresData.values),
+    () =>
+      temDadosNoGrafico(
+        colaboradoresData.values
+      ),
     [colaboradoresData.values]
   );
 
@@ -187,17 +264,27 @@ export default function Administracao() {
     () => ({
       chart: {
         type: "area",
-        toolbar: { show: false },
-        zoom: { enabled: false },
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
         fontFamily: "inherit",
         parentHeightOffset: 0,
       },
+
       colors: ["#3370EB"],
-      dataLabels: { enabled: false },
+
+      dataLabels: {
+        enabled: false,
+      },
+
       stroke: {
         curve: "smooth",
         width: 4,
       },
+
       fill: {
         type: "gradient",
         gradient: {
@@ -207,10 +294,15 @@ export default function Administracao() {
           stops: [0, 90, 100],
         },
       },
+
       grid: {
         borderColor: "#E6EEFF",
         strokeDashArray: 4,
-        xaxis: { lines: { show: false } },
+        xaxis: {
+          lines: {
+            show: false,
+          },
+        },
         padding: {
           top: 18,
           right: 18,
@@ -218,18 +310,38 @@ export default function Administracao() {
           left: 12,
         },
       },
+
       xaxis: {
         categories: dados.fluxoLabels || [],
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "#7A8AAA",
+            fontWeight: 700,
+          },
+        },
       },
+
       yaxis: {
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
+        labels: {
+          style: {
+            colors: "#7A8AAA",
+            fontWeight: 700,
+          },
+        },
       },
+
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} agendamentos` },
+        y: {
+          formatter: (value) =>
+            `${value} agendamentos`,
+        },
       },
     }),
     [dados.fluxoLabels]
@@ -241,11 +353,21 @@ export default function Administracao() {
         type: "donut",
         fontFamily: "inherit",
       },
+
       labels: dados.servicosLabels || [],
       colors: chartColors,
-      legend: { show: false },
-      stroke: { width: 0 },
-      dataLabels: { enabled: false },
+
+      legend: {
+        show: false,
+      },
+
+      stroke: {
+        width: 0,
+      },
+
+      dataLabels: {
+        enabled: false,
+      },
 
       plotOptions: {
         pie: {
@@ -283,7 +405,8 @@ export default function Administracao() {
       tooltip: {
         theme: "light",
         y: {
-          formatter: (value) => `${value} atendimentos`,
+          formatter: (value) =>
+            `${value} atendimentos`,
         },
       },
     }),
@@ -294,9 +417,12 @@ export default function Administracao() {
     () => ({
       chart: {
         type: "bar",
-        toolbar: { show: false },
+        toolbar: {
+          show: false,
+        },
         fontFamily: "inherit",
       },
+
       plotOptions: {
         bar: {
           horizontal: true,
@@ -305,27 +431,70 @@ export default function Administracao() {
           distributed: true,
         },
       },
-      colors: ["#3370EB", "#12B76A", "#7C3AED", "#F5B942", "#2EC4B6", "#EF7A9B"],
-      dataLabels: { enabled: false },
+
+      colors: [
+        "#3370EB",
+        "#12B76A",
+        "#7C3AED",
+        "#F5B942",
+        "#2EC4B6",
+        "#EF7A9B",
+      ],
+
+      dataLabels: {
+        enabled: false,
+      },
+
       grid: {
         borderColor: "#E6EEFF",
         strokeDashArray: 4,
-        xaxis: { lines: { show: true } },
-        yaxis: { lines: { show: false } },
+        xaxis: {
+          lines: {
+            show: true,
+          },
+        },
+        yaxis: {
+          lines: {
+            show: false,
+          },
+        },
       },
+
       xaxis: {
         categories: colaboradoresData.labels,
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: { style: { colors: "#7A8AAA", fontWeight: 700 } },
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "#7A8AAA",
+            fontWeight: 700,
+          },
+        },
       },
+
       yaxis: {
-        labels: { style: { colors: "#30456F", fontWeight: 800 } },
+        labels: {
+          style: {
+            colors: "#30456F",
+            fontWeight: 800,
+          },
+        },
       },
-      legend: { show: false },
+
+      legend: {
+        show: false,
+      },
+
       tooltip: {
         theme: "light",
-        y: { formatter: (value) => `${value} pets atendidos` },
+        y: {
+          formatter: (value) =>
+            `${value} pets atendidos`,
+        },
       },
     }),
     [colaboradoresData.labels]
@@ -333,6 +502,9 @@ export default function Administracao() {
 
   function handleLogout() {
     localStorage.removeItem("isAdmin");
+    localStorage.removeItem("isDev");
+    localStorage.removeItem("token");
+
     navigate("/conta");
   }
 
@@ -340,6 +512,7 @@ export default function Administracao() {
     return (
       <>
         <Header />
+        <AdminSidebar />
 
         <main className="admin-page">
           <section className="admin-loading-shell">
@@ -349,29 +522,45 @@ export default function Administracao() {
                 <strong>Administração</strong>
               </div>
 
-              <div className="admin-loading-pet-animation" aria-hidden="true">
+              <div
+                className="admin-loading-pet-animation"
+                aria-hidden="true"
+              >
                 <div className="admin-loading-paw-main">
-                  <PawPrint size={36} strokeWidth={2.5} />
+                  <PawPrint
+                    size={36}
+                    strokeWidth={2.5}
+                  />
                 </div>
 
                 <div className="admin-loading-orbit admin-loading-orbit-calendar">
-                  <CalendarDays size={18} strokeWidth={2.5} />
+                  <CalendarDays
+                    size={18}
+                    strokeWidth={2.5}
+                  />
                 </div>
 
                 <div className="admin-loading-orbit admin-loading-orbit-bath">
-                  <Bath size={18} strokeWidth={2.5} />
+                  <Bath
+                    size={18}
+                    strokeWidth={2.5}
+                  />
                 </div>
 
                 <div className="admin-loading-orbit admin-loading-orbit-scissors">
-                  <Scissors size={18} strokeWidth={2.5} />
+                  <Scissors
+                    size={18}
+                    strokeWidth={2.5}
+                  />
                 </div>
               </div>
 
               <h1>Carregando dashboard</h1>
 
               <p>
-                Estamos buscando os dados mais recentes de agendamentos, serviços
-                e atividades do pet shop.
+                Estamos buscando os dados mais
+                recentes de agendamentos, serviços e
+                atividades do pet shop.
               </p>
 
               <div className="admin-loading-skeleton">
@@ -389,50 +578,17 @@ export default function Administracao() {
   return (
     <>
       <Header />
+      <AdminSidebar />
 
       <main className="admin-page">
         <section className="admin-shell">
-          <div className="admin-sidebar-track">
-            <aside className="admin-sidebar">
-              <div className="admin-brand">
-                <span>PETNET</span>
-                <strong>Administração</strong>
-              </div>
-
-              <nav className="admin-menu">
-                {menu.map((item) => (
-                  <button
-                    key={item.nome}
-                    type="button"
-                    className={location.pathname === item.rota ? "active" : ""}
-                    onClick={() => navigate(item.rota)}
-                  >
-                    {item.nome}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="admin-sidebar-card admin-sidebar-next-card">
-                <span>Próximo atendimento</span>
-
-                <div className="admin-next-time">
-                  <strong>09:00</strong>
-                </div>
-
-                <div className="admin-next-details">
-                  <small>Thor</small>
-                  <small>Banho</small>
-                </div>
-              </div>
-
-
-            </aside>
-          </div>
-
           <section className="admin-content">
             <div className="admin-topbar">
               <div>
-                <span className="admin-page-label">Gerência</span>
+                <span className="admin-page-label">
+                  Gerência
+                </span>
+
                 <h1>Dashboard Operacional</h1>
               </div>
 
@@ -442,8 +598,14 @@ export default function Administracao() {
                     <button
                       key={periodo}
                       type="button"
-                      className={periodoAtivo === periodo ? "active" : ""}
-                      onClick={() => setPeriodoAtivo(periodo)}
+                      className={
+                        periodoAtivo === periodo
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setPeriodoAtivo(periodo)
+                      }
                     >
                       {periodo}
                     </button>
@@ -453,8 +615,6 @@ export default function Administracao() {
                 <button
                   className="admin-logout-btn"
                   onClick={handleLogout}
-                  onMouseEnter={() => setHoverLogout(true)}
-                  onMouseLeave={() => setHoverLogout(false)}
                   type="button"
                 >
                   <img
@@ -462,16 +622,24 @@ export default function Administracao() {
                     alt=""
                     className="admin-logout-icon"
                   />
+
                   Sair
                 </button>
               </div>
             </div>
 
-            {erro ? <div style={{ marginBottom: 16 }}>{erro}</div> : null}
+            {erro && (
+              <div className="admin-error-message">
+                {erro}
+              </div>
+            )}
 
             <section className="admin-card-grid">
               {dados.cards.map((card) => {
-                const cardTipo = card.titulo === "Cancelamento" ? "amarelo" : card.tipo;
+                const cardTipo =
+                  card.titulo === "Cancelamento"
+                    ? "amarelo"
+                    : card.tipo;
 
                 return (
                   <article
@@ -490,6 +658,7 @@ export default function Administracao() {
               <section className="admin-panel admin-panel-flow">
                 <div className="admin-panel-header">
                   <h2>Fluxo de agendamentos</h2>
+
                   <span>{periodoAtivo}</span>
                 </div>
 
@@ -497,113 +666,38 @@ export default function Administracao() {
                   {temFluxoData ? (
                     <Chart
                       options={fluxoOptions}
-                      series={[{ name: "Agendamentos", data: dados.fluxo || [] }]}
+                      series={[
+                        {
+                          name: "Agendamentos",
+                          data: dados.fluxo || [],
+                        },
+                      ]}
                       type="area"
                       height={390}
                     />
                   ) : (
                     <div className="admin-empty-chart admin-empty-chart-flow">
                       <div className="admin-empty-icon admin-empty-icon-blue">
-                        <TrendingUp size={30} strokeWidth={2.4} />
+                        <TrendingUp
+                          size={30}
+                          strokeWidth={2.4}
+                        />
                       </div>
 
-                      <span className="admin-empty-kicker">Fluxo ainda vazio</span>
+                      <span className="admin-empty-kicker">
+                        Fluxo ainda vazio
+                      </span>
 
-                      <strong>Nenhum agendamento no período</strong>
-
-                      <p>
-                        Assim que novos agendamentos forem registrados, a evolução dos horários
-                        aparecerá neste gráfico.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              <section className="admin-panel admin-panel-table">
-                <div className="admin-panel-header admin-panel-header-agenda">
-                  <div>
-                    <h2>Agenda de hoje</h2>
-                    <p>Resumo do dia com horários, tutor e serviço.</p>
-                  </div>
-
-                  <button type="button" onClick={() => navigate("/admin/agendamentos")}>
-                    Ver agenda
-                  </button>
-                </div>
-
-                <div className="admin-agenda-summary">
-                  <div>
-                    <span>Total</span>
-                    <strong>{agendaResumo.atendimentos}</strong>
-                  </div>
-
-                  <div>
-                    <span>Confirmados</span>
-                    <strong>{agendaResumo.confirmados}</strong>
-                  </div>
-
-                  <div>
-                    <span>Finalizados</span>
-                    <strong>{agendaResumo.finalizados}</strong>
-                  </div>
-
-                  <div>
-                    <span>Entregues</span>
-                    <strong>{agendaResumo.entregues}</strong>
-                  </div>
-                </div>
-
-                <div className="admin-table-wrapper">
-                  {(dados.agendaHoje || []).length > 0 ? (
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Horário</th>
-                          <th>Pet</th>
-                          <th>Tutor</th>
-                          <th>Serviço</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {dados.agendaHoje.map((item, index) => (
-                          <tr key={`${item.pet || "pet"}-${index}`}>
-                            <td>{item.horario}</td>
-                            <td>{item.pet}</td>
-                            <td>{item.tutor}</td>
-                            <td>{item.servico}</td>
-                            <td>
-                              <span className={getStatusClass(item.status)}>
-                                {item.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="admin-empty-state admin-empty-state-agenda">
-                      <div className="admin-empty-state-icon">
-                        <CalendarX size={30} strokeWidth={2.4} />
-                      </div>
-
-                      <strong>Nenhum agendamento para exibir</strong>
+                      <strong>
+                        Nenhum agendamento no período
+                      </strong>
 
                       <p>
-                        Ainda não há horários registrados neste período. Quando novos agendamentos
-                        forem criados, eles aparecerão nesta tabela.
+                        Assim que novos agendamentos
+                        forem registrados, a evolução
+                        dos horários aparecerá neste
+                        gráfico.
                       </p>
-
-                      <button
-                        type="button"
-                        className="admin-empty-state-button"
-                        onClick={() => navigate("/admin/agendamentos")}
-                      >
-                        <Clock3 size={17} strokeWidth={2.5} />
-                        Abrir agenda
-                      </button>
                     </div>
                   )}
                 </div>
@@ -625,29 +719,179 @@ export default function Administracao() {
                       />
 
                       <div className="admin-donut-legend">
-                        {(dados.servicosLabels || []).map((label, index) => (
-                          <div key={label}>
-                            <span className={`dot dot-${index}`} />
-                            <small>{label}</small>
-                            <strong>{dados.servicos[index]}</strong>
-                          </div>
-                        ))}
+                        {(dados.servicosLabels || []).map(
+                          (label, index) => (
+                            <div key={label}>
+                              <span
+                                className={`dot dot-${index}`}
+                              />
+
+                              <small>{label}</small>
+
+                              <strong>
+                                {dados.servicos[index]}
+                              </strong>
+                            </div>
+                          )
+                        )}
                       </div>
                     </>
                   ) : (
                     <div className="admin-empty-chart admin-empty-chart-donut">
                       <div className="admin-empty-icon admin-empty-icon-yellow">
-                        <Scissors size={30} strokeWidth={2.4} />
+                        <Scissors
+                          size={30}
+                          strokeWidth={2.4}
+                        />
                       </div>
 
-                      <span className="admin-empty-kicker">Serviços em espera</span>
+                      <span className="admin-empty-kicker">
+                        Serviços em espera
+                      </span>
 
-                      <strong>Nenhum serviço buscado ainda</strong>
+                      <strong>
+                        Nenhum serviço buscado ainda
+                      </strong>
 
                       <p>
-                        Quando houver agendamentos, os serviços mais procurados serão organizados
-                        neste painel.
+                        Quando houver agendamentos, os
+                        serviços mais procurados serão
+                        organizados neste painel.
                       </p>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              <section className="admin-panel admin-panel-table">
+                <div className="admin-panel-header admin-panel-header-agenda">
+                  <div>
+                    <h2>Agenda de hoje</h2>
+
+                    <p>
+                      Resumo do dia com horários,
+                      tutor e serviço.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate("/admin/agendamentos")
+                    }
+                  >
+                    Ver agenda
+                  </button>
+                </div>
+
+                <div className="admin-agenda-summary">
+                  <div>
+                    <span>Total</span>
+                    <strong>
+                      {agendaResumo.atendimentos}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Confirmados</span>
+                    <strong>
+                      {agendaResumo.confirmados}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Finalizados</span>
+                    <strong>
+                      {agendaResumo.finalizados}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Entregues</span>
+                    <strong>
+                      {agendaResumo.entregues}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="admin-table-wrapper">
+                  {(dados.agendaHoje || []).length >
+                  0 ? (
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Horário</th>
+                          <th>Pet</th>
+                          <th>Tutor</th>
+                          <th>Serviço</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {dados.agendaHoje.map(
+                          (item, index) => (
+                            <tr
+                              key={`${
+                                item.pet || "pet"
+                              }-${index}`}
+                            >
+                              <td>{item.horario}</td>
+                              <td>{item.pet}</td>
+                              <td>{item.tutor}</td>
+                              <td>{item.servico}</td>
+
+                              <td>
+                                <span
+                                  className={getStatusClass(
+                                    item.status
+                                  )}
+                                >
+                                  {item.status}
+                                </span>
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="admin-empty-state admin-empty-state-agenda">
+                      <div className="admin-empty-state-icon">
+                        <CalendarX
+                          size={30}
+                          strokeWidth={2.4}
+                        />
+                      </div>
+
+                      <strong>
+                        Nenhum agendamento para exibir
+                      </strong>
+
+                      <p>
+                        Ainda não há horários
+                        registrados neste período.
+                        Quando novos agendamentos forem
+                        criados, eles aparecerão nesta
+                        tabela.
+                      </p>
+
+                      <button
+                        type="button"
+                        className="admin-empty-state-button"
+                        onClick={() =>
+                          navigate(
+                            "/admin/agendamentos"
+                          )
+                        }
+                      >
+                        <Clock3
+                          size={17}
+                          strokeWidth={2.5}
+                        />
+
+                        Abrir agenda
+                      </button>
                     </div>
                   )}
                 </div>
@@ -662,23 +906,37 @@ export default function Administracao() {
                   {temColaboradoresData ? (
                     <Chart
                       options={colaboradoresOptions}
-                      series={[{ name: "Pets", data: colaboradoresData.values }]}
+                      series={[
+                        {
+                          name: "Pets",
+                          data: colaboradoresData.values,
+                        },
+                      ]}
                       type="bar"
                       height={320}
                     />
                   ) : (
                     <div className="admin-empty-chart admin-empty-chart-collaborators">
                       <div className="admin-empty-icon admin-empty-icon-green">
-                        <UsersRound size={30} strokeWidth={2.4} />
+                        <UsersRound
+                          size={30}
+                          strokeWidth={2.4}
+                        />
                       </div>
 
-                      <span className="admin-empty-kicker">Equipe sem registros</span>
+                      <span className="admin-empty-kicker">
+                        Equipe sem registros
+                      </span>
 
-                      <strong>Nenhum atendimento por colaborador</strong>
+                      <strong>
+                        Nenhum atendimento por
+                        colaborador
+                      </strong>
 
                       <p>
-                        Quando os atendimentos forem concluídos, a distribuição por colaborador
-                        aparecerá aqui.
+                        Quando os atendimentos forem
+                        concluídos, a distribuição por
+                        colaborador aparecerá aqui.
                       </p>
                     </div>
                   )}
@@ -691,33 +949,57 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-activity-list">
-                  {(dados.atividadesRecentes || []).length > 0 ? (
-                    dados.atividadesRecentes.map((item, index) => (
-                      <div className="admin-activity-item" key={`${item.titulo || "item"}-${index}`}>
-                        <div className="admin-activity-dot" />
+                  {(dados.atividadesRecentes || [])
+                    .length > 0 ? (
+                    dados.atividadesRecentes.map(
+                      (item, index) => (
+                        <div
+                          className="admin-activity-item"
+                          key={`${
+                            item.titulo || "item"
+                          }-${index}`}
+                        >
+                          <div className="admin-activity-dot" />
 
-                        <div>
-                          <strong>{item.titulo}</strong>
-                          <p>{item.texto}</p>
-                          <small>{item.hora}</small>
+                          <div>
+                            <strong>
+                              {item.titulo}
+                            </strong>
+
+                            <p>{item.texto}</p>
+
+                            <small>{item.hora}</small>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      )
+                    )
                   ) : (
                     <div className="admin-empty-state admin-empty-state-activity">
                       <div className="admin-empty-state-icon">
-                        <ClipboardList size={30} strokeWidth={2.4} />
+                        <ClipboardList
+                          size={30}
+                          strokeWidth={2.4}
+                        />
                       </div>
 
-                      <strong>Nenhuma atividade recente</strong>
+                      <strong>
+                        Nenhuma atividade recente
+                      </strong>
 
                       <p>
-                        As últimas movimentações do sistema aparecerão aqui assim que houver
-                        confirmações, finalizações, entregas ou cancelamentos.
+                        As últimas movimentações do
+                        sistema aparecerão aqui assim
+                        que houver confirmações,
+                        finalizações, entregas ou
+                        cancelamentos.
                       </p>
 
                       <span className="admin-empty-state-chip">
-                        <Sparkles size={15} strokeWidth={2.5} />
+                        <Sparkles
+                          size={15}
+                          strokeWidth={2.5}
+                        />
+
                         Aguardando movimentações
                       </span>
                     </div>

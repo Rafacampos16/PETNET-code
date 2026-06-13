@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import "../styles/status.css";
 import scheduleService from "../services/scheduleService";
+import AdminSidebar from "../components/AdminSidebar";
 
 const ScheduleStatus = {
   SCHEDULED: "SCHEDULED",
@@ -233,6 +234,8 @@ const Status = () => {
   }
 
   return (
+    <>
+    <AdminSidebar />
     <div className="status-admin-page">
       <div className="status-admin-shell">
         <header className="status-admin-hero">
@@ -529,6 +532,7 @@ const Status = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

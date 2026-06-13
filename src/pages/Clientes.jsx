@@ -4,6 +4,7 @@ import DataTable from "react-data-table-component";
 import pawCatIcon from "../assets/icons/paw-cat.png";
 import petClienteIcon from "../assets/icons/pet-cliente.png";
 import LoadingScreen from "../components/LoadingScreen";
+import AdminSidebar from "../components/AdminSidebar";
 
 import {
   FiSearch,
@@ -345,7 +346,7 @@ const Clientes = () => {
         name: "Cliente",
         sortable: true,
         grow: 1.5,
-        minWidth: "260px",
+        minWidth: "200px",
         cell: (row) => (
           <div className="cell-cliente">
             <div className="cliente-avatar">
@@ -429,7 +430,7 @@ const Clientes = () => {
       {
         name: "Ações",
         center: true,
-        width: "280px",
+        width: "230px",
         cell: (row) => (
           <div className="acoes-usuario-table">
             <button className="btn-ver" onClick={() => abrirModal(row)}>
@@ -460,6 +461,8 @@ const Clientes = () => {
   }
 
   return (
+    <>
+    <AdminSidebar /> 
     <div className="clientes-container">
       <h1 className="titulo-clientes">Gerenciamento de Usuários</h1>
 
@@ -768,6 +771,7 @@ const Clientes = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
