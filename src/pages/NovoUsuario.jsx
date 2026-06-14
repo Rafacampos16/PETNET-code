@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiEye, FiEyeOff } from "react-icons/fi";
 import { userService } from "../services/userService";
 import "../styles/novo_usuario.css";
+import AdminSidebar from "../components/AdminSidebar";
 
 export default function NovoUsuario() {
   const navigate = useNavigate();
@@ -149,6 +150,8 @@ export default function NovoUsuario() {
   }
 
   return (
+    <>
+    <AdminSidebar /> 
     <div className="novo-usuario-page">
       <div className="novo-usuario-header">
         <span className="novo-usuario-badge">Administração</span>
@@ -374,5 +377,7 @@ export default function NovoUsuario() {
         </div>
       </form>
     </div>
+    </>
+   
   );
 }
