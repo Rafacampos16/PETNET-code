@@ -102,35 +102,37 @@ function Logs() {
   }
 
   function formatarDataHora(dataHora) {
-  if (!dataHora) return "Não informado";
+    if (!dataHora) return "Não informado";
 
-  const data = new Date(dataHora);
+    const str = String(dataHora).endsWith("Z") ? dataHora : dataHora + "Z";
+    const data = new Date(str);
 
-  if (Number.isNaN(data.getTime())) return dataHora;
+    if (Number.isNaN(data.getTime())) return dataHora;
 
-  return data.toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+    return data.toLocaleString("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
-function formatarHora(dataHora) {
-  if (!dataHora) return "--:--";
+  function formatarHora(dataHora) {
+    if (!dataHora) return "--:--";
 
-  const data = new Date(dataHora);
+    const str = String(dataHora).endsWith("Z") ? dataHora : dataHora + "Z";
+    const data = new Date(str);
 
-  if (Number.isNaN(data.getTime())) return "--:--";
+    if (Number.isNaN(data.getTime())) return "--:--";
 
-  return data.toLocaleTimeString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+    return data.toLocaleTimeString("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   function formatarCpf(cpf) {
     const cpfLimpo = String(cpf || "").replace(/\D/g, "");
@@ -315,9 +317,8 @@ function formatarHora(dataHora) {
           </section>
         ) : (
           <section
-            className={`logs-content ${
-              logSelecionado ? "with-details" : "without-details"
-            }`}
+            className={`logs-content ${logSelecionado ? "with-details" : "without-details"
+              }`}
           >
             <div className="logs-table-card">
               <div className="logs-table-header">
