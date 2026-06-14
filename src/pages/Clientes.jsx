@@ -98,6 +98,7 @@ const Clientes = () => {
             numero: user.addresses?.[0]?.number,
             bairro: user.addresses?.[0]?.neighborhood,
             cep: user.addresses?.[0]?.cep,
+            localizacao: user.addresses?.[0]?.locaticion || "",
             ativo: user.active !== false,
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
@@ -151,35 +152,32 @@ const Clientes = () => {
     });
   };
 
+  //alterar depois para permitir a inclusão de multiplos endereços
   const salvarEdicao = async () => {
     const body = {
-      name: form.nome,
-      cpf: form.cpf,
-      email: form.email,
-      type: form.tipo,
-      active: true,
-      must_create_password: true,
+      name: clienteEditando.nome,
+      email: clienteEditando.email,
+      type: clienteEditando.tipo,
 
-      contact: form.telefone
+      contact: clienteEditando.telefone
         ? {
-          name: "Principal",
-          number: form.telefone,
-        }
+            name: "Celular",
+            number: clienteEditando.telefone,
+          }
         : undefined,
 
-      address:
-        form.endereco || form.cep
-          ? {
-            type: form.tipoEndereco || "Casa",
-            cep: form.cep,
-            address: form.endereco,
-            number: form.numero,
-            neighborhood: form.bairro,
-            complement: form.complemento,
-            locaticion: form.localizacao,
+      address: clienteEditando.endereco || clienteEditando.cep
+        ? {
+            type: "Residencial",
+            cep: clienteEditando.cep,
+            address: clienteEditando.endereco,
+            number: clienteEditando.numero,
+            neighborhood: clienteEditando.bairro,
+            locaticion: clienteEditando.localizacao || "",
           }
-          : undefined,
+        : undefined,
     };
+
     try {
       await userService.updateUser(clienteEditando.cpf, body);
       setClientes(
@@ -213,11 +211,11 @@ const Clientes = () => {
   const normalizarTipoUsuario = (tipo = "") => {
     const tipoLower = tipo.toLowerCase();
 
-    if (tipoLower === "admin" || tipoLower === "administrador") {
-      return "Admin";
+    if (tipoLower === "manager" || tipoLower === "gerente") {
+      return "Gerente";
     }
 
-    if (tipoLower === "colaborador") {
+    if (tipoLower === "collaborator" || tipoLower === "colaborador") {
       return "Colaborador";
     }
 
@@ -399,21 +397,6 @@ const Clientes = () => {
           </div>
         ),
       },
-      // {
-      //   name: "Bairro",
-      //   sortable: true,
-      //   cell: (row) => (
-      //     <span className="badge-local">
-      //       <FiMapPin size={13} /> {row.bairro}
-      //     </span>
-      //   ),
-      // },
-      // {
-      //   name: "UF",
-      //   center: true,
-      //   width: "120px",
-      //   cell: (row) => <span className="badge-estado">{row.estado}</span>,
-      // },
       {
         name: "Pets",
         center: true,
@@ -438,12 +421,7 @@ const Clientes = () => {
               Ver
             </button>
 
-            <button
-              className={`btn-status-usuario ${row.ativo ? "desativar" : "ativar"}`}
-              onClick={() => alternarStatusUsuario(row)}
-            >
-              {row.ativo ? "Desativar" : "Ativar"}
-            </button>
+           
           </div>
         ),
       },
@@ -488,42 +466,10 @@ const Clientes = () => {
               <option value="">Todos</option>
               <option value="Cliente">Clientes</option>
               <option value="Colaborador">Colaboradores</option>
-              <option value="Admin">Administradores</option>
+              <option value="Gerente">Gerentes</option>
             </select>
           </div>
         </div>
-
-        {/* <div className="filters-bar">
-          <div className="filter-group">
-            <label>Cidade</label>
-            <select
-              value={cidadeFiltro}
-              onChange={(e) => setCidadeFiltro(e.target.value)}
-            >
-              <option value="">Todas</option>
-              {cidadesUnicas.map((cidade) => (
-                <option key={cidade} value={cidade}>
-                  {cidade}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-group filter-uf">
-            <label>UF</label>
-            <select
-              value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              {estadosUnicos.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div> */}
       </div>
 
       <div className="table-card">
@@ -581,14 +527,7 @@ const Clientes = () => {
             <div className="modal-grid-custom">
               <div className="info-box">
                 <label>CPF</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.cpf}
-                    onChange={(e) => alterarCampo("cpf", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.cpf}</span>
-                )}
+                <span>{clienteSelecionado.cpf}</span>
               </div>
 
               <div className="info-box">
@@ -650,30 +589,6 @@ const Clientes = () => {
                   <span>{clienteSelecionado.bairro}</span>
                 )}
               </div>
-
-              {/* <div className="info-box">
-                <label>Cidade</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.cidade}
-                    onChange={(e) => alterarCampo("cidade", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.cidade}</span>
-                )}
-              </div>
-
-              <div className="info-box">
-                <label>Estado</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.estado}
-                    onChange={(e) => alterarCampo("estado", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.estado}</span>
-                )}
-              </div> */}
 
               <div className="info-box">
                 <label>CEP</label>
