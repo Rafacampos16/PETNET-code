@@ -356,6 +356,16 @@ const Header = () => {
     },
   ];
 
+  if (isAdmin) {
+    const indicePets = menuPublico.findIndex(
+      (item) => item.id === "pets"
+    );
+
+    if (indicePets !== -1) {
+      menuPublico.splice(indicePets, 1);
+    }
+  }
+
   if (isUser) {
     menuPublico.push({
       id: "agenda-cliente",
@@ -564,20 +574,18 @@ const Header = () => {
   } = {}) => {
     return (
       <div
-        className={`navbar-account-wrapper ${
-          admin
+        className={`navbar-account-wrapper ${admin
             ? "navbar-account-wrapper-admin"
             : ""
-        }`}
+          }`}
         ref={contaDropdownRef}
       >
         <button
           type="button"
-          className={`navbar-account ${
-            admin
+          className={`navbar-account ${admin
               ? ""
               : "navbar-account-inline"
-          }`}
+            }`}
           onClick={handleContaClick}
           aria-expanded={
             isLogged
@@ -605,11 +613,10 @@ const Header = () => {
               <ChevronDown
                 size={18}
                 strokeWidth={3}
-                className={`navbar-account-arrow ${
-                  contaDropdownOpen
+                className={`navbar-account-arrow ${contaDropdownOpen
                     ? "open"
                     : ""
-                }`}
+                  }`}
               />
             </>
           ) : (
@@ -628,11 +635,10 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div
-          className={`header-content ${
-            isAdminPage
+          className={`header-content ${isAdminPage
               ? "admin-header-content"
               : ""
-          }`}
+            }`}
         >
           {isLogged && (
             <button
@@ -668,11 +674,10 @@ const Header = () => {
           )}
 
           <div
-            className={`logo-center ${
-              isAdminPage
+            className={`logo-center ${isAdminPage
                 ? "admin-logo"
                 : ""
-            }`}
+              }`}
             onClick={handleLogoClick}
             role="button"
             tabIndex={0}
@@ -708,21 +713,18 @@ const Header = () => {
             aria-expanded={menuOpen}
           >
             <span
-              className={`bar ${
-                menuOpen ? "open" : ""
-              }`}
+              className={`bar ${menuOpen ? "open" : ""
+                }`}
             />
 
             <span
-              className={`bar ${
-                menuOpen ? "open" : ""
-              }`}
+              className={`bar ${menuOpen ? "open" : ""
+                }`}
             />
 
             <span
-              className={`bar ${
-                menuOpen ? "open" : ""
-              }`}
+              className={`bar ${menuOpen ? "open" : ""
+                }`}
             />
           </button>
 
@@ -732,11 +734,10 @@ const Header = () => {
             })
           ) : (
             <div
-              className={`header-right ${
-                isColaboradorPage
+              className={`header-right ${isColaboradorPage
                   ? "collaborator-nav"
                   : ""
-              }`}
+                }`}
             >
               {menuDesktop.map(
                 renderizarItemDesktop
@@ -756,9 +757,8 @@ const Header = () => {
           )}
 
           <nav
-            className={`mobile-menu ${
-              menuOpen ? "show" : ""
-            }`}
+            className={`mobile-menu ${menuOpen ? "show" : ""
+              }`}
             aria-hidden={!menuOpen}
           >
             <div className="mobile-menu-header">
@@ -885,11 +885,10 @@ const Header = () => {
                   (notificacao) => (
                     <div
                       key={notificacao.id}
-                      className={`navbar-notification-item ${
-                        notificacao.lida
+                      className={`navbar-notification-item ${notificacao.lida
                           ? "lida"
                           : ""
-                      }`}
+                        }`}
                     >
                       <div>
                         <strong>

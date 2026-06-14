@@ -836,9 +836,9 @@
   color: #8a7400;
 }
 
-.badge-admin {
-  background-color: rgba(31, 41, 55, 0.1);
-  color: #1f2937;
+.badge-gerente {
+  background-color: rgba(201, 104, 141, 0.493);
+  color: #8f3352;
 }
 
 .btn-novo-usuario {

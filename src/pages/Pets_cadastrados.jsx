@@ -53,6 +53,15 @@ export const traduzirPorte = (size) => {
   }
 };
 
+export const traduzirSRD = (breed) => {
+  switch (breed) {
+    case "SRD":
+      return "Não informado"
+    default:
+      return breed;
+  }
+}
+
 const formatarData = (data) => {
   if (!data) return "";
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -97,7 +106,7 @@ const Pets_cadastrados = () => {
               id: pet.id,
               name: pet.name,
               species: pet.species,
-              breed: pet.breed,
+              breed: traduzirSRD(pet.breed),
               size: traduzirPorte(pet.size),
               weight: `${pet.weight} kg`,
               birth_date: formatarData(pet.birth_date),
@@ -305,7 +314,7 @@ const Pets_cadastrados = () => {
         cell: (row) => (
           <span className="birth-cell">
             <FiCalendar size={14} />
-            {row.birth_date || "--"}
+            {row.birth_date || "--/--/----"}
           </span>
         ),
       },

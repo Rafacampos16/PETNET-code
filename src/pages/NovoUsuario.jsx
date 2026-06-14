@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiUser, FiMail, FiPhone, FiMapPin, FiShield } from "react-icons/fi";
+import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiEye, FiEyeOff } from "react-icons/fi";
 import { userService } from "../services/userService";
 import "../styles/novo_usuario.css";
+import AdminSidebar from "../components/AdminSidebar";
 
 export default function NovoUsuario() {
   const navigate = useNavigate();
@@ -12,7 +13,8 @@ export default function NovoUsuario() {
     cpf: "",
     email: "",
     telefone: "",
-    tipo: "Cliente",
+    tipo: "",
+    senha: "",
     cep: "",
     endereco: "",
     numero: "",
@@ -24,6 +26,7 @@ export default function NovoUsuario() {
 
   const [erros, setErros] = useState({});
   const [salvando, setSalvando] = useState(false);
+  const [showSenha, setShowSenha] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -40,6 +43,10 @@ export default function NovoUsuario() {
 
     if (name === "cep") {
       novoValor = value.replace(/\D/g, "").slice(0, 8);
+    }
+
+    if (name === "complemento") {
+      novoValor = value.slice(0, 10);
     }
 
     setForm((prev) => ({
@@ -85,6 +92,7 @@ export default function NovoUsuario() {
     if (!form.cpf.trim()) novosErros.cpf = true;
     if (!form.email.trim()) novosErros.email = true;
     if (!form.tipo.trim()) novosErros.tipo = true;
+    if (!form.senha.trim()) novosErros.senha = true;
 
     setErros(novosErros);
 
@@ -107,23 +115,18 @@ export default function NovoUsuario() {
         cpf: form.cpf,
         email: form.email,
         type: form.tipo,
-
-        // Usuário criado pelo admin sem senha inicial.
-        // O backend precisa tratar isso e exigir criação de senha no primeiro login.
-        password: null,
-        must_create_password: true,
-        active: true,
+        password: form.senha,
 
         contact: form.telefone
           ? {
-              name: "Principal",
+              name: "Celular",
               number: form.telefone,
             }
           : undefined,
 
         address: form.endereco || form.cep
           ? {
-              type: form.tipoEndereco || "Casa",
+              type: "Residencial",
               cep: form.cep,
               address: form.endereco,
               number: form.numero,
@@ -137,7 +140,7 @@ export default function NovoUsuario() {
       await userService.createUser(body);
 
       alert("Usuário cadastrado com sucesso!");
-      navigate("/clientes");
+      navigate("/admin/clientes");
     } catch (error) {
       console.error("Erro ao criar usuário:", error);
       alert(error.response?.data?.error || "Erro ao cadastrar usuário.");
@@ -147,6 +150,8 @@ export default function NovoUsuario() {
   }
 
   return (
+    <>
+    <AdminSidebar /> 
     <div className="novo-usuario-page">
       <div className="novo-usuario-header">
         <span className="novo-usuario-badge">Administração</span>
@@ -209,10 +214,32 @@ export default function NovoUsuario() {
                 onChange={handleChange}
                 className={erros.tipo ? "input-erro" : ""}
               >
+                <option value="" disabled>Selecione o tipo</option>
                 <option value="Cliente">Cliente</option>
+                <option value="Gerente">Gerente</option>
                 <option value="Colaborador">Colaborador</option>
-                <option value="Admin">Administrador</option>
               </select>
+            </label>
+
+            <label>
+              Senha *
+              <div style={{ position: "relative" }}>
+                <input
+                  name="senha"
+                  type={showSenha ? "text" : "password"}
+                  placeholder="Digite a senha inicial"
+                  value={form.senha}
+                  onChange={handleChange}
+                  className={erros.senha ? "input-erro" : ""}
+                  style={{ paddingRight: "2.5rem", width: "100%", boxSizing: "border-box" }}
+                />
+                <span
+                  onClick={() => setShowSenha((prev) => !prev)}
+                  style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: "#888" }}
+                >
+                  {showSenha ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </span>
+              </div>
             </label>
           </div>
         </div>
@@ -305,7 +332,7 @@ export default function NovoUsuario() {
               <input
                 name="complemento"
                 type="text"
-                placeholder="Apartamento, bloco..."
+                placeholder="Ex: Apto 101"
                 value={form.complemento}
                 onChange={handleChange}
               />
@@ -327,10 +354,10 @@ export default function NovoUsuario() {
         <div className="senha-info-box">
           <FiShield />
           <div>
-            <strong>Senha definida no primeiro acesso</strong>
+            <strong>Senha inicial definida pelo administrador</strong>
             <p>
-              O administrador cadastra o usuário sem senha. No primeiro login, o
-              sistema deve solicitar a criação da senha.
+              Defina uma senha inicial para o usuário e repasse a ele. Recomenda-se
+              que o usuário altere a senha no primeiro acesso.
             </p>
           </div>
         </div>
@@ -350,5 +377,7 @@ export default function NovoUsuario() {
         </div>
       </form>
     </div>
+    </>
+   
   );
 }

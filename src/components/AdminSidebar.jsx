@@ -14,6 +14,7 @@ import {
   Scissors,
   ScrollText,
   UsersRound,
+  FileClock
 } from "lucide-react";
 
 import "../styles/adminSidebar.css";
@@ -25,6 +26,7 @@ const AdminSidebar = () => {
   const [menuAberto, setMenuAberto] = useState(false);
 
   const isDev = localStorage.getItem("isDev") === "true";
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   const itensMenu = [
     {
@@ -63,15 +65,15 @@ const AdminSidebar = () => {
       rota: "/admin/status",
       icon: ClipboardList,
     },
-    ...(isDev
-      ? [
-          {
-            nome: "Logs",
-            rota: "/logs",
-            icon: ScrollText,
-          },
-        ]
-      : []),
+    ...(isAdmin || isDev
+  ? [
+      {
+        nome: "Logs",
+        rota: "/logs",
+        icon: FileClock,
+      },
+    ]
+  : []),
   ];
 
   function estaAtivo(item) {
