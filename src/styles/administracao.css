@@ -333,7 +333,6 @@
 .admin-panel-collaborators {
   grid-area: collaborators;
 
-  min-height: 430px;
 
   display: flex;
   flex-direction: column;
@@ -342,7 +341,6 @@
 .admin-panel-activity {
   grid-area: activity;
 
-  min-height: 430px;
 
   display: flex;
   flex-direction: column;
@@ -562,7 +560,9 @@
 
 .admin-table-wrapper {
   width: 100%;
+  max-height: 320px;
   overflow-x: auto;
+  overflow-y: auto;
 }
 
 .admin-table {
@@ -610,9 +610,14 @@
   font-weight: 900;
 }
 
+.admin-status-agendado {
+  color: #b67521;
+  background: rgba(235, 186, 51, 0.205);
+}
+
 .admin-status-confirmado {
   color: #2154b6;
-  background: rgba(51, 112, 235, 0.12);
+  background: rgba(51, 177, 235, 0.12);
 }
 
 .admin-status-finalizado {
@@ -639,6 +644,8 @@
   flex-direction: column;
 
   gap: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .admin-activity-item {
