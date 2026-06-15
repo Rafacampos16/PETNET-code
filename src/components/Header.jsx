@@ -50,6 +50,8 @@ import {
   marcarNotificacaoComoLida,
 } from "../utils/notificacoesLocal";
 
+import notificationService from "../services/notificationService";
+
 import "../styles/header.css";
 
 const Header = () => {
@@ -162,12 +164,30 @@ const Header = () => {
 
   const nomeUsuario = obterNomeUsuario();
 
-  function carregarNotificacoes() {
-    const lista = listarNotificacoes();
+  function normalizarNotificacao(n) {
+    return {
+      id: n.id,
+      titulo: n.topic,
+      descricao: n.message,
+      lida: n.viewed,
+    };
+  }
 
-    setNotificacoes(
-      Array.isArray(lista) ? lista : []
-    );
+  async function carregarNotificacoes() {
+    if (!isLogged) {
+      setNotificacoes([]);
+      return;
+    }
+    try {
+      const lista = await notificationService.listar();
+      if (Array.isArray(lista)) {
+        setNotificacoes(lista.map(normalizarNotificacao));
+      } else {
+        setNotificacoes([]);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar notificações:", err);
+    }
   }
 
   function abrirModalNotificacoes() {
@@ -176,9 +196,15 @@ const Header = () => {
     setModalNotificacoes(true);
   }
 
-  function marcarComoLida(id) {
-    marcarNotificacaoComoLida(id);
-    carregarNotificacoes();
+  async function marcarComoLida(id) {
+    try {
+      await notificationService.marcarComoLida(id);
+      setNotificacoes((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, lida: true } : n))
+      );
+    } catch (err) {
+      console.error("Erro ao marcar como lida:", err);
+    }
   }
 
   const totalNaoLidas = notificacoes.filter(
@@ -193,26 +219,23 @@ const Header = () => {
 
     carregarNotificacoes();
 
-    window.addEventListener(
-      "storage",
-      carregarNotificacoes
-    );
+    function handleFoco() {
+      if (document.visibilityState === "visible") {
+        carregarNotificacoes();
+      }
+    }
 
-    window.addEventListener(
-      "focus",
-      carregarNotificacoes
-    );
+    window.addEventListener("focus", handleFoco);
+
+    const intervalo = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        carregarNotificacoes();
+      }
+    }, 3 * 60 * 1000);
 
     return () => {
-      window.removeEventListener(
-        "storage",
-        carregarNotificacoes
-      );
-
-      window.removeEventListener(
-        "focus",
-        carregarNotificacoes
-      );
+      window.removeEventListener("focus", handleFoco);
+      clearInterval(intervalo);
     };
   }, [isLogged, location.pathname]);
 
@@ -575,16 +598,16 @@ const Header = () => {
     return (
       <div
         className={`navbar-account-wrapper ${admin
-            ? "navbar-account-wrapper-admin"
-            : ""
+          ? "navbar-account-wrapper-admin"
+          : ""
           }`}
         ref={contaDropdownRef}
       >
         <button
           type="button"
           className={`navbar-account ${admin
-              ? ""
-              : "navbar-account-inline"
+            ? ""
+            : "navbar-account-inline"
             }`}
           onClick={handleContaClick}
           aria-expanded={
@@ -614,8 +637,8 @@ const Header = () => {
                 size={18}
                 strokeWidth={3}
                 className={`navbar-account-arrow ${contaDropdownOpen
-                    ? "open"
-                    : ""
+                  ? "open"
+                  : ""
                   }`}
               />
             </>
@@ -636,8 +659,8 @@ const Header = () => {
       <div className="container">
         <div
           className={`header-content ${isAdminPage
-              ? "admin-header-content"
-              : ""
+            ? "admin-header-content"
+            : ""
             }`}
         >
           {isLogged && (
@@ -675,8 +698,8 @@ const Header = () => {
 
           <div
             className={`logo-center ${isAdminPage
-                ? "admin-logo"
-                : ""
+              ? "admin-logo"
+              : ""
               }`}
             onClick={handleLogoClick}
             role="button"
@@ -735,8 +758,8 @@ const Header = () => {
           ) : (
             <div
               className={`header-right ${isColaboradorPage
-                  ? "collaborator-nav"
-                  : ""
+                ? "collaborator-nav"
+                : ""
                 }`}
             >
               {menuDesktop.map(
@@ -886,8 +909,8 @@ const Header = () => {
                     <div
                       key={notificacao.id}
                       className={`navbar-notification-item ${notificacao.lida
-                          ? "lida"
-                          : ""
+                        ? "lida"
+                        : ""
                         }`}
                     >
                       <div>

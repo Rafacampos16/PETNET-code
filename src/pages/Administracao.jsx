@@ -9,6 +9,8 @@ import "../styles/administracao.css";
 
 import IconLogoutHover from "../assets/icons/logout-h.png";
 import dashboardService from "../services/dashboardService";
+import scheduleService from "../services/scheduleService";
+import notificationService from "../services/notificationService";
 
 import {
   CalendarX,
@@ -70,25 +72,13 @@ const emptyPeriodo = {
 };
 
 function getStatusClass(status) {
-  const normalizado = String(status || "").toLowerCase();
-
-  if (normalizado === "confirmado") {
-    return "admin-status admin-status-confirmado";
-  }
-
-  if (normalizado === "finalizado") {
-    return "admin-status admin-status-finalizado";
-  }
-
-  if (normalizado === "entregue") {
-    return "admin-status admin-status-entregue";
-  }
-
-  if (normalizado === "cancelado") {
-    return "admin-status admin-status-cancelado";
-  }
-
-  return "admin-status admin-status-cancelado";
+  const s = String(status || "").toUpperCase();
+  if (s === "CONFIRMED" || s === "CONFIRMADO") return "admin-status admin-status-confirmado";
+  if (s === "FINISHED" || s === "FINALIZED" || s === "FINALIZADO") return "admin-status admin-status-finalizado";
+  if (s === "DELIVERED" || s === "ENTREGUE") return "admin-status admin-status-entregue";
+  if (s === "CANCELLED" || s === "CANCELED" || s === "CANCELADO") return "admin-status admin-status-cancelado";
+  if (s === "SCHEDULED" || s === "AGENDADO") return "admin-status admin-status-agendado";
+  return "admin-status";
 }
 
 function parseValor(valor) {
@@ -140,6 +130,8 @@ export default function Administracao() {
 
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
+  const [agendaHoje, setAgendaHoje] = useState([]);
+  const [atividadesRecentes, setAtividadesRecentes] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -189,6 +181,66 @@ export default function Administracao() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    async function carregarAgendaHoje() {
+      try {
+        const hoje = new Date();
+        const inicio = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate(), 3, 0, 0));
+        const fim = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), hoje.getUTCDate() + 1, 2, 59, 59));
+
+        const res = await scheduleService.listar(inicio.toISOString(), fim.toISOString());
+        const lista = Array.isArray(res.data) ? res.data : [];
+
+        const formatados = lista.map((s) => {
+          const dt = new Date(s.date_time);
+          return {
+            horario: dt.toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "America/Sao_Paulo",
+            }),
+            pet: s.pet?.name || "—",
+            tutor: s.client?.name || "—",
+            servico: s.services?.map((sv) => sv.name).join(", ") || "—",
+            status: s.status || "—",
+          };
+        });
+
+        formatados.sort((a, b) => a.horario.localeCompare(b.horario));
+        setAgendaHoje(formatados);
+      } catch (err) {
+        console.error("Erro ao carregar agenda de hoje:", err);
+      }
+    }
+
+    carregarAgendaHoje();
+  }, []);
+
+  useEffect(() => {
+  async function carregarAtividades() {
+    try {
+      const res = await notificationService.listar();
+      const lista = Array.isArray(res) ? res : [];
+
+      const formatadas = lista.slice(0, 5).map((n) => ({
+        titulo: n.topic,
+        texto: n.message,
+        hora: new Date(n.created_at).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "America/Sao_Paulo",
+        }),
+      }));
+
+      setAtividadesRecentes(formatadas);
+    } catch (err) {
+      console.error("Erro ao carregar atividades:", err);
+    }
+  }
+
+  carregarAtividades();
+}, []);
 
   const dados = useMemo(() => {
     const chave =
@@ -815,8 +867,8 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-table-wrapper">
-                  {(dados.agendaHoje || []).length >
-                  0 ? (
+                  {(agendaHoje || []).length >
+                    0 ? (
                     <table className="admin-table">
                       <thead>
                         <tr>
@@ -829,12 +881,11 @@ export default function Administracao() {
                       </thead>
 
                       <tbody>
-                        {dados.agendaHoje.map(
+                        {agendaHoje.map(
                           (item, index) => (
                             <tr
-                              key={`${
-                                item.pet || "pet"
-                              }-${index}`}
+                              key={`${item.pet || "pet"
+                                }-${index}`}
                             >
                               <td>{item.horario}</td>
                               <td>{item.pet}</td>
@@ -949,15 +1000,14 @@ export default function Administracao() {
                 </div>
 
                 <div className="admin-activity-list">
-                  {(dados.atividadesRecentes || [])
+                  {(atividadesRecentes || [])
                     .length > 0 ? (
-                    dados.atividadesRecentes.map(
+                    atividadesRecentes.map(
                       (item, index) => (
                         <div
                           className="admin-activity-item"
-                          key={`${
-                            item.titulo || "item"
-                          }-${index}`}
+                          key={`${item.titulo || "item"
+                            }-${index}`}
                         >
                           <div className="admin-activity-dot" />
 

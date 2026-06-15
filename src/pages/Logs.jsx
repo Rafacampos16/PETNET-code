@@ -153,6 +153,7 @@ function Logs() {
       auth: "Auth",
       login: "Auth",
       register: "Auth",
+      notification: "Notificação",
     };
     return map[entity] || primeiraLetraMaiuscula(entity);
   }

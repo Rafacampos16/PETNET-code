@@ -79,7 +79,7 @@ export default function MinhaConta() {
 
   useEffect(() => {
     if (modalNotificacoes) {
-      setNotificacoes(listarNotificacoes());
+      //setNotificacoes(listarNotificacoes());
     }
   }, [modalNotificacoes]);
 

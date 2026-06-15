@@ -224,7 +224,7 @@ const Agendamentos = () => {
 
     const [hora, min] = horaInicio.split(":").map(Number);
     const dateTime = new Date(selectedDate);
-    dateTime.setHours(hora, min, 0, 0);
+    dateTime.setUTCHours(hora + 3, min, 0, 0);
 
     const petSelecionado = petsDisponiveis.find((p) => String(p.id) === String(pet));
     const colaborador = colaboradores.find((c) => c.cpf === colaboradorCpf);
@@ -274,7 +274,7 @@ const Agendamentos = () => {
           await enviarEmailConfirmacaoAgendamento(agendamentoResumo);
         }
 
-        criarNotificacaoConfirmacaoAgendamento(agendamentoResumo);
+        // criarNotificacaoConfirmacaoAgendamento(agendamentoResumo);
       } catch (erroNotificacao) {
         console.error(
           "Agendamento criado, mas houve erro ao enviar notificação:",
@@ -305,367 +305,367 @@ const Agendamentos = () => {
   };
 
   return (
-<>
-     <AdminSidebar />
-    <div className="agendamento-page">
-      <div className="agendamento-header">
-        <div>
-          <span className="agendamento-badge">Painel de Agendamentos</span>
-          <h1 className="topo2">
-            <span className="icon">
-              <img src={Pata} alt="pata" />
-            </span>
-            AGENDAMENTO
-          </h1>
-          <p className="agendamento-subtitle">
-            Organize atendimentos com uma agenda visual, datas disponíveis e
-            formulário mais inteligente.
-          </p>
+    <>
+      <AdminSidebar />
+      <div className="agendamento-page">
+        <div className="agendamento-header">
+          <div>
+            <span className="agendamento-badge">Painel de Agendamentos</span>
+            <h1 className="topo2">
+              <span className="icon">
+                <img src={Pata} alt="pata" />
+              </span>
+              AGENDAMENTO
+            </h1>
+            <p className="agendamento-subtitle">
+              Organize atendimentos com uma agenda visual, datas disponíveis e
+              formulário mais inteligente.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="agendamento-grid">
-        <div className="form-card">
-          <div className="card-head">
-            <h2>Novo agendamento</h2>
-            <p>Preencha os dados para reservar um atendimento.</p>
-          </div>
-
-          <label>Buscar cliente</label>
-          <div style={{ position: "relative" }}>
-            <input
-              type="text"
-              placeholder="Digite o nome ou CPF do cliente"
-              value={nomeBusca}
-              onChange={(e) => {
-                setNomeBusca(e.target.value);
-                setClienteSelecionado(null);
-                setPetsDisponiveis([]);
-                setPet("");
-                setErrors((prev) => ({ ...prev, cliente: false }));
-              }}
-              className={errors.cliente ? "input-error" : ""}
-              autoComplete="off"
-            />
-
-            {clientesEncontrados.length > 0 && !clienteSelecionado && (
-              <ul className="clientes-sugestoes">
-                {clientesEncontrados.map((cliente) => (
-                  <li
-                    key={cliente.cpf}
-                    className="cliente-sugestao-item"
-                    onClick={() => selecionarCliente(cliente)}
-                  >
-                    <div className="cliente-sugestao-avatar">
-                      {cliente.name?.charAt(0).toUpperCase() || "C"}
-                    </div>
-
-                    <div className="cliente-sugestao-info">
-                      <strong>{cliente.name}</strong>
-
-                      {cliente.cpf && (
-                        <span>CPF: {formatarCPF(cliente.cpf)}</span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-          </div>
-
-          {buscandoClientes && <p className="helper-text">Buscando...</p>}
-          {erroBusca && <p className="helper-text erro-service">{erroBusca}</p>}
-
-          {nomeBusca.trim().length > 0 &&
-            !buscandoClientes &&
-            clientesEncontrados.length === 0 &&
-            !clienteSelecionado && (
-              <p className="helper-text">
-                Nenhum cliente encontrado com esse nome ou CPF.
-              </p>
-            )}
-
-          {errors.cliente && !clienteSelecionado && (
-            <p className="erro-service">Selecione um cliente na lista.</p>
-          )}
-
-          <label>Selecione o pet</label>
-          <select
-            value={pet}
-            onChange={(e) => {
-              setPet(e.target.value);
-              setErrors((prev) => ({ ...prev, pet: false }));
-            }}
-            className={errors.pet ? "input-error" : ""}
-            disabled={!clienteSelecionado}
-          >
-            <option value="">Selecione o nome do pet</option>
-            {petsDisponiveis.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-          {clienteSelecionado && petsDisponiveis.length === 0 && (
-            <p className="helper-text">Nenhum pet encontrado para este cliente.</p>
-          )}
-          {errors.pet && <p className="erro-service">Selecione um pet.</p>}
-
-          <label>Colaborador responsável</label>
-          <select
-            value={colaboradorCpf}
-            onChange={(e) => {
-              setColaboradorCpf(e.target.value);
-              setErrors((prev) => ({ ...prev, colaborador: false }));
-            }}
-            className={errors.colaborador ? "input-error" : ""}
-          >
-            <option value="">Selecione o colaborador</option>
-            {colaboradores.map((c) => (
-              <option key={c.cpf} value={c.cpf}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          {errors.colaborador && <p className="erro-service">Selecione um colaborador.</p>}
-
-          <label>Escolha o(s) serviço(s)</label>
-          <div className={`services-grid ${errors.servicos ? "services-error" : ""}`}>
-            {servicos.map((service) => (
-              <button
-                key={service.id}
-                type="button"
-                className={`service-btn ${selectedServices.includes(service.id) ? "active" : ""}`}
-                onClick={() => toggleService(service.id)}
-              >
-                {service.name}
-              </button>
-            ))}
-          </div>
-          {errors.servicos && (
-            <p className="erro-service">Selecione pelo menos um serviço.</p>
-          )}
-
-          <div className="linhas-dupla">
-            <div>
-              <label>Duração</label>
-              <select
-                value={duracao}
-                onChange={(e) => {
-                  setDuracao(e.target.value);
-                  setErrors((prev) => ({ ...prev, duracao: false }));
-                }}
-                className={errors.duracao ? "input-error" : ""}
-              >
-                <option value="">Selecione a duração</option>
-                {DURACOES.map((d) => (
-                  <option key={d.value} value={d.value}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
-              {errors.duracao && <p className="erro-service">Selecione a duração.</p>}
+        <div className="agendamento-grid">
+          <div className="form-card">
+            <div className="card-head">
+              <h2>Novo agendamento</h2>
+              <p>Preencha os dados para reservar um atendimento.</p>
             </div>
 
-            <div>
-              <label>Horário de início</label>
+            <label>Buscar cliente</label>
+            <div style={{ position: "relative" }}>
               <input
                 type="text"
-                placeholder="Ex: 09:00"
-                value={horaInicio}
-                onChange={handleHoraInicioChange}
-                onFocus={() => {
-                  if (!selectedDate) {
-                    setAvisoDataHorario(true);
-                  }
+                placeholder="Digite o nome ou CPF do cliente"
+                value={nomeBusca}
+                onChange={(e) => {
+                  setNomeBusca(e.target.value);
+                  setClienteSelecionado(null);
+                  setPetsDisponiveis([]);
+                  setPet("");
+                  setErrors((prev) => ({ ...prev, cliente: false }));
                 }}
-                onClick={() => {
-                  if (!selectedDate) {
-                    setAvisoDataHorario(true);
-                  }
-                }}
-                maxLength={5}
-                className={errors.inicio || avisoDataHorario ? "input-error" : ""}
-                readOnly={!selectedDate}
+                className={errors.cliente ? "input-error" : ""}
+                autoComplete="off"
               />
 
-              {avisoDataHorario && !selectedDate && (
-                <p className="aviso-data-horario">
-                  Selecione uma data no calendário antes de informar o horário.
+              {clientesEncontrados.length > 0 && !clienteSelecionado && (
+                <ul className="clientes-sugestoes">
+                  {clientesEncontrados.map((cliente) => (
+                    <li
+                      key={cliente.cpf}
+                      className="cliente-sugestao-item"
+                      onClick={() => selecionarCliente(cliente)}
+                    >
+                      <div className="cliente-sugestao-avatar">
+                        {cliente.name?.charAt(0).toUpperCase() || "C"}
+                      </div>
+
+                      <div className="cliente-sugestao-info">
+                        <strong>{cliente.name}</strong>
+
+                        {cliente.cpf && (
+                          <span>CPF: {formatarCPF(cliente.cpf)}</span>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+            </div>
+
+            {buscandoClientes && <p className="helper-text">Buscando...</p>}
+            {erroBusca && <p className="helper-text erro-service">{erroBusca}</p>}
+
+            {nomeBusca.trim().length > 0 &&
+              !buscandoClientes &&
+              clientesEncontrados.length === 0 &&
+              !clienteSelecionado && (
+                <p className="helper-text">
+                  Nenhum cliente encontrado com esse nome ou CPF.
                 </p>
               )}
 
-              {errors.inicio && <p className="erro-service">Informe um horário válido.</p>}
+            {errors.cliente && !clienteSelecionado && (
+              <p className="erro-service">Selecione um cliente na lista.</p>
+            )}
+
+            <label>Selecione o pet</label>
+            <select
+              value={pet}
+              onChange={(e) => {
+                setPet(e.target.value);
+                setErrors((prev) => ({ ...prev, pet: false }));
+              }}
+              className={errors.pet ? "input-error" : ""}
+              disabled={!clienteSelecionado}
+            >
+              <option value="">Selecione o nome do pet</option>
+              {petsDisponiveis.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {clienteSelecionado && petsDisponiveis.length === 0 && (
+              <p className="helper-text">Nenhum pet encontrado para este cliente.</p>
+            )}
+            {errors.pet && <p className="erro-service">Selecione um pet.</p>}
+
+            <label>Colaborador responsável</label>
+            <select
+              value={colaboradorCpf}
+              onChange={(e) => {
+                setColaboradorCpf(e.target.value);
+                setErrors((prev) => ({ ...prev, colaborador: false }));
+              }}
+              className={errors.colaborador ? "input-error" : ""}
+            >
+              <option value="">Selecione o colaborador</option>
+              {colaboradores.map((c) => (
+                <option key={c.cpf} value={c.cpf}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {errors.colaborador && <p className="erro-service">Selecione um colaborador.</p>}
+
+            <label>Escolha o(s) serviço(s)</label>
+            <div className={`services-grid ${errors.servicos ? "services-error" : ""}`}>
+              {servicos.map((service) => (
+                <button
+                  key={service.id}
+                  type="button"
+                  className={`service-btn ${selectedServices.includes(service.id) ? "active" : ""}`}
+                  onClick={() => toggleService(service.id)}
+                >
+                  {service.name}
+                </button>
+              ))}
             </div>
-          </div>
+            {errors.servicos && (
+              <p className="erro-service">Selecione pelo menos um serviço.</p>
+            )}
 
-          {selectedDate && !dataPodeAgendar && (
-            <p className="erro-service">
-              Esta data não está disponível para agendamento.
-            </p>
-          )}
-
-          <label>Observações</label>
-          <textarea
-            rows="4"
-            placeholder="Escreva detalhes importantes do atendimento..."
-            value={observacao}
-            onChange={(e) => setObservacao(e.target.value)}
-          />
-
-          {successMsg && <p className="success-msg">{successMsg}</p>}
-
-          <button className="btn-agendar" onClick={handleSubmit}>
-            AGENDAR
-          </button>
-        </div>
-
-        <div className="calendar-card">
-          <div className="card-head">
-            <h2>Agenda interativa</h2>
-            <p>Selecione a data e visualize a disponibilidade.</p>
-          </div>
-
-          <div className="calendar-content-layout">
-            <div className="calendar-main-box">
-              <InteractiveCalendar
-                selectedDate={selectedDate}
-                onSelectDate={handleDateSelect}
-                disponibilidadePorData={DISPONIBILIDADE_POR_DATA}
-              />
-            </div>
-
-            <div className="calendar-side-info">
-              <div className="selected-day-box">
-                <h3>Resumo do dia</h3>
-                {selectedDate ? (
-                  <>
-                    <p>
-                      <strong>Data:</strong>{" "}
-                      {format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                    </p>
-                    <div className="horarios-box">
-                      <strong>Disponibilidade</strong>
-                      <p className={dataPodeAgendar ? "dia-disponivel" : "sem-horarios"}>
-                        {getStatusDiaTexto()}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <p>Selecione uma data no calendário para ver a disponibilidade.</p>
-                )}
-              </div>
-
-              <div className="legend legend-modern">
-                <div className="legend-card">
-                  <span className="leg invalid"></span>
-                  <div>
-                    <strong>Data indisponível</strong>
-                    <p>Datas bloqueadas para agendamento</p>
-                  </div>
-                </div>
-                <div className="legend-card">
-                  <span className="leg full"></span>
-                  <div>
-                    <strong>Dia sem horários</strong>
-                    <p>Sem vagas disponíveis no momento</p>
-                  </div>
-                </div>
-                <div className="legend-card">
-                  <span className="leg available"></span>
-                  <div>
-                    <strong>Horários disponíveis</strong>
-                    <p>Dia liberado para novos agendamentos</p>
-                  </div>
-                </div>
-                <div className="legend-card">
-                  <span className="leg selected"></span>
-                  <div>
-                    <strong>Data selecionada</strong>
-                    <p>Dia que está sendo visualizado</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {showConfirmModal && agendamentoResumo && (
-        <div className="confirm-modal-overlay">
-          <div className="confirm-modal">
-            <div className="confirm-modal-header">
-              <h2>Confirmar agendamento</h2>
-              <p>Confira os dados antes de finalizar.</p>
-            </div>
-
-            <div className="confirm-summary">
-              <div className="summary-item">
-                <span>Cliente</span>
-                <strong>{agendamentoResumo.cpf}</strong>
-              </div>
-              <div className="summary-item">
-                <span>Pet</span>
-                <strong>{agendamentoResumo.petNome}</strong>
-              </div>
-              <div className="summary-item">
-                <span>Colaborador</span>
-                <strong>{agendamentoResumo.colaboradorNome}</strong>
-              </div>
-              <div className="summary-item">
-                <span>Data</span>
-                <strong>{agendamentoResumo.dataFormatada}</strong>
-              </div>
-              <div className="summary-item">
-                <span>Duração</span>
-                <strong>{agendamentoResumo.duracaoLabel}</strong>
-              </div>
-              <div className="summary-item">
-                <span>Hora de início</span>
-                <strong>{agendamentoResumo.horaInicio}</strong>
-              </div>
-
-              <div className="summary-item summary-full">
-                <span>Serviços</span>
-                <div className="summary-tags">
-                  {agendamentoResumo.servicos.map((s) => (
-                    <span key={s.id} className="summary-tag">{s.name}</span>
+            <div className="linhas-dupla">
+              <div>
+                <label>Duração</label>
+                <select
+                  value={duracao}
+                  onChange={(e) => {
+                    setDuracao(e.target.value);
+                    setErrors((prev) => ({ ...prev, duracao: false }));
+                  }}
+                  className={errors.duracao ? "input-error" : ""}
+                >
+                  <option value="">Selecione a duração</option>
+                  {DURACOES.map((d) => (
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
                   ))}
-                </div>
+                </select>
+                {errors.duracao && <p className="erro-service">Selecione a duração.</p>}
               </div>
-              <div className="summary-item summary-full">
-                <span>Observações</span>
-                <strong>
-                  {agendamentoResumo.observacao?.trim()
-                    ? agendamentoResumo.observacao
-                    : "Nenhuma observação informada"}
-                </strong>
+
+              <div>
+                <label>Horário de início</label>
+                <input
+                  type="text"
+                  placeholder="Ex: 09:00"
+                  value={horaInicio}
+                  onChange={handleHoraInicioChange}
+                  onFocus={() => {
+                    if (!selectedDate) {
+                      setAvisoDataHorario(true);
+                    }
+                  }}
+                  onClick={() => {
+                    if (!selectedDate) {
+                      setAvisoDataHorario(true);
+                    }
+                  }}
+                  maxLength={5}
+                  className={errors.inicio || avisoDataHorario ? "input-error" : ""}
+                  readOnly={!selectedDate}
+                />
+
+                {avisoDataHorario && !selectedDate && (
+                  <p className="aviso-data-horario">
+                    Selecione uma data no calendário antes de informar o horário.
+                  </p>
+                )}
+
+                {errors.inicio && <p className="erro-service">Informe um horário válido.</p>}
               </div>
             </div>
 
-            <div className="confirm-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setShowConfirmModal(false)}
-                disabled={enviando}
-              >
-                Voltar e editar
-              </button>
-              <button
-                type="button"
-                className="btn-confirm"
-                onClick={confirmarAgendamento}
-                disabled={enviando}
-              >
-                {enviando ? "Salvando..." : "Confirmar agendamento"}
-              </button>
+            {selectedDate && !dataPodeAgendar && (
+              <p className="erro-service">
+                Esta data não está disponível para agendamento.
+              </p>
+            )}
+
+            <label>Observações</label>
+            <textarea
+              rows="4"
+              placeholder="Escreva detalhes importantes do atendimento..."
+              value={observacao}
+              onChange={(e) => setObservacao(e.target.value)}
+            />
+
+            {successMsg && <p className="success-msg">{successMsg}</p>}
+
+            <button className="btn-agendar" onClick={handleSubmit}>
+              AGENDAR
+            </button>
+          </div>
+
+          <div className="calendar-card">
+            <div className="card-head">
+              <h2>Agenda interativa</h2>
+              <p>Selecione a data e visualize a disponibilidade.</p>
+            </div>
+
+            <div className="calendar-content-layout">
+              <div className="calendar-main-box">
+                <InteractiveCalendar
+                  selectedDate={selectedDate}
+                  onSelectDate={handleDateSelect}
+                  disponibilidadePorData={DISPONIBILIDADE_POR_DATA}
+                />
+              </div>
+
+              <div className="calendar-side-info">
+                <div className="selected-day-box">
+                  <h3>Resumo do dia</h3>
+                  {selectedDate ? (
+                    <>
+                      <p>
+                        <strong>Data:</strong>{" "}
+                        {format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      </p>
+                      <div className="horarios-box">
+                        <strong>Disponibilidade</strong>
+                        <p className={dataPodeAgendar ? "dia-disponivel" : "sem-horarios"}>
+                          {getStatusDiaTexto()}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <p>Selecione uma data no calendário para ver a disponibilidade.</p>
+                  )}
+                </div>
+
+                <div className="legend legend-modern">
+                  <div className="legend-card">
+                    <span className="leg invalid"></span>
+                    <div>
+                      <strong>Data indisponível</strong>
+                      <p>Datas bloqueadas para agendamento</p>
+                    </div>
+                  </div>
+                  <div className="legend-card">
+                    <span className="leg full"></span>
+                    <div>
+                      <strong>Dia sem horários</strong>
+                      <p>Sem vagas disponíveis no momento</p>
+                    </div>
+                  </div>
+                  <div className="legend-card">
+                    <span className="leg available"></span>
+                    <div>
+                      <strong>Horários disponíveis</strong>
+                      <p>Dia liberado para novos agendamentos</p>
+                    </div>
+                  </div>
+                  <div className="legend-card">
+                    <span className="leg selected"></span>
+                    <div>
+                      <strong>Data selecionada</strong>
+                      <p>Dia que está sendo visualizado</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
+
+        {showConfirmModal && agendamentoResumo && (
+          <div className="confirm-modal-overlay">
+            <div className="confirm-modal">
+              <div className="confirm-modal-header">
+                <h2>Confirmar agendamento</h2>
+                <p>Confira os dados antes de finalizar.</p>
+              </div>
+
+              <div className="confirm-summary">
+                <div className="summary-item">
+                  <span>Cliente</span>
+                  <strong>{agendamentoResumo.cpf}</strong>
+                </div>
+                <div className="summary-item">
+                  <span>Pet</span>
+                  <strong>{agendamentoResumo.petNome}</strong>
+                </div>
+                <div className="summary-item">
+                  <span>Colaborador</span>
+                  <strong>{agendamentoResumo.colaboradorNome}</strong>
+                </div>
+                <div className="summary-item">
+                  <span>Data</span>
+                  <strong>{agendamentoResumo.dataFormatada}</strong>
+                </div>
+                <div className="summary-item">
+                  <span>Duração</span>
+                  <strong>{agendamentoResumo.duracaoLabel}</strong>
+                </div>
+                <div className="summary-item">
+                  <span>Hora de início</span>
+                  <strong>{agendamentoResumo.horaInicio}</strong>
+                </div>
+
+                <div className="summary-item summary-full">
+                  <span>Serviços</span>
+                  <div className="summary-tags">
+                    {agendamentoResumo.servicos.map((s) => (
+                      <span key={s.id} className="summary-tag">{s.name}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="summary-item summary-full">
+                  <span>Observações</span>
+                  <strong>
+                    {agendamentoResumo.observacao?.trim()
+                      ? agendamentoResumo.observacao
+                      : "Nenhuma observação informada"}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="confirm-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={enviando}
+                >
+                  Voltar e editar
+                </button>
+                <button
+                  type="button"
+                  className="btn-confirm"
+                  onClick={confirmarAgendamento}
+                  disabled={enviando}
+                >
+                  {enviando ? "Salvando..." : "Confirmar agendamento"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
