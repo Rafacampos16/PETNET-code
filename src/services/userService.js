@@ -7,4 +7,8 @@ export const userService = {
   deleteUser: (cpf) => api.delete(`/users/${cpf}`),
   updateUser: (cpf, data) => api.put(`/users/${cpf}`, data),
   updateAddress: (cpf, endId, data) => api.put(`/users/${cpf}/${endId}`, data),
+  removerFoto: async (cpf) => {
+    const response = await api.delete(`/users/${cpf}/picture`);
+    return response.data;
+  },
 };
