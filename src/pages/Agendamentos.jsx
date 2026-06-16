@@ -158,13 +158,6 @@ const Agendamentos = () => {
     : "";
   const dataPodeAgendar = statusDia === "disponivel";
 
-  const getStatusDiaTexto = () => {
-    if (!selectedDate) return "Selecione uma data no calendário para ver a disponibilidade.";
-    if (statusDia === "bloqueada") return "Esta data está bloqueada para agendamento.";
-    if (statusDia === "semHorarios") return "Sem vagas disponíveis no momento.";
-    return "Dia liberado para novos agendamentos.";
-  };
-
   const handleHoraInicioChange = (e) => {
     if (!selectedDate) {
       setAvisoDataHorario(true);
@@ -524,7 +517,10 @@ const Agendamentos = () => {
           <div className="calendar-card">
             <div className="card-head">
               <h2>Agenda interativa</h2>
-              <p>Selecione a data e visualize a disponibilidade.</p>
+
+              <p>
+                Selecione uma data para realizar o agendamento.
+              </p>
             </div>
 
             <div className="calendar-content-layout">
@@ -534,59 +530,6 @@ const Agendamentos = () => {
                   onSelectDate={handleDateSelect}
                   disponibilidadePorData={DISPONIBILIDADE_POR_DATA}
                 />
-              </div>
-
-              <div className="calendar-side-info">
-                <div className="selected-day-box">
-                  <h3>Resumo do dia</h3>
-                  {selectedDate ? (
-                    <>
-                      <p>
-                        <strong>Data:</strong>{" "}
-                        {format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                      </p>
-                      <div className="horarios-box">
-                        <strong>Disponibilidade</strong>
-                        <p className={dataPodeAgendar ? "dia-disponivel" : "sem-horarios"}>
-                          {getStatusDiaTexto()}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <p>Selecione uma data no calendário para ver a disponibilidade.</p>
-                  )}
-                </div>
-
-                <div className="legend legend-modern">
-                  <div className="legend-card">
-                    <span className="leg invalid"></span>
-                    <div>
-                      <strong>Data indisponível</strong>
-                      <p>Datas bloqueadas para agendamento</p>
-                    </div>
-                  </div>
-                  <div className="legend-card">
-                    <span className="leg full"></span>
-                    <div>
-                      <strong>Dia sem horários</strong>
-                      <p>Sem vagas disponíveis no momento</p>
-                    </div>
-                  </div>
-                  <div className="legend-card">
-                    <span className="leg available"></span>
-                    <div>
-                      <strong>Horários disponíveis</strong>
-                      <p>Dia liberado para novos agendamentos</p>
-                    </div>
-                  </div>
-                  <div className="legend-card">
-                    <span className="leg selected"></span>
-                    <div>
-                      <strong>Data selecionada</strong>
-                      <p>Dia que está sendo visualizado</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
