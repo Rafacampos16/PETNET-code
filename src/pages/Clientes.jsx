@@ -189,23 +189,18 @@ const Clientes = () => {
       name: clienteEditando.nome,
       email: clienteEditando.email,
       type: clienteEditando.tipo,
-
-      contact: clienteEditando.telefone
-        ? {
-          name: "Celular",
-          number: clienteEditando.telefone,
-        }
+      contacts: clienteEditando.telefone
+        ? [{ name: "Principal", number: clienteEditando.telefone }]
         : undefined,
-
-      address: clienteEditando.endereco || clienteEditando.cep
-        ? {
-          type: "Residencial",
+      addresses: (clienteEditando.endereco || clienteEditando.cep)
+        ? [{
+          type: clienteEditando.tipo || "Casa",
           cep: clienteEditando.cep,
           address: clienteEditando.endereco,
           number: clienteEditando.numero,
           neighborhood: clienteEditando.bairro,
           locaticion: clienteEditando.localizacao || "",
-        }
+        }]
         : undefined,
     };
 
@@ -580,14 +575,24 @@ const Clientes = () => {
 
                 <div>
                   <h2>{clienteSelecionado.nome}</h2>
-                  <p>Visualização de cadastro do usuário</p>
+
+                  <p>CPF: {clienteSelecionado.cpf}</p>
+
+
                 </div>
               </div>
 
               <div className="modal-grid-custom">
                 <div className="info-box">
-                  <label>CPF</label>
-                  <span>{clienteSelecionado.cpf}</span>
+                  <label>Nome</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.nome}
+                      onChange={(e) => alterarCampo("nome", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.nome}</span>
+                  )}
                 </div>
 
                 <div className="info-box">
@@ -601,6 +606,8 @@ const Clientes = () => {
                     <span>{clienteSelecionado.telefone}</span>
                   )}
                 </div>
+
+
 
                 <div className="info-box info-box-full">
                   <label>Email</label>
@@ -664,7 +671,7 @@ const Clientes = () => {
               </div>
 
               <div className="pets-section-custom">
-                <div className="pets-section-title">🐾 Pets do Usuário</div>
+                <div className="pets-section-title">Pets do Usuário</div>
 
                 {clienteSelecionado.pets?.length ? (
                   <div className="pets-list-grid">
@@ -672,7 +679,7 @@ const Clientes = () => {
                       <div className="pet-card-modal" key={index}>
                         <strong>{pet.nome}</strong>
                         <span>{pet.tipo}</span>
-                        <small>{pet.raca}</small>
+                        <small>{pet.raca === "SRD" ? "Não informado" : pet.raca}</small>
                       </div>
                     ))}
                   </div>

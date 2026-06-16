@@ -480,7 +480,7 @@ const Pets_cadastrados = () => {
               ? "female"
               : sexo === "Macho"
                 ? "male"
-                : "";
+                : "null";
 
           return (
             <span className={`badge-sex ${classeSexo}`}>

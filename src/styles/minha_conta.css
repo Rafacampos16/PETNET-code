@@ -723,7 +723,7 @@
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
   animation: fadeInUp 0.2s ease;
   max-height: 88vh;
-  overflow-y:visible;
+  overflow-y: auto;
 }
 
 .modal-editar {

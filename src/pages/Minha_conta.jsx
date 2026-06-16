@@ -718,26 +718,13 @@ export default function MinhaConta() {
           }));
 
         const body = {
-          name: formEditar.nome,
-          email: formEditar.email,
-          userPicture: foto || undefined,
-          contact: contatosTratados[0] || {
-            name: formEditar.nome,
-            number: formEditar.telefone,
-          },
-          address: enderecosTratados[0] || {
-            type: formEditar.tipo,
-            cep: formEditar.cep?.replace(/\D/g, ""),
-            address: formEditar.endereco,
-            number: formEditar.numero,
-            neighborhood: formEditar.bairro,
-            complement: formEditar.complemento || "",
-            locaticion: formEditar.localizacao || "",
-          },
-          contacts: contatosTratados,
-          addresses: enderecosTratados,
-        };
-
+  name: formEditar.nome,
+  email: formEditar.email,
+  userPicture: foto || undefined,
+  contacts: contatosTratados,
+  addresses: enderecosTratados,
+};
+        console.log("Body enviado:", JSON.stringify(body, null, 2));
         await userService.updateUser(cpf, body);
 
         const resUser = await userService.showUser(cpf);

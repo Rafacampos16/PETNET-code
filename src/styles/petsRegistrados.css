@@ -453,6 +453,11 @@
   color: #2457bd;
 }
 
+.badge-sex.null {
+  background: #abadaf23;
+  color: #778ca7;
+}
+
 .birth-cell {
   display: inline-flex;
   flex-shrink: 0;
