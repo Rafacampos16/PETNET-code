@@ -5,16 +5,12 @@
   padding: 34px 5% 34px 6.5rem;
 
   background:
-    radial-gradient(
-      circle at top left,
+    radial-gradient(circle at top left,
       rgba(249, 238, 124, 0.35),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at top right,
+      transparent 28%),
+    radial-gradient(circle at top right,
       rgba(51, 112, 235, 0.14),
-      transparent 30%
-    ),
+      transparent 30%),
     #f5f7fb;
 
   overflow-x: hidden;
@@ -304,8 +300,8 @@
 }
 
 .entidade-pet {
-  background: #e8fff1;
-  color: #15803d;
+  background: #e8fffe;
+  color: #158080;
 }
 
 .entidade-service {
@@ -353,6 +349,11 @@
 .status-error {
   background: #fee2e2;
   color: #b91c1c;
+}
+
+.status-failed {
+  background: #fefce2;
+  color: #a18b0f;
 }
 
 .status-warning {
