@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
-import { FiSearch, FiCalendar, FiTag, FiPlus } from "react-icons/fi";
+
 import { useNavigate } from "react-router-dom";
 import "../styles/petsRegistrados.css";
 import PetImg from "../assets/images/cao.png";
@@ -9,6 +9,7 @@ import petService from "../services/petService";
 import { userService } from "../services/userService";
 import LoadingScreen from "../components/LoadingScreen";
 import AdminSidebar from "../components/AdminSidebar";
+import { FiSearch, FiCalendar, FiTag, FiPlus, FiEye, FiEdit2 } from "react-icons/fi";
 
 const ExpandedPetInfo = ({ data }) => {
   return (
@@ -80,6 +81,118 @@ const Pets_cadastrados = () => {
   const [especieFiltro, setEspecieFiltro] = useState("");
   const [porteFiltro, setPorteFiltro] = useState("");
   const [loading, setLoading] = useState(true);
+  const [petSelecionado, setPetSelecionado] = useState(null);
+  const [petEditando, setPetEditando] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [petParaExcluir, setPetParaExcluir] = useState(null);
+  const [modalFotoOpen, setModalFotoOpen] = useState(false);
+  const [petFotoSelecionado, setPetFotoSelecionado] = useState(null);
+
+  function abrirModalFoto(pet) {
+    setPetFotoSelecionado(pet);
+    setModalFotoOpen(true);
+  }
+
+  async function salvarFotoPet(base64) {
+    try {
+      if (base64) {
+        await petService.atualizar(petFotoSelecionado.id, { petPicture: base64 });
+        setPets((prev) =>
+          prev.map((p) => p.id === petFotoSelecionado.id ? { ...p, photo: base64 } : p)
+        );
+        setPetFotoSelecionado((prev) => ({ ...prev, photo: base64 }));
+      } else {
+        await petService.removerFoto(petFotoSelecionado.id); // 👈 DELETE direto
+        setPets((prev) =>
+          prev.map((p) => p.id === petFotoSelecionado.id ? { ...p, photo: null } : p)
+        );
+        setModalFotoOpen(false);
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao salvar foto.");
+    }
+  }
+
+  function abrirConfirmacaoExclusao(pet) {
+    setPetParaExcluir(pet);
+    setConfirmDeleteOpen(true);
+  }
+
+  function fecharConfirmacaoExclusao() {
+    setPetParaExcluir(null);
+    setConfirmDeleteOpen(false);
+  }
+
+  async function confirmarExclusao() {
+    if (!petParaExcluir) return;
+    try {
+      await petService.deletar(petParaExcluir.id);
+      setPets((prev) => prev.filter((p) => p.id !== petParaExcluir.id));
+      fecharConfirmacaoExclusao();
+      fecharModal();
+      alert("Pet excluído com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao excluir pet.");
+    }
+  }
+
+  function abrirModal(pet) {
+    setPetSelecionado(pet);
+    setPetEditando({ ...pet, birth_date: pet.birth_date_raw });
+    setModoEdicao(false);
+    setModalOpen(true);
+  }
+
+  function fecharModal() {
+    setModalOpen(false);
+  }
+
+  function alterarCampo(campo, valor) {
+    setPetEditando((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  async function salvarEdicao() {
+    try {
+      const bodyPet = {
+        name: petEditando.name,
+        species: petEditando.species === "Cachorro" ? "dog" : petEditando.species === "Gato" ? "cat" : petEditando.species,
+        breed: petEditando.breed === "Não informado" ? "SRD" : petEditando.breed,
+        size: petEditando.size === "Pequeno" ? "S" : petEditando.size === "Médio" ? "M" : petEditando.size === "Grande" ? "L" : petEditando.size === "Gigante" ? "XL" : petEditando.size,
+        weight: petEditando.weight ? Number(String(petEditando.weight).replace(" kg", "")) : null,
+        sex: petEditando.sex === "Fêmea" ? "F" : petEditando.sex === "Macho" ? "M" : petEditando.sex,
+        observations: petEditando.observations || "",
+        user_cpf: petEditando.user_cpf,
+        birth_date: petEditando.birth_date
+          ? new Date(petEditando.birth_date + "T00:00:00").toISOString()
+          : null,
+      };
+
+      await petService.atualizar(petEditando.id, bodyPet);
+
+      setPets((prev) =>
+        prev.map((p) => p.id === petEditando.id
+          ? {
+            ...p,
+            ...petEditando,
+            birth_date: formatarData(petEditando.birth_date),
+            birth_date_raw: petEditando.birth_date,
+          }
+          : p
+        )
+      );
+      setPetSelecionado((prev) => ({
+        ...prev,
+        ...petEditando,
+        birth_date: formatarData(petEditando.birth_date),
+      }));
+      setModoEdicao(false);
+      alert("Pet atualizado com sucesso!");
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao atualizar pet.");
+    }
+  }
 
   useEffect(() => {
     const carregar = async () => {
@@ -110,11 +223,12 @@ const Pets_cadastrados = () => {
               size: traduzirPorte(pet.size),
               weight: `${pet.weight} kg`,
               birth_date: formatarData(pet.birth_date),
+              birth_date_raw: pet.birth_date ? pet.birth_date.split("T")[0] : "",
               sex: pet.sex || "",
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               owner_name: dono?.name || localStorage.getItem("userName") || "Não informado",
-              photo: pet.picture_blob || "",
+              photo: pet.petPicture || "",
             };
           });
 
@@ -254,12 +368,37 @@ const Pets_cadastrados = () => {
 
           return (
             <div className="pet-main-cell">
-              <div className="pet-avatar">
+              <div
+                className="pet-avatar"
+                style={{ cursor: "pointer", position: "relative" }}
+                onClick={(e) => { e.stopPropagation(); abrirModalFoto(row); }}
+                onMouseEnter={(e) => {
+                  const overlay = e.currentTarget.querySelector(".pet-avatar-hover");
+                  if (overlay) overlay.style.opacity = 1;
+                }}
+                onMouseLeave={(e) => {
+                  const overlay = e.currentTarget.querySelector(".pet-avatar-hover");
+                  if (overlay) overlay.style.opacity = 0;
+                }}
+              >
                 <img
                   src={row.photo || (isDog ? PetImg : PetImg2)}
                   alt={row.name}
-                  className="pet-avatar-img"
+                  className={row.photo ? "pet-avatar-img pet-avatar-foto" : "pet-avatar-img"}
                 />
+                <div
+                  className="pet-avatar-hover"
+                  style={{
+                    position: "absolute", inset: 0,
+                    background: "rgba(0,0,0,0.45)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    borderRadius: 14, opacity: 0, transition: "opacity 0.2s",
+                    fontSize: 10, fontWeight: 800, color: "#fff", textAlign: "center",
+                    padding: 4,
+                  }}
+                >
+                  <FiEdit2 size={16} color="#fff" />
+                </div>
               </div>
 
               <div className="pet-main-info">
@@ -318,6 +457,17 @@ const Pets_cadastrados = () => {
           </span>
         ),
       },
+      {
+        name: "Ações",
+        center: true,
+        width: "120px",
+        cell: (row) => (
+          <button className="btn-ver" onClick={() => abrirModal(row)}>
+            <FiEye size={15} />
+            Ver
+          </button>
+        ),
+      },
     ],
     []
   );
@@ -331,14 +481,15 @@ const Pets_cadastrados = () => {
     );
   }
 
+
   return (
     <>
       {podeVerMenuAdmin && <AdminSidebar />}
 
       <div
         className={`petsReg-container ${podeVerMenuAdmin
-            ? "petsReg-container-admin"
-            : "petsReg-container-cliente"
+          ? "petsReg-container-admin"
+          : "petsReg-container-cliente"
           }`}
       >
         <h1 className="petsReg-title">Pets registrados</h1>
@@ -425,6 +576,196 @@ const Pets_cadastrados = () => {
           />
         </div>
       </div>
+
+      {modalOpen && petSelecionado && (
+        <div className="modal-overlay" onClick={fecharModal}>
+          <div className="modal-cliente" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={fecharModal}>✕</button>
+
+            <div className="modal-header-custom">
+              <div style={{ width: 58, height: 58, borderRadius: 18, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, #eef4ff 0%, #dce8ff 100%)", border: "1px solid #dbe7ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <img
+                  src={petSelecionado.photo || (petSelecionado.species?.toLowerCase().includes("cachorro") ? PetImg : PetImg2)}
+                  alt={petSelecionado.name}
+                  style={{ width: petSelecionado.photo ? "100%" : "38px", height: petSelecionado.photo ? "100%" : "38px", objectFit: petSelecionado.photo ? "cover" : "contain", borderRadius: 18 }}
+                />
+              </div>
+              <div>
+                <h2>{petSelecionado.name}</h2>
+                <p>Dono: {petSelecionado.owner_name}</p>
+              </div>
+            </div>
+
+            <div className="modal-grid-custom">
+              <div className="info-box">
+                <label>Nome</label>
+                {modoEdicao
+                  ? <input value={petEditando.name} onChange={(e) => alterarCampo("name", e.target.value)} />
+                  : <span>{petSelecionado.name}</span>}
+              </div>
+
+              <div className="info-box">
+                <label>Espécie</label>
+                {modoEdicao
+                  ? <select value={petEditando.species} onChange={(e) => alterarCampo("species", e.target.value)}>
+                    <option value="Cachorro">Cachorro</option>
+                    <option value="Gato">Gato</option>
+                  </select>
+                  : <span>{petSelecionado.species}</span>}
+              </div>
+
+              <div className="info-box">
+                <label>Raça</label>
+                {modoEdicao
+                  ? <input value={petEditando.breed} onChange={(e) => alterarCampo("breed", e.target.value)} />
+                  : <span>{petSelecionado.breed}</span>}
+              </div>
+
+              <div className="info-box">
+                <label>Porte</label>
+                {modoEdicao
+                  ? <select value={petEditando.size} onChange={(e) => alterarCampo("size", e.target.value)}>
+                    <option value="Pequeno">Pequeno</option>
+                    <option value="Médio">Médio</option>
+                    <option value="Grande">Grande</option>
+                    <option value="Gigante">Gigante</option>
+                  </select>
+                  : <span>{petSelecionado.size}</span>}
+              </div>
+
+              <div className="info-box">
+                <label>Peso</label>
+                {modoEdicao
+                  ? <input type="number" value={String(petEditando.weight).replace(" kg", "")} onChange={(e) => alterarCampo("weight", e.target.value)} />
+                  : <span>{petSelecionado.weight}</span>}
+              </div>
+
+              <div className="info-box">
+                <label>Sexo</label>
+                {modoEdicao
+                  ? <select value={petEditando.sex} onChange={(e) => alterarCampo("sex", e.target.value)}>
+                    <option value="Macho">Macho</option>
+                    <option value="Fêmea">Fêmea</option>
+                  </select>
+                  : <span>{petSelecionado.sex}</span>}
+              </div>
+              <div className="info-box">
+                <label>Data de nascimento</label>
+                {modoEdicao
+                  ? <input
+                    type="date"
+                    value={petEditando.birth_date || ""}
+                    onChange={(e) => alterarCampo("birth_date", e.target.value)}
+                  />
+                  : <span>{petSelecionado.birth_date || "Não informada"}</span>}
+              </div>
+
+              <div className="info-box info-box-full">
+                <label>Observações</label>
+                {modoEdicao
+                  ? <input value={petEditando.observations || ""} onChange={(e) => alterarCampo("observations", e.target.value)} />
+                  : <span>{petSelecionado.observations || "Nenhuma observação"}</span>}
+              </div>
+
+
+            </div>
+
+            <div className="modal-buttons">
+              {modoEdicao
+                ? <button className="btn-salvar" onClick={salvarEdicao}>Salvar</button>
+                : <button className="btn-editar" onClick={() => setModoEdicao(true)}>Editar</button>
+              }
+              <button className="btn-excluir" onClick={() => abrirConfirmacaoExclusao(petSelecionado)}>
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDeleteOpen && petParaExcluir && (
+        <div className="modal-overlay">
+          <div className="modal-confirm-delete">
+            <button className="modal-close" onClick={fecharConfirmacaoExclusao}>✕</button>
+
+            <div className="confirm-delete-icon">🐾</div>
+
+            <h3>Confirmar exclusão</h3>
+            <p>
+              Tem certeza que deseja excluir o pet{" "}
+              <strong>{petParaExcluir.name}</strong>?
+            </p>
+            <span className="confirm-delete-warning">
+              Essa ação não poderá ser desfeita.
+            </span>
+
+            <div className="confirm-delete-buttons">
+              <button className="btn-cancelar-exclusao" onClick={fecharConfirmacaoExclusao}>
+                Cancelar
+              </button>
+              <button className="btn-confirmar-exclusao" onClick={confirmarExclusao}>
+                Sim, excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {modalFotoOpen && petFotoSelecionado && (
+        <div className="modal-overlay" onClick={() => setModalFotoOpen(false)}>
+          <div className="modal-confirm-delete" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalFotoOpen(false)}>✕</button>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg, #eef4ff 0%, #dce8ff 100%)", border: "1px solid #dbe7ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {petFotoSelecionado.photo
+                  ? <img src={petFotoSelecionado.photo} alt="Foto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <img
+                    src={petSelecionado.species?.toLowerCase().includes("cachorro") ? PetImg : PetImg2}
+                    alt="pet"
+                    style={{ width: 38, height: 38, objectFit: "contain" }}
+                  />
+                }
+              </div>
+
+              <strong style={{ color: "#1f3d7a", fontSize: 16 }}>{petFotoSelecionado.name}</strong>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  className="btn-editar"
+                  style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                  onClick={() => document.getElementById("foto-input-mini").click()}
+                >
+                  {petFotoSelecionado.photo ? "Trocar foto" : "Adicionar foto"}
+                </button>
+
+                {petFotoSelecionado.photo && (
+                  <button
+                    className="btn-excluir"
+                    style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                    onClick={() => salvarFotoPet("")}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <input
+              id="foto-input-mini"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => salvarFotoPet(reader.result);
+                reader.readAsDataURL(file);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };
