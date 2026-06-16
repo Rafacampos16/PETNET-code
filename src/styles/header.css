@@ -482,17 +482,26 @@
   align-items: flex-start;
   justify-content: flex-start;
   padding: 6rem 1.2rem 1.2rem;
+  box-sizing: border-box;
 }
 
 .navbar-notification-modal {
   width: min(420px, calc(100vw - 2.4rem));
-  max-height: calc(100vh - 7rem);
-  overflow-y: auto;
+  max-height: calc(100dvh - 7rem);
+  padding: 1.15rem;
+
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+
   border: 1px solid #dce7ff;
   border-radius: 1.35rem;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-  padding: 1.15rem;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+  box-sizing: border-box;
+
   animation: navbarNotifFade 0.2s ease;
 }
 
@@ -509,10 +518,13 @@
 }
 
 .navbar-notification-top {
+  flex-shrink: 0;
+
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+
   margin-bottom: 1rem;
 }
 
@@ -538,27 +550,75 @@
   width: 36px;
   height: 36px;
   min-width: 36px;
+  flex-shrink: 0;
+
   border: none;
   border-radius: 999px;
   background: #edf3ff;
   color: #3370eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: 1.45rem;
   font-weight: 900;
+  line-height: 1;
+
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
+.navbar-notification-close:hover {
+  background: #dfeaff;
+  transform: rotate(4deg);
+}
+
+/* SOMENTE A LISTA POSSUI ROLAGEM */
+
 .navbar-notification-list {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  padding-right: 0.45rem;
+
+  scrollbar-width: thin;
+  scrollbar-color: #aebbd1 transparent;
+  scrollbar-gutter: stable;
+}
+
+.navbar-notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navbar-notification-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.navbar-notification-list::-webkit-scrollbar-thumb {
+  background: #aebbd1;
+  border-radius: 999px;
+}
+
+.navbar-notification-list::-webkit-scrollbar-thumb:hover {
+  background: #8fa2c1;
 }
 
 .navbar-notification-item {
+  flex-shrink: 0;
+
   border: 1px solid #dce7ff;
   border-left: 5px solid #3370eb;
   background: #ffffff;
   border-radius: 1rem;
   padding: 0.85rem;
+  box-sizing: border-box;
 }
 
 .navbar-notification-item.lida {
@@ -585,12 +645,15 @@
   margin-top: 0.7rem;
   min-height: 34px;
   padding: 0 0.8rem;
+
   border: none;
   border-radius: 0.7rem;
   background: #eef4ff;
   color: #3370eb;
+
   font-size: 0.78rem;
   font-weight: 900;
+
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -628,8 +691,13 @@
 
   .navbar-notification-modal {
     width: calc(100vw - 1.6rem);
-    max-height: calc(100vh - 6rem);
+    max-height: calc(100dvh - 6rem);
+    padding: 1rem;
     border-radius: 1.15rem;
+  }
+
+  .navbar-notification-list {
+    padding-right: 0.35rem;
   }
 }
 
@@ -872,11 +940,7 @@
   box-sizing: border-box;
   overflow-y: auto;
 
-  background: linear-gradient(
-    180deg,
-    #3370eb 0%,
-    #2862d5 100%
-  );
+  background: linear-gradient(180deg, #3370eb 0%, #2862d5 100%);
 
   box-shadow: -14px 0 35px rgba(15, 23, 42, 0.25);
 

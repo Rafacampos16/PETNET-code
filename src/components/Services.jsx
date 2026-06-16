@@ -11,12 +11,20 @@ import { useNavigate } from "react-router-dom";
 
 const Services = () => {
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = React.useState(
+    window.innerWidth <= 768
+  );
 
   React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const services = [
@@ -24,22 +32,34 @@ const Services = () => {
       icon: Bath,
       title: "Banho e Tosa",
       description:
-        "Banhos com produtos especificos para cada tipo de pelagem e tosa higienica ou estetica conforme a necessidade do seu pet.",
-      items: ["Banho medicinal", "Tosa higienica", "Tosa estetica"]
+        "Banhos com produtos específicos para cada tipo de pelagem e tosa higiênica ou estética, conforme a necessidade do seu pet.",
+      items: [
+        "Banho medicinal",
+        "Tosa higiênica",
+        "Tosa estética"
+      ]
     },
     {
       icon: Stethoscope,
-      title: "Veterinario",
+      title: "Veterinário",
       description:
-        "Atendimento veterinario completo para garantir a saude e o bem-estar do seu animal com carinho, seguranca e atencao.",
-      items: ["Consultas de rotina", "Vacinacao", "Exames laboratoriais"]
+        "Atendimento veterinário completo para garantir a saúde e o bem-estar do seu animal com carinho, segurança e atenção.",
+      items: [
+        "Consultas de rotina",
+        "Vacinação",
+        "Exames laboratoriais"
+      ]
     },
     {
       icon: Package,
       title: "Pacotes Mensais",
       description:
-        "Mais economia, praticidade e cuidado continuo para manter o seu melhor amigo sempre bem cuidado.",
-      items: ["Economia garantida", "Saude constante", "Comodidade exclusiva"]
+        "Mais economia, praticidade e cuidado contínuo para manter o seu melhor amigo sempre bem cuidado.",
+      items: [
+        "Economia garantida",
+        "Saúde constante",
+        "Comodidade exclusiva"
+      ]
     }
   ];
 
@@ -71,7 +91,7 @@ const Services = () => {
               marginBottom: "0.4rem"
             }}
           >
-            Nossos Servicos
+            Nossos Serviços
           </h2>
 
           <div
@@ -92,7 +112,7 @@ const Services = () => {
               lineHeight: "1.7"
             }}
           >
-            Solucoes pensadas para oferecer conforto, saude e bem-estar em cada
+            Soluções pensadas para oferecer conforto, saúde e bem-estar em cada
             etapa do cuidado com o seu pet.
           </p>
         </div>
@@ -100,134 +120,149 @@ const Services = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "repeat(3, minmax(0, 1fr))",
             gap: "1.5rem",
             alignItems: "stretch"
           }}
         >
-          {services.map(({ icon: Icon, title, description, items }, i) => (
-            <article
-              key={i}
-              className="service-card"
-              style={{
-                width: "100%",
-                minWidth: "0",
-                background: "rgba(255, 255, 255, 0.92)",
-                borderRadius: "26px",
-                padding: "1.5rem",
-                border: "1px solid rgba(51, 112, 235, 0.08)",
-                boxShadow: "0 16px 32px rgba(31, 61, 123, 0.08)",
-                display: "flex",
-                flexDirection: "column"
-              }}
-            >
-              <div
+          {services.map(
+            ({ icon: Icon, title, description, items }, i) => (
+              <article
+                key={i}
+                className="service-card"
                 style={{
-                  marginBottom: "1rem",
-                  textAlign: "center"
+                  width: "100%",
+                  minWidth: "0",
+                  background: "rgba(255, 255, 255, 0.92)",
+                  borderRadius: "26px",
+                  padding: "1.5rem",
+                  border: "1px solid rgba(51, 112, 235, 0.08)",
+                  boxShadow:
+                    "0 16px 32px rgba(31, 61, 123, 0.08)",
+                  display: "flex",
+                  flexDirection: "column"
                 }}
               >
                 <div
-                  className="service-icon"
                   style={{
-                    width: "68px",
-                    height: "68px",
-                    borderRadius: "20px",
-                    background: "linear-gradient(135deg, var(--petnet-blue), #5f94ff)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    margin: "0 auto 1rem auto"
+                    marginBottom: "1rem",
+                    textAlign: "center"
                   }}
                 >
-                  <Icon size={34} />
-                </div>
-
-                <h3
-                  style={{
-                    fontSize: "1.3rem",
-                    fontWeight: "800",
-                    color: "var(--petnet-blue)",
-                    margin: 0
-                  }}
-                >
-                  {title}
-                </h3>
-              </div>
-
-              <p
-                style={{
-                  color: "rgba(0, 0, 0, 0.72)",
-                  fontSize: "0.97rem",
-                  lineHeight: "1.65",
-                  marginBottom: "1.2rem"
-                }}
-              >
-                {description}
-              </p>
-
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: "0 0 1.4rem 0",
-                  display: "grid",
-                  gap: "0.7rem",
-                  flexGrow: 1
-                }}
-              >
-                {items.map((item, index) => (
-                  <li
-                    key={index}
+                  <div
+                    className="service-icon"
                     style={{
+                      width: "68px",
+                      height: "68px",
+                      borderRadius: "20px",
+                      background:
+                        "linear-gradient(135deg, var(--petnet-blue), #5f94ff)",
                       display: "flex",
                       alignItems: "center",
-                      gap: "0.65rem",
-                      color: "#1f2c47",
-                      fontSize: "0.95rem",
-                      fontWeight: "600"
+                      justifyContent: "center",
+                      color: "#fff",
+                      margin: "0 auto 1rem auto"
                     }}
                   >
-                    <CheckCircle2 size={18} style={{ color: "var(--petnet-blue)", flexShrink: 0 }} />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+                    <Icon size={34} />
+                  </div>
 
-              <button
-                onClick={() => navigate("/servicos")}
-                onMouseEnter={(e) => {
-                  e.target.style.background =
-                    "linear-gradient(135deg, #F9EE7C, #FFE666)";
-                  e.target.style.color = "#1f2c47";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background =
-                    "linear-gradient(135deg, var(--petnet-blue), #5f94ff)";
-                  e.target.style.color = "white";
-                }}
-                style={{
-                  marginTop: "auto",
-                  background: "linear-gradient(135deg, var(--petnet-blue), #5f94ff)",
-                  color: "white",
-                  fontWeight: "800",
-                  border: "none",
-                  borderRadius: "16px",
-                  padding: "0.9rem 1rem",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.45rem",
-                  transition: "all 0.25s ease"
-                }}
-              >
-                Ver mais
-                <ArrowRight size={18} />
-              </button>
-            </article>
-          ))}
+                  <h3
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: "800",
+                      color: "var(--petnet-blue)",
+                      margin: 0
+                    }}
+                  >
+                    {title}
+                  </h3>
+                </div>
+
+                <p
+                  style={{
+                    color: "rgba(0, 0, 0, 0.72)",
+                    fontSize: "0.97rem",
+                    lineHeight: "1.65",
+                    marginBottom: "1.2rem"
+                  }}
+                >
+                  {description}
+                </p>
+
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: "0 0 1.4rem 0",
+                    display: "grid",
+                    gap: "0.7rem",
+                    flexGrow: 1
+                  }}
+                >
+                  {items.map((item, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.65rem",
+                        color: "#1f2c47",
+                        fontSize: "0.95rem",
+                        fontWeight: "600"
+                      }}
+                    >
+                      <CheckCircle2
+                        size={18}
+                        style={{
+                          color: "var(--petnet-blue)",
+                          flexShrink: 0
+                        }}
+                      />
+
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/servicos")}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, #F9EE7C, #FFE666)";
+                    e.currentTarget.style.color = "#1f2c47";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background =
+                      "linear-gradient(135deg, var(--petnet-blue), #5f94ff)";
+                    e.currentTarget.style.color = "white";
+                  }}
+                  style={{
+                    marginTop: "auto",
+                    background:
+                      "linear-gradient(135deg, var(--petnet-blue), #5f94ff)",
+                    color: "white",
+                    fontWeight: "800",
+                    border: "none",
+                    borderRadius: "16px",
+                    padding: "0.9rem 1rem",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.45rem",
+                    transition: "all 0.25s ease"
+                  }}
+                >
+                  Ver mais
+                  <ArrowRight size={18} />
+                </button>
+              </article>
+            )
+          )}
         </div>
       </div>
     </section>

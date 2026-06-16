@@ -31,6 +31,8 @@ import {
   Heart,
   Plus,
   Trash2,
+  Camera,
+  ImagePlus,
 } from "lucide-react";
 
 import { userService } from "../services/userService";
@@ -716,26 +718,13 @@ export default function MinhaConta() {
           }));
 
         const body = {
-          name: formEditar.nome,
-          email: formEditar.email,
-          userPicture: foto || undefined,
-          contact: contatosTratados[0] || {
-            name: formEditar.nome,
-            number: formEditar.telefone,
-          },
-          address: enderecosTratados[0] || {
-            type: formEditar.tipo,
-            cep: formEditar.cep?.replace(/\D/g, ""),
-            address: formEditar.endereco,
-            number: formEditar.numero,
-            neighborhood: formEditar.bairro,
-            complement: formEditar.complemento || "",
-            locaticion: formEditar.localizacao || "",
-          },
-          contacts: contatosTratados,
-          addresses: enderecosTratados,
-        };
-
+  name: formEditar.nome,
+  email: formEditar.email,
+  userPicture: foto || undefined,
+  contacts: contatosTratados,
+  addresses: enderecosTratados,
+};
+        console.log("Body enviado:", JSON.stringify(body, null, 2));
         await userService.updateUser(cpf, body);
 
         const resUser = await userService.showUser(cpf);
@@ -1165,57 +1154,91 @@ export default function MinhaConta() {
 
           <div className="right-column">
             <section className="card-conta foto-card">
-              <div className="card-header">
-                <h3>Foto do tutor ou do pet</h3>
+              <div className="card-header foto-card-header">
+                <div>
+                  <h3>Foto do tutor ou do pet</h3>
+                  <p>
+                    Personalize o perfil com uma foto especial.
+                  </p>
+                </div>
               </div>
 
               <div className="foto-area">
-                <label className="upload-box">
+                <label
+                  htmlFor="fotoPerfilInput"
+                  className={`upload-box ${foto ? "tem-foto" : ""}`}
+                >
                   {foto ? (
-                    <img src={foto} className="foto-preview" alt="Prévia" />
+                    <>
+                      <img
+                        src={foto}
+                        className="foto-preview"
+                        alt="Foto do perfil"
+                      />
+
+                      <div className="foto-preview-overlay">
+                        <Camera size={25} />
+                        <span>Trocar foto</span>
+                      </div>
+                    </>
                   ) : (
                     <div className="foto-placeholder">
-                      <PawPrint size={36} />
-                      <p>Adicionar foto</p>
+                      <div className="foto-placeholder-icon">
+                        <PawPrint size={34} />
+                      </div>
+
+                      <strong>Adicione uma foto</strong>
+
+                      <p>
+                        Clique para escolher uma imagem
+                      </p>
                     </div>
                   )}
-                  <input type="file" accept="image/*" onChange={handleFoto} />
                 </label>
 
-                {!foto ? (
-                  <button
-                    className="foto-btn"
-                    onClick={() =>
-                      document.querySelector("#fileInputFake").click()
-                    }
-                  >
-                    Escolher foto
-                  </button>
-                ) : (
-                  <div className="foto-btns">
-                    <button
-                      className="foto-btn trocar"
-                      onClick={() =>
-                        document.querySelector("#fileInputFake").click()
-                      }
-                    >
-                      Trocar foto
-                    </button>
+                <div className="foto-upload-info">
+                  <strong>
+                    {foto
+                      ? "Foto adicionada ao perfil"
+                      : "Nenhuma foto selecionada"}
+                  </strong>
 
+                  <span>
+                    Formatos recomendados: JPG, PNG ou WEBP.
+                  </span>
+                </div>
+
+                <div
+                  className={`foto-btns ${foto ? "foto-btns-duplo" : ""}`}
+                >
+                  <label
+                    htmlFor="fotoPerfilInput"
+                    className="foto-btn foto-btn-principal"
+                  >
+                    <ImagePlus size={18} />
+
+                    <span>
+                      {foto ? "Trocar foto" : "Adicionar foto"}
+                    </span>
+                  </label>
+
+                  {foto && (
                     <button
-                      className="foto-btn remover"
+                      type="button"
+                      className="foto-btn foto-btn-remover"
                       onClick={removerFoto}
                     >
-                      Remover foto
+                      <Trash2 size={18} />
+                      <span>Excluir foto</span>
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 <input
-                  id="fileInputFake"
+                  id="fotoPerfilInput"
+                  className="foto-input-hidden"
                   type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
+                  accept="image/jpeg,image/png,image/webp"
                   onChange={handleFoto}
                 />
               </div>
