@@ -30,6 +30,11 @@ const petService = {
     const res = await api.delete(`/pets/${id}`);
     return res.data;
   },
+
+  removerFoto: async (id) => {
+    const response = await api.delete(`/pets/${id}/picture`);
+    return response.data;
+  },
 };
 
 export default petService;

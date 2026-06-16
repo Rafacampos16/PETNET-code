@@ -91,6 +91,17 @@
   object-fit: contain;
 }
 
+.servico-icon-circle {
+  overflow: hidden;
+}
+
+.servico-icon.foto-real {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
 /* TEXTOS */
 
 .servico-card h3 {

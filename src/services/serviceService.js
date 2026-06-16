@@ -25,6 +25,16 @@ const serviceService = {
     const res = await api.patch(`/services/${id}/reactivate`);
     return res.data;
   },
+
+  removerFoto: async (id) => {
+    const response = await api.delete(`/services/${id}/picture`);
+    return response.data;
+  },
+
+  listarTodos: async ({ inactive = false } = {}) => {
+    const res = await api.get("/services", { params: { inactive: true } });
+    return res.data;
+  },
 };
 
 export default serviceService;

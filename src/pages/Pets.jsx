@@ -34,6 +34,7 @@ function Pets() {
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
   const [buscandoClientes, setBuscandoClientes] = useState(false);
 
+
   const [form, setForm] = useState({
     name: "",
     species: "",
@@ -135,7 +136,14 @@ function Pets() {
   }
 
   function handleFileChange(e) {
-    setForm({ ...form, picture_url: e.target.files[0] });
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm({ ...form, picture_url: reader.result });
+    };
+    reader.readAsDataURL(file);
   }
 
   function limparCPF(cpf = "") {
@@ -237,12 +245,11 @@ function Pets() {
         breed: form.breed.trim() || "SRD",
         size: sizeMap[form.size],
         weight: form.weight ? Number(form.weight) : null,
-        birth_date: form.birth_date
-          ? new Date(form.birth_date).toISOString()
-          : null,
+        birth_date: form.birth_date ? new Date(form.birth_date).toISOString() : null,
         sex: form.sex ? sexMap[form.sex] : null,
         user_cpf: cpfResponsavel,
         observations: form.observations,
+        petPicture: form.picture_url || undefined,
       };
 
       const response = await petService.criar(data);
@@ -558,7 +565,7 @@ function Pets() {
                       {form.picture_url ? (
                         <div className="preview-container">
                           <img
-                            src={URL.createObjectURL(form.picture_url)}
+                            src={form.picture_url}
                             alt="Prévia do pet"
                             className="preview-img"
                           />

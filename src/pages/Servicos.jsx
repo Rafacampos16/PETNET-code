@@ -32,7 +32,7 @@ const Servicos = () => {
     window.open(url, "_blank");
   };
 
-  
+
   const iconeMap = {
     "Banho": banhoIcon,
     "Banho Terapêutico": terapeuticoIcon,
@@ -56,7 +56,7 @@ const Servicos = () => {
   };
 
   const [services, setServices] = useState([]);
-  
+
   useEffect(() => {
     serviceService.listar()
       .then((data) => setServices(data))
@@ -83,9 +83,9 @@ const Servicos = () => {
               <div key={service.id} className="servico-card">
                 <div className="servico-icon-circle">
                   <img
-                    src={iconeMap[service.name] || defaultIcon}
+                    src={service.servicePicture || iconeMap[service.name] || defaultIcon}
                     alt={service.name}
-                    className="servico-icon"
+                    className={service.servicePicture ? "servico-icon foto-real" : "servico-icon"}
                   />
                 </div>
                 <h3>{service.name}</h3>

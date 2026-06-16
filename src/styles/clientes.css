@@ -103,6 +103,15 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 18px rgba(51, 112, 235, 0.25);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cliente-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
 }
 
 .cliente-main-info {
@@ -478,6 +487,15 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 12px 24px rgba(51, 112, 235, 0.2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.modal-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px;
 }
 
 .modal-header-custom h2 {
@@ -693,25 +711,25 @@
   }
 }
 
-.icon-pet-table{
-  width:18px;
-  height:18px;
-  margin-right:6px;
+.icon-pet-table {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
 }
 
-.icon-pets-expand{
-  width:20px;
-  height:20px;
-  margin-right:8px;
+.icon-pets-expand {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
 }
 
-.pets-header{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:600;
-  margin-bottom:12px;
-  color:#2b5cff;
+.pets-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2b5cff;
 }
 
 .modal-confirm-delete {
@@ -971,7 +989,7 @@
     min-width: 980px;
   }
 
-  .table-card > div:last-child {
+  .table-card>div:last-child {
     overflow-x: auto;
   }
 
@@ -1090,6 +1108,11 @@
     width: 48px;
     height: 48px;
     border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .modal-avatar-img {
+    border-radius: 15px;
   }
 
   .modal-header-custom h2 {
@@ -1185,7 +1208,7 @@
   box-sizing: border-box;
 }
 
-.table-card > div {
+.table-card>div {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -1210,12 +1233,7 @@
   flex-shrink: 0;
 }
 
-.cliente-avatar {
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-}
+
 
 .cliente-main-info {
   min-width: 0;
@@ -1301,6 +1319,11 @@
     width: 36px;
     min-width: 36px;
     height: 36px;
+    border-radius: 11px;
+    overflow: hidden;
+  }
+
+  .cliente-avatar-img {
     border-radius: 11px;
   }
 }

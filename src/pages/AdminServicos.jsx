@@ -15,11 +15,43 @@ import cronogramaIcon from "../assets/icons/cronograma.png";
 import hidratacaoIcon from "../assets/icons/hidratacao.png";
 import peleIcon from "../assets/icons/pele.png";
 import porosidadeIcon from "../assets/icons/porosidade.png";
+import { FiEdit2 } from "react-icons/fi";
 
 
 const AdminServicos = () => {
   const [servicos, setServicos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
+  const [modalFotoOpen, setModalFotoOpen] = useState(false);
+  const [servicoFotoSelecionado, setServicoFotoSelecionado] = useState(null);
+
+  function abrirModalFoto(servico) {
+    setServicoFotoSelecionado(servico);
+    setModalFotoOpen(true);
+  }
+
+  async function salvarFotoServico(base64) {
+    try {
+      if (base64) {
+        const atualizado = await serviceService.atualizar(servicoFotoSelecionado.id, {
+          name: servicoFotoSelecionado.name,
+          description: servicoFotoSelecionado.description,
+          servicePicture: base64,
+        });
+        setServicos((prev) =>
+          prev.map((s) => s.id === servicoFotoSelecionado.id ? { ...s, servicePicture: base64 } : s)
+        );
+        setServicoFotoSelecionado((prev) => ({ ...prev, servicePicture: base64 }));
+      } else {
+        await serviceService.removerFoto(servicoFotoSelecionado.id); // 👈 DELETE direto
+        setServicos((prev) =>
+          prev.map((s) => s.id === servicoFotoSelecionado.id ? { ...s, servicePicture: null } : s)
+        );
+        setModalFotoOpen(false);
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao salvar foto.");
+    }
+  }
 
   const limparFormulario = () => {
     setForm({ name: "", description: "", servicePicture: null });
@@ -33,7 +65,7 @@ const AdminServicos = () => {
   });
 
   useEffect(() => {
-    serviceService.listar()
+    serviceService.listarTodos()
       .then((data) => setServicos(Array.isArray(data) ? data : []))
       .catch((err) => console.error("Erro ao carregar serviços:", err));
   }, []);
@@ -201,22 +233,34 @@ const AdminServicos = () => {
                   placeholder="Descreva brevemente o serviço oferecido..."
                 />
               </label>
-              {/* Feature ainda não implementada, ((não remover)).
-              <label>
-                Imagem do serviço
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = () =>
-                      setForm((prev) => ({ ...prev, servicePicture: reader.result }));
-                    reader.readAsDataURL(file);
-                  }}
-                />
-              </label> */}
+              {
+                <label>
+                  Imagem do serviço
+                  <div style={{ marginTop: 8 }}>
+                    <button
+                      type="button"
+                      className="btn-cancelar-edicao"
+                      style={{ width: "100%", padding: "13px 14px", textAlign: "left", fontWeight: 700, fontSize: 14 }}
+                      onClick={() => document.getElementById("servico-foto-form-input").click()}
+                    >
+                      {form.servicePicture ? "✓ Imagem selecionada — clique para trocar" : "Escolher imagem"}
+                    </button>
+                    <input
+                      id="servico-foto-form-input"
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = () =>
+                          setForm((prev) => ({ ...prev, servicePicture: reader.result }));
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                  </div>
+                </label>}
 
               <div className="admin-servicos-preview">
                 {form.servicePicture && (
@@ -260,8 +304,35 @@ const AdminServicos = () => {
                     className={`admin-servico-card ${servico.excluded_at ? "inativo" : ""}`}
                   >
                     <div className="admin-servico-info">
-                      <div className="admin-servicos-icon-circle small">
-                        <img src={servico.picture_blob || iconeMap[servico.name] || banhoIcon} alt={servico.name} />
+                      <div
+                        className="admin-servicos-icon-circle small"
+                        style={{ cursor: "pointer", position: "relative" }}
+                        onClick={() => abrirModalFoto(servico)}
+                        onMouseEnter={(e) => {
+                          const overlay = e.currentTarget.querySelector(".servico-avatar-hover");
+                          if (overlay) overlay.style.opacity = 1;
+                        }}
+                        onMouseLeave={(e) => {
+                          const overlay = e.currentTarget.querySelector(".servico-avatar-hover");
+                          if (overlay) overlay.style.opacity = 0;
+                        }}
+                      >
+                        <img
+                          src={servico.servicePicture || iconeMap[servico.name] || banhoIcon}
+                          alt={servico.name}
+                          className={servico.servicePicture ? "foto-real" : "icone-padrao"}
+                        />
+                        <div
+                          className="servico-avatar-hover"
+                          style={{
+                            position: "absolute", inset: 0,
+                            background: "rgba(0,0,0,0.45)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            borderRadius: 16, opacity: 0, transition: "opacity 0.2s",
+                          }}
+                        >
+                          <FiEdit2 size={12} color="#fff" />
+                        </div>
                       </div>
 
                       <div>
@@ -308,6 +379,60 @@ const AdminServicos = () => {
           </div>
         </div>
       </section>
+
+      {modalFotoOpen && servicoFotoSelecionado && (
+        <div className="modal-overlay" onClick={() => setModalFotoOpen(false)}>
+          <div className="modal-confirm-delete" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalFotoOpen(false)}>✕</button>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg, #3370eb 0%, #5f8ef0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <img
+                  src={servicoFotoSelecionado.servicePicture || iconeMap[servicoFotoSelecionado.name] || banhoIcon}
+                  alt="Foto"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+
+              <strong style={{ color: "#1f3d7a", fontSize: 16 }}>{servicoFotoSelecionado.name}</strong>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  className="btn-editar"
+                  style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                  onClick={() => document.getElementById("servico-foto-input").click()}
+                >
+                  {servicoFotoSelecionado.servicePicture ? "Trocar foto" : "Adicionar foto"}
+                </button>
+
+                {servicoFotoSelecionado.servicePicture && (
+                  <button
+                    className="btn-excluir"
+                    style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                    onClick={() => salvarFotoServico("")}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <input
+              id="servico-foto-input"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => salvarFotoServico(reader.result);
+                reader.readAsDataURL(file);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };

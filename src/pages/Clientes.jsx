@@ -13,6 +13,7 @@ import {
   FiPhone,
   FiMail,
   FiUser,
+  FiEdit2,
 } from "react-icons/fi";
 import "../styles/clientes.css";
 import { userService } from "../services/userService";
@@ -70,7 +71,36 @@ const Clientes = () => {
   const [loading, setLoading] = useState(true);
   const [tipoUsuarioFiltro, setTipoUsuarioFiltro] = useState("");
   const navigate = useNavigate();
+  const [modalFotoOpen, setModalFotoOpen] = useState(false);
+  const [clienteFotoSelecionado, setClienteFotoSelecionado] = useState(null);
 
+  function abrirModalFoto(cliente) {
+    setClienteFotoSelecionado(cliente);
+    setModalFotoOpen(true);
+  }
+
+  async function salvarFotoCliente(base64) {
+    try {
+      if (base64) {
+        await userService.updateUser(clienteFotoSelecionado.cpf, {
+          name: clienteFotoSelecionado.nome,
+          userPicture: base64,
+        });
+        setClientes((prev) =>
+          prev.map((c) => c.cpf === clienteFotoSelecionado.cpf ? { ...c, photo: base64 } : c)
+        );
+        setClienteFotoSelecionado((prev) => ({ ...prev, photo: base64 }));
+      } else {
+        await userService.removerFoto(clienteFotoSelecionado.cpf); // 👈 DELETE direto
+        setClientes((prev) =>
+          prev.map((c) => c.cpf === clienteFotoSelecionado.cpf ? { ...c, photo: null } : c)
+        );
+        setModalFotoOpen(false);
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Erro ao salvar foto.");
+    }
+  }
   useEffect(() => {
     const carregar = async () => {
       try {
@@ -99,6 +129,7 @@ const Clientes = () => {
             bairro: user.addresses?.[0]?.neighborhood,
             cep: user.addresses?.[0]?.cep,
             localizacao: user.addresses?.[0]?.locaticion || "",
+            photo: user.userPicture || null,
             ativo: user.active !== false,
             pets: petsDoUsuario.map((pet) => ({
               nome: pet.name,
@@ -161,20 +192,20 @@ const Clientes = () => {
 
       contact: clienteEditando.telefone
         ? {
-            name: "Celular",
-            number: clienteEditando.telefone,
-          }
+          name: "Celular",
+          number: clienteEditando.telefone,
+        }
         : undefined,
 
       address: clienteEditando.endereco || clienteEditando.cep
         ? {
-            type: "Residencial",
-            cep: clienteEditando.cep,
-            address: clienteEditando.endereco,
-            number: clienteEditando.numero,
-            neighborhood: clienteEditando.bairro,
-            locaticion: clienteEditando.localizacao || "",
-          }
+          type: "Residencial",
+          cep: clienteEditando.cep,
+          address: clienteEditando.endereco,
+          number: clienteEditando.numero,
+          neighborhood: clienteEditando.bairro,
+          locaticion: clienteEditando.localizacao || "",
+        }
         : undefined,
     };
 
@@ -347,8 +378,34 @@ const Clientes = () => {
         minWidth: "200px",
         cell: (row) => (
           <div className="cell-cliente">
-            <div className="cliente-avatar">
-              <FiUser size={16} />
+            <div
+              className="cliente-avatar"
+              style={{ cursor: "pointer", position: "relative" }}
+              onClick={(e) => { e.stopPropagation(); abrirModalFoto(row); }}
+              onMouseEnter={(e) => {
+                const overlay = e.currentTarget.querySelector(".cliente-avatar-hover");
+                if (overlay) overlay.style.opacity = 1;
+              }}
+              onMouseLeave={(e) => {
+                const overlay = e.currentTarget.querySelector(".cliente-avatar-hover");
+                if (overlay) overlay.style.opacity = 0;
+              }}
+            >
+              {row.photo
+                ? <img src={row.photo} alt={row.nome} className="cliente-avatar-img" />
+                : <FiUser size={16} />
+              }
+              <div
+                className="cliente-avatar-hover"
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "rgba(0,0,0,0.45)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  borderRadius: 12, opacity: 0, transition: "opacity 0.2s",
+                }}
+              >
+                <FiEdit2 size={12} color="#fff" />
+              </div>
             </div>
 
             <div className="cliente-main-info">
@@ -421,7 +478,7 @@ const Clientes = () => {
               Ver
             </button>
 
-           
+
           </div>
         ),
       },
@@ -440,252 +497,307 @@ const Clientes = () => {
 
   return (
     <>
-    <AdminSidebar /> 
-    <div className="clientes-container">
-      <h1 className="titulo-clientes">Gerenciamento de Usuários</h1>
+      <AdminSidebar />
+      <div className="clientes-container">
+        <h1 className="titulo-clientes">Gerenciamento de Usuários</h1>
 
-      <div className="table-toolbar">
-        <div className="search-box-professional">
-          <FiSearch className="search-box-icon" />
-          <input
-            type="text"
-            placeholder="Buscar cliente por nome, CPF ou email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-big"
+        <div className="table-toolbar">
+          <div className="search-box-professional">
+            <FiSearch className="search-box-icon" />
+            <input
+              type="text"
+              placeholder="Buscar cliente por nome, CPF ou email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-big"
+            />
+          </div>
+
+          <div className="filters-bar">
+            <div className="filter-group">
+              <label>Tipo de usuário</label>
+              <select
+                value={tipoUsuarioFiltro}
+                onChange={(e) => setTipoUsuarioFiltro(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="Cliente">Clientes</option>
+                <option value="Colaborador">Colaboradores</option>
+                <option value="Gerente">Gerentes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="table-card">
+          <div className="table-card-top">
+            <div>
+              <h2>Lista de usuários</h2>
+              <p>{filteredClientes.length} usuário(s) encontrado(s)</p>
+            </div>
+
+            <button
+              type="button"
+              className="btn-novo-usuario"
+              onClick={() => navigate("/admin/usuarios/novo")}
+            >
+              + Novo usuário
+            </button>
+          </div>
+
+          <DataTable
+            columns={columns}
+            data={filteredClientes}
+            pagination
+            highlightOnHover
+            responsive
+            persistTableHead
+            noDataComponent={
+              <div className="empty-table">
+                Nenhum usuário encontrado com os filtros informados.
+              </div>
+            }
+            customStyles={customStyles}
+            expandableRows
+            expandableRowsComponent={PetsExpand}
           />
         </div>
 
-        <div className="filters-bar">
-          <div className="filter-group">
-            <label>Tipo de usuário</label>
-            <select
-              value={tipoUsuarioFiltro}
-              onChange={(e) => setTipoUsuarioFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="Cliente">Clientes</option>
-              <option value="Colaborador">Colaboradores</option>
-              <option value="Gerente">Gerentes</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="table-card">
-        <div className="table-card-top">
-          <div>
-            <h2>Lista de usuários</h2>
-            <p>{filteredClientes.length} usuário(s) encontrado(s)</p>
-          </div>
-
-          <button
-            type="button"
-            className="btn-novo-usuario"
-            onClick={() => navigate("/admin/usuarios/novo")}
-          >
-            + Novo usuário
-          </button>
-        </div>
-
-        <DataTable
-          columns={columns}
-          data={filteredClientes}
-          pagination
-          highlightOnHover
-          responsive
-          persistTableHead
-          noDataComponent={
-            <div className="empty-table">
-              Nenhum usuário encontrado com os filtros informados.
-            </div>
-          }
-          customStyles={customStyles}
-          expandableRows
-          expandableRowsComponent={PetsExpand}
-        />
-      </div>
-
-      {modalOpen && clienteSelecionado && (
-        <div className="modal-overlay">
-          <div className="modal-cliente">
-            <button className="modal-close" onClick={fecharModal}>
-              ✕
-            </button>
-
-            <div className="modal-header-custom">
-              <div className="modal-avatar">
-                <FiUser size={24} />
-              </div>
-
-              <div>
-                <h2>{clienteSelecionado.nome}</h2>
-                <p>Visualização de cadastro do usuário</p>
-              </div>
-            </div>
-
-            <div className="modal-grid-custom">
-              <div className="info-box">
-                <label>CPF</label>
-                <span>{clienteSelecionado.cpf}</span>
-              </div>
-
-              <div className="info-box">
-                <label>Telefone</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.telefone}
-                    onChange={(e) => alterarCampo("telefone", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.telefone}</span>
-                )}
-              </div>
-
-              <div className="info-box info-box-full">
-                <label>Email</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.email}
-                    onChange={(e) => alterarCampo("email", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.email}</span>
-                )}
-              </div>
-
-              <div className="info-box">
-                <label>Endereço</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.endereco}
-                    onChange={(e) => alterarCampo("endereco", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.endereco}</span>
-                )}
-              </div>
-
-              <div className="info-box">
-                <label>Número</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.numero}
-                    onChange={(e) => alterarCampo("numero", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.numero}</span>
-                )}
-              </div>
-
-              <div className="info-box">
-                <label>Bairro</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.bairro}
-                    onChange={(e) => alterarCampo("bairro", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.bairro}</span>
-                )}
-              </div>
-
-              <div className="info-box">
-                <label>CEP</label>
-                {modoEdicao ? (
-                  <input
-                    value={clienteEditando.cep}
-                    onChange={(e) => alterarCampo("cep", e.target.value)}
-                  />
-                ) : (
-                  <span>{clienteSelecionado.cep}</span>
-                )}
-              </div>
-            </div>
-
-            <div className="pets-section-custom">
-              <div className="pets-section-title">🐾 Pets do Usuário</div>
-
-              {clienteSelecionado.pets?.length ? (
-                <div className="pets-list-grid">
-                  {clienteSelecionado.pets.map((pet, index) => (
-                    <div className="pet-card-modal" key={index}>
-                      <strong>{pet.nome}</strong>
-                      <span>{pet.tipo}</span>
-                      <small>{pet.raca}</small>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="empty-pets-text">Nenhum pet cadastrado</p>
-              )}
-            </div>
-
-            <div className="modal-buttons">
-              {modoEdicao ? (
-                <button className="btn-salvar" onClick={salvarEdicao}>
-                  Salvar
-                </button>
-              ) : (
-                <button
-                  className="btn-editar"
-                  onClick={() => setModoEdicao(true)}
-                >
-                  Editar
-                </button>
-              )}
-
-              <button
-                className="btn-excluir"
-                onClick={() => abrirConfirmacaoExclusao(clienteSelecionado)}
-              >
-                Excluir
+        {modalOpen && clienteSelecionado && (
+          <div className="modal-overlay">
+            <div className="modal-cliente">
+              <button className="modal-close" onClick={fecharModal}>
+                ✕
               </button>
+
+              <div className="modal-header-custom">
+                <div className="modal-avatar">
+                  {clienteSelecionado.photo
+                    ? <img src={clienteSelecionado.photo} alt={clienteSelecionado.nome} className="modal-avatar-img" />
+                    : <FiUser size={24} />
+                  }
+                </div>
+
+                <div>
+                  <h2>{clienteSelecionado.nome}</h2>
+                  <p>Visualização de cadastro do usuário</p>
+                </div>
+              </div>
+
+              <div className="modal-grid-custom">
+                <div className="info-box">
+                  <label>CPF</label>
+                  <span>{clienteSelecionado.cpf}</span>
+                </div>
+
+                <div className="info-box">
+                  <label>Telefone</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.telefone}
+                      onChange={(e) => alterarCampo("telefone", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.telefone}</span>
+                  )}
+                </div>
+
+                <div className="info-box info-box-full">
+                  <label>Email</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.email}
+                      onChange={(e) => alterarCampo("email", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.email}</span>
+                  )}
+                </div>
+
+                <div className="info-box">
+                  <label>Endereço</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.endereco}
+                      onChange={(e) => alterarCampo("endereco", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.endereco}</span>
+                  )}
+                </div>
+
+                <div className="info-box">
+                  <label>Número</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.numero}
+                      onChange={(e) => alterarCampo("numero", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.numero}</span>
+                  )}
+                </div>
+
+                <div className="info-box">
+                  <label>Bairro</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.bairro}
+                      onChange={(e) => alterarCampo("bairro", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.bairro}</span>
+                  )}
+                </div>
+
+                <div className="info-box">
+                  <label>CEP</label>
+                  {modoEdicao ? (
+                    <input
+                      value={clienteEditando.cep}
+                      onChange={(e) => alterarCampo("cep", e.target.value)}
+                    />
+                  ) : (
+                    <span>{clienteSelecionado.cep}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="pets-section-custom">
+                <div className="pets-section-title">🐾 Pets do Usuário</div>
+
+                {clienteSelecionado.pets?.length ? (
+                  <div className="pets-list-grid">
+                    {clienteSelecionado.pets.map((pet, index) => (
+                      <div className="pet-card-modal" key={index}>
+                        <strong>{pet.nome}</strong>
+                        <span>{pet.tipo}</span>
+                        <small>{pet.raca}</small>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="empty-pets-text">Nenhum pet cadastrado</p>
+                )}
+              </div>
+
+              <div className="modal-buttons">
+                {modoEdicao ? (
+                  <button className="btn-salvar" onClick={salvarEdicao}>
+                    Salvar
+                  </button>
+                ) : (
+                  <button
+                    className="btn-editar"
+                    onClick={() => setModoEdicao(true)}
+                  >
+                    Editar
+                  </button>
+                )}
+
+                <button
+                  className="btn-excluir"
+                  onClick={() => abrirConfirmacaoExclusao(clienteSelecionado)}
+                >
+                  Excluir
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {confirmDeleteOpen && clienteParaExcluir && (
-        <div className="modal-overlay">
-          <div className="modal-confirm-delete">
-            <button
-              className="modal-close"
-              onClick={fecharConfirmacaoExclusao}
-            >
-              ✕
-            </button>
-
-            <div className="confirm-delete-icon">🐾</div>
-
-            <h3>Confirmar exclusão</h3>
-            <p>
-              Tem certeza que deseja excluir o cliente{" "}
-              <strong>{clienteParaExcluir.nome}</strong>?
-            </p>
-            <span className="confirm-delete-warning">
-              Essa ação não poderá ser desfeita.
-            </span>
-
-            <div className="confirm-delete-buttons">
+        {confirmDeleteOpen && clienteParaExcluir && (
+          <div className="modal-overlay">
+            <div className="modal-confirm-delete">
               <button
-                className="btn-cancelar-exclusao"
+                className="modal-close"
                 onClick={fecharConfirmacaoExclusao}
               >
-                Cancelar
+                ✕
               </button>
 
-              <button
-                className="btn-confirmar-exclusao"
-                onClick={confirmarExclusaoCliente}
-              >
-                Sim, excluir
-              </button>
+              <div className="confirm-delete-icon">🐾</div>
+
+              <h3>Confirmar exclusão</h3>
+              <p>
+                Tem certeza que deseja excluir o cliente{" "}
+                <strong>{clienteParaExcluir.nome}</strong>?
+              </p>
+              <span className="confirm-delete-warning">
+                Essa ação não poderá ser desfeita.
+              </span>
+
+              <div className="confirm-delete-buttons">
+                <button
+                  className="btn-cancelar-exclusao"
+                  onClick={fecharConfirmacaoExclusao}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  className="btn-confirmar-exclusao"
+                  onClick={confirmarExclusaoCliente}
+                >
+                  Sim, excluir
+                </button>
+              </div>
             </div>
+          </div>
+        )}
+      </div>
+      {modalFotoOpen && clienteFotoSelecionado && (
+        <div className="modal-overlay" onClick={() => setModalFotoOpen(false)}>
+          <div className="modal-confirm-delete" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalFotoOpen(false)}>✕</button>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg, #3370eb 0%, #5f8ef0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {clienteFotoSelecionado.photo
+                  ? <img src={clienteFotoSelecionado.photo} alt="Foto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <FiUser size={36} color="#fff" />
+                }
+              </div>
+
+              <strong style={{ color: "#1f3d7a", fontSize: 16 }}>{clienteFotoSelecionado.nome}</strong>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  className="btn-editar"
+                  style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                  onClick={() => document.getElementById("cliente-foto-input").click()}
+                >
+                  {clienteFotoSelecionado.photo ? "Trocar foto" : "Adicionar foto"}
+                </button>
+
+                {clienteFotoSelecionado.photo && (
+                  <button
+                    className="btn-excluir"
+                    style={{ padding: "8px 16px", fontSize: 13, minWidth: "unset", height: "auto" }}
+                    onClick={() => salvarFotoCliente("")}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <input
+              id="cliente-foto-input"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => salvarFotoCliente(reader.result);
+                reader.readAsDataURL(file);
+              }}
+            />
           </div>
         </div>
       )}
-    </div>
     </>
   );
 };
