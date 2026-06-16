@@ -1982,3 +1982,307 @@
     padding: 12px;
   }
 }
+
+/* =========================================================
+   FOTO DO PERFIL
+========================================================= */
+
+.foto-card {
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(51, 112, 235, 0.08),
+      transparent 36%
+    ),
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbfdff 100%
+    );
+}
+
+.foto-card-header {
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.foto-card-header h3 {
+  margin: 0;
+}
+
+.foto-card-header p {
+  margin: 5px 0 0;
+  color: var(--petnet-text-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.foto-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  padding: 18px;
+
+  background: rgba(248, 251, 255, 0.78);
+  border: 1px solid #e6edff;
+  border-radius: 22px;
+}
+
+.upload-box {
+  position: relative;
+
+  width: 220px;
+  height: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f8fbff 0%,
+      #eef4ff 100%
+    );
+
+  border: 2px dashed #b8d0ff;
+  border-radius: 28px;
+
+  color: var(--petnet-blue);
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 255, 255, 0.55);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.upload-box:hover {
+  transform: translateY(-3px);
+  border-color: var(--petnet-blue);
+
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 255, 255, 0.65),
+    0 15px 30px rgba(51, 112, 235, 0.13);
+}
+
+.upload-box.tem-foto {
+  border-style: solid;
+  border-color: #d8e5ff;
+  background: #ffffff;
+}
+
+.foto-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-preview-overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 42, 92, 0.08),
+      rgba(18, 42, 92, 0.68)
+    );
+
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 900;
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.upload-box.tem-foto:hover .foto-preview-overlay {
+  opacity: 1;
+}
+
+.foto-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  padding: 20px;
+  text-align: center;
+}
+
+.foto-placeholder-icon {
+  width: 68px;
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 3px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3370eb,
+      #5c91ff
+    );
+
+  border-radius: 22px;
+  color: #ffffff;
+
+  box-shadow:
+    0 12px 24px rgba(51, 112, 235, 0.2);
+}
+
+.foto-placeholder strong {
+  color: #2457bd;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.foto-placeholder p {
+  margin: 0;
+  color: #71809d;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.foto-upload-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+
+  text-align: center;
+}
+
+.foto-upload-info strong {
+  color: #17336c;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.foto-upload-info span {
+  color: var(--petnet-text-soft);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.foto-btns {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.foto-btns.foto-btns-duplo {
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+}
+
+.foto-btn {
+  min-width: 0;
+  min-height: 46px;
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.foto-btn-principal {
+  background:
+    linear-gradient(
+      135deg,
+      var(--petnet-blue),
+      #5b91ff
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 20px rgba(51, 112, 235, 0.2);
+}
+
+.foto-btn-principal:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 25px rgba(51, 112, 235, 0.26);
+}
+
+.foto-btn-remover {
+  background: #fff2f2;
+  border: 1px solid #ffd3d3;
+  color: #dc2626;
+}
+
+.foto-btn-remover:hover {
+  transform: translateY(-2px);
+  background: #fee2e2;
+
+  box-shadow:
+    0 10px 20px rgba(220, 38, 38, 0.09);
+}
+
+.foto-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .foto-area {
+    padding: 15px;
+  }
+
+  .upload-box {
+    width: min(220px, 100%);
+    height: 210px;
+    border-radius: 24px;
+  }
+
+  .foto-btns.foto-btns-duplo {
+    grid-template-columns: 1fr;
+  }
+
+  .foto-btn {
+    width: 100%;
+  }
+}
