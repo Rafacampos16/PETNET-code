@@ -117,7 +117,7 @@ const Pets_cadastrados = () => {
         );
         setPetFotoSelecionado((prev) => ({ ...prev, photo: base64 }));
       } else {
-        await petService.removerFoto(petFotoSelecionado.id); // 👈 DELETE direto
+        await petService.removerFoto(petFotoSelecionado.id); //  DELETE direto
         setPets((prev) =>
           prev.map((p) => p.id === petFotoSelecionado.id ? { ...p, photo: null } : p)
         );
@@ -791,12 +791,24 @@ const Pets_cadastrados = () => {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
               <div style={{ width: 90, height: 90, borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg, #eef4ff 0%, #dce8ff 100%)", border: "1px solid #dbe7ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {petFotoSelecionado.photo
-                  ? <img src={petFotoSelecionado.photo} alt="Foto" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : <img
-                    src={petSelecionado.species?.toLowerCase().includes("cachorro") ? PetImg : PetImg2}
-                    alt="pet"
-                    style={{ width: 38, height: 38, objectFit: "contain" }}
-                  />
+                  ? (
+                    <img
+                      src={petFotoSelecionado.photo}
+                      alt="Foto"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  )
+                  : (
+                    <img
+                      src={
+                        petFotoSelecionado.species?.toLowerCase().includes("cachorro")
+                          ? PetImg
+                          : PetImg2
+                      }
+                      alt="pet"
+                      style={{ width: 38, height: 38, objectFit: "contain" }}
+                    />
+                  )
                 }
               </div>
 

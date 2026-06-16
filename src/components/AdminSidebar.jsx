@@ -41,9 +41,14 @@ const AdminSidebar = () => {
       exact: true,
     },
     {
-      nome: "Agendar",
+      nome: "Agendamentos",
       rota: "/admin/agendamentos",
       icon: CalendarDays,
+    },
+    {
+      nome: "Status",
+      rota: "/admin/status",
+      icon: ClipboardList,
     },
     {
       nome: "Serviços",
@@ -59,11 +64,6 @@ const AdminSidebar = () => {
       nome: "Pets",
       rota: "/admin/pets",
       icon: PawPrint,
-    },
-    {
-      nome: "Status",
-      rota: "/admin/status",
-      icon: ClipboardList,
     },
     ...(isAdmin || isDev
   ? [
