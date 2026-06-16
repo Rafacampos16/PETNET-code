@@ -63,6 +63,19 @@ export const traduzirSRD = (breed) => {
   }
 }
 
+export const traduzirSexo = (sex) => {
+  switch (sex) {
+    case "F":
+      return "Fêmea";
+
+    case "M":
+      return "Macho";
+
+    default:
+      return sex || "—";
+  }
+};
+
 const formatarData = (data) => {
   if (!data) return "";
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -160,8 +173,20 @@ const Pets_cadastrados = () => {
         species: petEditando.species === "Cachorro" ? "dog" : petEditando.species === "Gato" ? "cat" : petEditando.species,
         breed: petEditando.breed === "Não informado" ? "SRD" : petEditando.breed,
         size: petEditando.size === "Pequeno" ? "S" : petEditando.size === "Médio" ? "M" : petEditando.size === "Grande" ? "L" : petEditando.size === "Gigante" ? "XL" : petEditando.size,
-        weight: petEditando.weight ? Number(String(petEditando.weight).replace(" kg", "")) : null,
-        sex: petEditando.sex === "Fêmea" ? "F" : petEditando.sex === "Macho" ? "M" : petEditando.sex,
+        weight:
+          petEditando.weight &&
+            petEditando.weight !== "Não informado"
+            ? Number(
+              String(petEditando.weight).replace(" kg", "")
+            )
+            : null,
+
+        sex:
+          petEditando.sex === "Fêmea"
+            ? "F"
+            : petEditando.sex === "Macho"
+              ? "M"
+              : null,
         observations: petEditando.observations || "",
         user_cpf: petEditando.user_cpf,
         birth_date: petEditando.birth_date
@@ -221,10 +246,20 @@ const Pets_cadastrados = () => {
               species: pet.species,
               breed: traduzirSRD(pet.breed),
               size: traduzirPorte(pet.size),
-              weight: `${pet.weight} kg`,
+              weight:
+                pet.weight !== null &&
+                  pet.weight !== undefined &&
+                  pet.weight !== ""
+                  ? `${pet.weight} kg`
+                  : "—",
+
               birth_date: formatarData(pet.birth_date),
-              birth_date_raw: pet.birth_date ? pet.birth_date.split("T")[0] : "",
-              sex: pet.sex || "",
+
+              birth_date_raw: pet.birth_date
+                ? pet.birth_date.split("T")[0]
+                : "",
+
+              sex: traduzirSexo(pet.sex),
               observations: pet.observations,
               user_cpf: pet.user_cpf,
               owner_name: dono?.name || localStorage.getItem("userName") || "Não informado",
@@ -436,15 +471,23 @@ const Pets_cadastrados = () => {
       {
         name: "Sexo",
         center: true,
-        width: "120px",
-        cell: (row) => (
-          <span
-            className={`badge-sex ${row.sex?.toLowerCase() === "fêmea" ? "female" : "male"
-              }`}
-          >
-            {row.sex}
-          </span>
-        ),
+        width: "140px",
+        cell: (row) => {
+          const sexo = row.sex || "Não informado";
+
+          const classeSexo =
+            sexo === "Fêmea"
+              ? "female"
+              : sexo === "Macho"
+                ? "male"
+                : "";
+
+          return (
+            <span className={`badge-sex ${classeSexo}`}>
+              {sexo}
+            </span>
+          );
+        },
       },
       {
         name: "Nascimento",
@@ -635,19 +678,49 @@ const Pets_cadastrados = () => {
 
               <div className="info-box">
                 <label>Peso</label>
-                {modoEdicao
-                  ? <input type="number" value={String(petEditando.weight).replace(" kg", "")} onChange={(e) => alterarCampo("weight", e.target.value)} />
-                  : <span>{petSelecionado.weight}</span>}
+                {modoEdicao ? (
+                  <input
+                    type="number"
+                    value={
+                      petEditando.weight === "Não informado"
+                        ? ""
+                        : String(petEditando.weight || "").replace(" kg", "")
+                    }
+                    onChange={(e) =>
+                      alterarCampo("weight", e.target.value)
+                    }
+                    placeholder="Não informado"
+                  />
+                ) : (
+                  <span>
+                    {petSelecionado.weight || "Não informado"}
+                  </span>
+                )}
               </div>
 
               <div className="info-box">
                 <label>Sexo</label>
-                {modoEdicao
-                  ? <select value={petEditando.sex} onChange={(e) => alterarCampo("sex", e.target.value)}>
+
+                {modoEdicao ? (
+                  <select
+                    value={
+                      petEditando.sex === "Não informado"
+                        ? ""
+                        : petEditando.sex || ""
+                    }
+                    onChange={(e) =>
+                      alterarCampo("sex", e.target.value)
+                    }
+                  >
+                    <option value="">Não informado</option>
                     <option value="Macho">Macho</option>
                     <option value="Fêmea">Fêmea</option>
                   </select>
-                  : <span>{petSelecionado.sex}</span>}
+                ) : (
+                  <span>
+                    {petSelecionado.sex || "Não informado"}
+                  </span>
+                )}
               </div>
               <div className="info-box">
                 <label>Data de nascimento</label>
