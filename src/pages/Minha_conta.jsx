@@ -370,6 +370,9 @@ export default function MinhaConta() {
       try {
         const resUser = await userService.showUser(cpf);
         const user = resUser.data;
+        if (user.userPicture) {
+          setFoto(user.userPicture);
+        }
 
         setDados({
           nome: user.name,
@@ -436,6 +439,7 @@ export default function MinhaConta() {
             localizacao: user.addresses?.[0]?.locaticion || "",
             tipo: user.addresses?.[0]?.type || "",
             numero: user.addresses?.[0]?.number || "",
+            foto: user.userPicture || null,
           }));
         }
 
@@ -456,13 +460,38 @@ export default function MinhaConta() {
     if (cpf && pets.length > 0) {
       carregarAgendamentos(cpf);
     }
+
   }, [pets]);
 
-  function handleFoto(e) {
+  async function handleFoto(e) {
     const file = e.target.files[0];
-    if (file) setFoto(file);
-  }
+    if (!file) return;
 
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result;
+      setFoto(base64);
+
+      try {
+        const cpf = localStorage.getItem("userCpf");
+        await userService.updateUser(cpf, { userPicture: base64 }); // só a foto
+      } catch (err) {
+        console.error("Erro ao salvar foto:", err);
+        alert("Erro ao salvar a foto.");
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+  async function removerFoto() {
+    try {
+      const cpf = localStorage.getItem("userCpf");
+      await userService.removerFoto(cpf);
+      setFoto(null);
+    } catch (err) {
+      console.error("Erro ao remover foto:", err);
+      alert("Erro ao remover a foto.");
+    }
+  }
   function abrirModalEditar() {
     if (dados) {
       setFormEditar(garantirListasEdicao({ ...dados }));
@@ -689,6 +718,7 @@ export default function MinhaConta() {
         const body = {
           name: formEditar.nome,
           email: formEditar.email,
+          userPicture: foto || undefined,
           contact: contatosTratados[0] || {
             name: formEditar.nome,
             number: formEditar.telefone,
@@ -899,11 +929,7 @@ export default function MinhaConta() {
             <div className="hero-card-left">
               <div className="hero-avatar">
                 {foto ? (
-                  <img
-                    src={URL.createObjectURL(foto)}
-                    alt="Perfil"
-                    className="hero-avatar-img"
-                  />
+                  <img src={foto} alt="Perfil" className="hero-avatar-img" />
                 ) : (
                   <User size={34} />
                 )}
@@ -1146,11 +1172,7 @@ export default function MinhaConta() {
               <div className="foto-area">
                 <label className="upload-box">
                   {foto ? (
-                    <img
-                      src={URL.createObjectURL(foto)}
-                      className="foto-preview"
-                      alt="Prévia"
-                    />
+                    <img src={foto} className="foto-preview" alt="Prévia" />
                   ) : (
                     <div className="foto-placeholder">
                       <PawPrint size={36} />
@@ -1182,7 +1204,7 @@ export default function MinhaConta() {
 
                     <button
                       className="foto-btn remover"
-                      onClick={() => setFoto(null)}
+                      onClick={removerFoto}
                     >
                       Remover foto
                     </button>
