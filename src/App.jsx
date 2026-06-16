@@ -19,6 +19,7 @@ import Criarconta from "./pages/Criar_conta";
 import Minhaconta from "./pages/Minha_conta";
 import Clientes from "./pages/Clientes";
 import Agendamentos from "./pages/Agendamentos";
+import GerenciarAgendamentos from "./pages/GerenciarAgendamentos";
 import PetsCadastrados from "./pages/Pets_cadastrados";
 import Status from "./pages/Status";
 import Colaborador from "./pages/Colaborador";
@@ -85,6 +86,15 @@ const App = () => {
 
           <Route
             path="/admin/agendamentos"
+            element={
+              <ProtectedRoute>
+                <GerenciarAgendamentos />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/agendamentos/novo"
             element={
               <ProtectedRoute>
                 <Agendamentos />
