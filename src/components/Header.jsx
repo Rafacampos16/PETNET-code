@@ -4,13 +4,12 @@ import {
   ChevronDown,
   LogOut,
   UserRound,
+  Scissors,
 } from "lucide-react";
 
 import PataIcon from "../assets/icons/pata.png";
 import PataIconHover from "../assets/icons/pata-h.png";
 
-import PetsIcon from "../assets/icons/pets.png";
-import PetsIconHover from "../assets/icons/pets-h.png";
 
 import HomeIcon from "../assets/icons/home.png";
 import HomeIconHover from "../assets/icons/home-h.png";
@@ -367,8 +366,7 @@ const Header = () => {
       id: "servicos",
       label: "Serviços",
       rota: "/servicos",
-      icon: PetsIcon,
-      hoverIcon: PetsIconHover,
+      iconComponent: Scissors,
     },
     {
       id: "pets",
@@ -517,17 +515,14 @@ const Header = () => {
 
   const renderizarItemDesktop = (item) => {
     const estaHover = hoveredItem === item.id;
+    const IconComponent = item.iconComponent;
 
     return (
       <div
         key={item.id}
         className="menu-item"
-        onMouseEnter={() =>
-          setHoveredItem(item.id)
-        }
-        onMouseLeave={() =>
-          setHoveredItem("")
-        }
+        onMouseEnter={() => setHoveredItem(item.id)}
+        onMouseLeave={() => setHoveredItem("")}
         onClick={() => navegar(item.rota)}
         role="button"
         tabIndex={0}
@@ -540,15 +535,28 @@ const Header = () => {
           }
         }}
       >
-        <img
-          src={
-            estaHover
-              ? item.hoverIcon
-              : item.icon
-          }
-          alt={item.label}
-          className="icon-link"
-        />
+        {IconComponent ? (
+          <IconComponent
+            size={28}
+            strokeWidth={2.3}
+            className="icon-link"
+            style={{
+              color: estaHover
+                ? "var(--petnet-yellow)"
+                : "#ffffff",
+            }}
+          />
+        ) : (
+          <img
+            src={
+              estaHover
+                ? item.hoverIcon
+                : item.icon
+            }
+            alt={item.label}
+            className="icon-link"
+          />
+        )}
 
         <span
           style={{
