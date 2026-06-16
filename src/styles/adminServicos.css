@@ -153,6 +153,7 @@
 }
 
 .admin-servicos-icon-circle {
+  overflow: hidden;
   width: 58px;
   height: 58px;
   min-width: 58px;
@@ -171,10 +172,17 @@
   border-radius: 16px;
 }
 
-.admin-servicos-icon-circle img {
-  width: 30px;
-  height: 30px;
+.admin-servicos-icon-circle img.icone-padrao {
+  width: 65%;
+  height: 65%;
   object-fit: contain;
+}
+
+.admin-servicos-icon-circle img.foto-real {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 .admin-servicos-preview strong {
@@ -333,9 +341,11 @@
 }
 
 .admin-servico-actions button {
-  padding: 10px 13px;
+  padding: 10px 16px;
   font-size: 12px;
+  border-radius: 14px;
 }
+
 
 .btn-editar {
   background: #edf3ff;
