@@ -380,6 +380,7 @@ export default function MinhaConta() {
           nome: user.name,
           email: user.email,
           telefone: user.contacts?.[0]?.number || "",
+          contatos: user.contacts || [],
           endereco: user.addresses?.[0]?.address || "",
           bairro: user.addresses?.[0]?.neighborhood || "",
           cep: user.addresses?.[0]?.cep || "",
@@ -387,6 +388,7 @@ export default function MinhaConta() {
           localizacao: user.addresses?.[0]?.locaticion || "",
           tipo: user.addresses?.[0]?.type || "",
           numero: user.addresses?.[0]?.number || "",
+          enderecos: user.addresses || [],
           nomePet: "",
           especiePet: "",
           racaPet: "",
@@ -411,6 +413,7 @@ export default function MinhaConta() {
             nome: user.name,
             email: user.email,
             telefone: user.contacts?.[0]?.number || "",
+            contatos: user.contacts || [],
             endereco: user.addresses?.[0]?.address || "",
             bairro: user.addresses?.[0]?.neighborhood || "",
             cep: user.addresses?.[0]?.cep || "",
@@ -418,6 +421,7 @@ export default function MinhaConta() {
             localizacao: user.addresses?.[0]?.locaticion || "",
             tipo: user.addresses?.[0]?.type || "",
             numero: user.addresses?.[0]?.number || "",
+            enderecos: user.addresses || [],
             nomePet: primeiroPet.name || "",
             especiePet: primeiroPet.species || "",
             racaPet: primeiroPet.breed || "",
@@ -434,6 +438,7 @@ export default function MinhaConta() {
             nome: user.name,
             email: user.email,
             telefone: user.contacts?.[0]?.number || "",
+            contatos: user.contacts || [],
             endereco: user.addresses?.[0]?.address || "",
             bairro: user.addresses?.[0]?.neighborhood || "",
             cep: user.addresses?.[0]?.cep || "",
@@ -441,6 +446,7 @@ export default function MinhaConta() {
             localizacao: user.addresses?.[0]?.locaticion || "",
             tipo: user.addresses?.[0]?.type || "",
             numero: user.addresses?.[0]?.number || "",
+            enderecos: user.addresses || [],
             foto: user.userPicture || null,
           }));
         }
@@ -718,12 +724,12 @@ export default function MinhaConta() {
           }));
 
         const body = {
-  name: formEditar.nome,
-  email: formEditar.email,
-  userPicture: foto || undefined,
-  contacts: contatosTratados,
-  addresses: enderecosTratados,
-};
+          name: formEditar.nome,
+          email: formEditar.email,
+          userPicture: foto || undefined,
+          contact: contatosTratados,
+          address: enderecosTratados,
+        };
         console.log("Body enviado:", JSON.stringify(body, null, 2));
         await userService.updateUser(cpf, body);
 

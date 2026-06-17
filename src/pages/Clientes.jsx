@@ -129,6 +129,8 @@ const Clientes = () => {
             bairro: user.addresses?.[0]?.neighborhood,
             cep: user.addresses?.[0]?.cep,
             localizacao: user.addresses?.[0]?.locaticion || "",
+            contacts: user.contacts || [],
+            addresses: user.addresses || [],
             photo: user.userPicture || null,
             ativo: user.active !== false,
             pets: petsDoUsuario.map((pet) => ({
@@ -183,33 +185,57 @@ const Clientes = () => {
     });
   };
 
-  //alterar depois para permitir a inclusão de multiplos endereços
   const salvarEdicao = async () => {
+    const telefoneEditado = clienteEditando.telefone && clienteEditando.telefone !== "--"
+      ? clienteEditando.telefone
+      : null;
+
+    const contactsOriginais = clienteEditando.contacts ? [...clienteEditando.contacts] : [];
+    if (telefoneEditado) {
+      if (contactsOriginais.length > 0) {
+        contactsOriginais[0] = { ...contactsOriginais[0], number: telefoneEditado };
+      } else {
+        contactsOriginais.push({ name: "Principal", number: telefoneEditado });
+      }
+    }
+
+    const addressesOriginais = clienteEditando.addresses ? [...clienteEditando.addresses] : [];
+    if (clienteEditando.endereco || clienteEditando.cep) {
+      const addrAtualizado = {
+        type: addressesOriginais[0]?.type || "Casa",
+        cep: clienteEditando.cep,
+        address: clienteEditando.endereco,
+        number: clienteEditando.numero,
+        neighborhood: clienteEditando.bairro,
+        locaticion: clienteEditando.localizacao || "",
+      };
+      if (addressesOriginais.length > 0) {
+        addressesOriginais[0] = { ...addressesOriginais[0], ...addrAtualizado };
+      } else {
+        addressesOriginais.push(addrAtualizado);
+      }
+    }
+
     const body = {
       name: clienteEditando.nome,
       email: clienteEditando.email,
       type: clienteEditando.tipo,
-      contacts: clienteEditando.telefone
-        ? [{ name: "Principal", number: clienteEditando.telefone }]
-        : undefined,
-      addresses: (clienteEditando.endereco || clienteEditando.cep)
-        ? [{
-          type: clienteEditando.tipo || "Casa",
-          cep: clienteEditando.cep,
-          address: clienteEditando.endereco,
-          number: clienteEditando.numero,
-          neighborhood: clienteEditando.bairro,
-          locaticion: clienteEditando.localizacao || "",
-        }]
-        : undefined,
+      contact: contactsOriginais.length > 0 ? contactsOriginais : undefined,
+      address: addressesOriginais.length > 0 ? addressesOriginais : undefined,
     };
 
     try {
       await userService.updateUser(clienteEditando.cpf, body);
+      const clienteAtualizado = {
+        ...clienteEditando,
+        contacts: contactsOriginais,
+        addresses: addressesOriginais,
+      };
       setClientes(
-        clientes.map((c) => (c.id === clienteEditando.id ? clienteEditando : c))
+        clientes.map((c) => (c.id === clienteEditando.id ? clienteAtualizado : c))
       );
-      setClienteSelecionado(clienteEditando);
+      setClienteSelecionado(clienteAtualizado);
+      setClienteEditando(clienteAtualizado);
       setModoEdicao(false);
       alert("Cliente atualizado com sucesso!");
     } catch (err) {
